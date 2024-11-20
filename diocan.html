@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memento Mori</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            margin: 20px 0;
+            font-size: 24px;
+        }
+
+        .grid-container {
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+            margin: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(53, auto); /* 1 colonna per i numeri laterali + 52 settimane */
+            gap: 2px;
+        }
+
+        .grid div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 25px;
+            height: 25px;
+            border: 1px solid #ddd;
+            font-size: 10px;
+        }
+
+        .header {
+            font-weight: bold;
+            background-color: #ddd;
+        }
+
+        .row-number {
+            font-weight: bold;
+            background-color: #eee;
+        }
+
+        .checkbox {
+            width: 100%;
+            height: 100%;
+            display: inline-block;
+        }
+
+        .checkbox input {
+            display: none;
+        }
+
+        .checkbox input:checked + label {
+            background-color: #333;
+            color: white;
+            border: 1px solid #333;
+        }
+
+        .checkbox label {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .grid-container {
+            overflow: auto;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Memento Mori</h1>
+    <div class="grid-container">
+        <div class="grid">
+            <!-- Header -->
+            <div></div> <!-- Spazio vuoto per la colonna dei numeri -->
+            <script>
+                for (let i = 1; i <= 52; i++) {
+                    document.write(`<div class="header">${i}</div>`);
+                }
+            </script>
+
+            <!-- Corpo -->
+            <script>
+                for (let row = 1; row <= 85; row++) {
+                    document.write(`<div class="row-number">${row}</div>`); // Aggiungi numero della riga
+                    for (let col = 1; col <= 52; col++) {
+                        document.write(`
+                            <div class="checkbox">
+                                <input type="checkbox" id="week-${row}-${col}">
+                                <label for="week-${row}-${col}"></label>
+                            </div>
+                        `);
+                    }
+                }
+            </script>
+        </div>
+    </div>
+</body>
+</html>
