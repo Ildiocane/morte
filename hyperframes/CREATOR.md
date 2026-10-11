@@ -1,12 +1,6 @@
-<!-- HYPERFRAMES_SETUP_INCOMPLETE -->
-<!-- ^ Leave this marker until /setup is complete. It tells Claude to greet a new user
-     and run onboarding before any video work. The setup skill removes it when finished. -->
-
 # Creator Profile — Luca Bandiera
 
 Your identity, positioning, and workflow for video work in this workspace. **Read this before every video task** (alongside `PREFERENCES.md`). Use it for on-screen text, niche framing, and workflow assumptions.
-
-> 🚧 **This file is a blank template.** Run `/setup` (or just tell Claude "help me get set up") and it will fill these sections in from a short interview. You can also edit it by hand any time.
 
 ## Identity
 
@@ -46,14 +40,9 @@ Clean dark default for now (set during /setup): background `#0a0a0f`, surface `#
 
 ## Inspiration creators
 
-Studied creators live in [`_reference/creator-library/`](_reference/creator-library/). Add more with `/study-creator <url>`.
+See [`_reference/creator-library/INDEX.md`](_reference/creator-library/INDEX.md) for the full list. Add new creators via `/study-creator <url>`.
 
-**Pending (blocked during /setup — TikTok was not reachable from the cloud environment):** study these @jeffnippardfitness videos with `/study-creator`:
-- https://www.tiktok.com/@jeffnippardfitness/video/7652093298256923924
-- https://www.tiktok.com/@jeffnippardfitness/video/7610877939973934356
-- https://www.tiktok.com/@jeffnippardfitness/video/7607951419785612565
-- https://www.tiktok.com/@jeffnippardfitness/video/7605986132278611221
-- https://www.tiktok.com/@jeffnippardfitness/video/7601564484368370964
+- **Primary reference:** [@jeffnippardfitness](_reference/creator-library/jeffnippardfitness/style-distilled.md) — 5 videos studied during /setup. Default to this fingerprint for Luca's builds unless told otherwise.
 
 ## Posting cadence & length defaults
 
