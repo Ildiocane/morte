@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="it" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      :root {
+        --ink: #0a0a0f;
+        --paper: #ffffff;
+        --accent: #3b82f6;
+        --good: #22c55e;
+        --bad: #ef4444;
+        --hl: #f5c518;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: var(--paper); }
+
+      /* ---- face ---- */
+      #face-wrap { position: absolute; inset: 0; transform-origin: 50% 50%; }
+      #face { width: 1080px; height: 1920px; object-fit: cover;
+        filter: contrast(1.06) saturate(1.06) brightness(0.99); }
+      #vignette { position: absolute; inset: 0; pointer-events: none;
+        background: radial-gradient(ellipse 80% 70% at 50% 50%, transparent 60%, rgba(0,0,0,0.28) 100%); }
+      #topshade { position: absolute; left: 0; right: 0; top: 0; height: 640px; pointer-events: none;
+        background: linear-gradient(to bottom, rgba(5,5,10,0.55), rgba(5,5,10,0)); opacity: 0; }
+
+      /* ---- top graphics zone (above Luca's head) ---- */
+      .zone { position: absolute; left: 60px; width: 960px; }
+      #scale-group { top: 190px; height: 380px; }
+      #scale-title { position: relative; height: 52px; font-weight: 800; font-size: 42px; letter-spacing: 0.06em; text-transform: uppercase;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.6); margin-bottom: 18px; }
+      #scale-title span { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; }
+      #scale-title #t1 { opacity: 1; }
+      #bar { position: relative; width: 960px; height: 90px; border-radius: 45px; overflow: hidden;
+        background: rgba(10,10,15,0.62); border: 2px solid rgba(255,255,255,0.35);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+      .zone-fill { position: absolute; top: 0; bottom: 0; transform-origin: 0 50%; transform: scaleX(0); }
+      #z-all { background: var(--accent); }
+      #z-green { background: var(--good); }
+      #z-red { background: var(--bad); }
+      .zone-label { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; white-space: nowrap;
+        font-weight: 800; font-size: 38px; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.5); opacity: 0; }
+      #ticks { position: relative; height: 50px; margin-top: 6px; }
+      .tick { position: absolute; top: 0; transform: translateX(-50%); font-weight: 800; font-size: 38px;
+        font-variant-numeric: tabular-nums; text-shadow: 0 2px 8px rgba(0,0,0,0.65); }
+      #pill-row { position: relative; margin-top: 12px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+      .pill { display: inline-flex; align-items: center; gap: 10px; padding: 12px 28px; border-radius: 999px;
+        font-weight: 800; font-size: 40px; letter-spacing: 0.02em; white-space: nowrap;
+        box-shadow: 0 8px 22px rgba(0,0,0,0.35); }
+      .pill.white { background: var(--paper); color: var(--ink); }
+      .pill.green { background: var(--good); color: #fff; }
+      .pill.red { background: var(--bad); color: #fff; }
+      .pill.glass { background: rgba(255,255,255,0.18); color: #fff; border: 2px solid rgba(255,255,255,0.6);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+      .rowset { position: absolute; left: 0; right: 0; top: 0; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+      .stamp { position: absolute; left: 50%; top: 60px; transform: translate(-50%, 0) rotate(-6deg);
+        border: 8px solid var(--bad); color: var(--bad); background: rgba(255,255,255,0.92);
+        font-weight: 900; font-size: 82px; letter-spacing: 0.06em; padding: 6px 30px; border-radius: 14px;
+        white-space: nowrap; opacity: 0; box-shadow: 0 12px 30px rgba(0,0,0,0.35); }
+      .repcard { display: flex; flex-direction: column; align-items: center; justify-content: center;
+        width: 236px; height: 116px; border-radius: 24px; background: var(--paper); color: var(--ink);
+        box-shadow: 0 10px 26px rgba(0,0,0,0.35); }
+      .repcard b { font-size: 60px; font-weight: 900; font-variant-numeric: tabular-nums; color: #15803d; line-height: 1; }
+      .repcard span { font-size: 22px; font-weight: 700; color: #52525b; margin-top: 4px; letter-spacing: 0.08em; }
+
+      /* ---- study card ---- */
+      #study { top: 190px; height: 400px; }
+      #paper { position: relative; width: 900px; margin: 0 auto; background: var(--paper); color: var(--ink);
+        border-radius: 18px; padding: 30px 38px; box-shadow: 0 16px 40px rgba(0,0,0,0.4); }
+      #paper .kicker { font-size: 26px; font-weight: 800; letter-spacing: 0.14em; color: #71717a; }
+      #paper .title { position: relative; display: inline; font-size: 56px; font-weight: 800; line-height: 1.25; }
+      #paper .title-wrap { position: relative; margin-top: 12px; }
+      #hl { position: absolute; left: -8px; top: 6px; width: calc(100% + 16px); height: calc(100% - 4px);
+        background: var(--hl); opacity: 0.75; border-radius: 8px; transform-origin: 0 50%; z-index: 0; }
+      #paper .title-text { position: relative; z-index: 1; }
+      #paper .lines { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+      #paper .lines i { display: block; height: 12px; border-radius: 6px; background: #e4e4e7; }
+      #pill-pratica { position: absolute; left: 50%; top: 300px; transform: translateX(-50%); }
+
+      /* ---- CTA ---- */
+      #cta { top: 220px; height: 380px; display: flex; flex-direction: column; align-items: center; gap: 22px; }
+      #handle { font-size: 56px; padding: 18px 40px; }
+      #cta-row { display: flex; gap: 16px; }
+
+      /* ---- captions (Jeff style: white, soft shadow, no box) ---- */
+      #captions { position: absolute; left: 70px; right: 70px; top: 1500px; height: 200px; }
+      .cap { position: absolute; left: 0; right: 0; top: 0; text-align: center; font-weight: 700; font-size: 60px;
+        line-height: 1.15; color: #fff; opacity: 0;
+        text-shadow: 0 0 2px rgba(0,0,0,0.9), 0 2px 6px rgba(0,0,0,0.85), 0 6px 22px rgba(0,0,0,0.55); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="55.47" data-width="1080" data-height="1920">
+      <div id="face-wrap">
+        <video id="face" src="assets/edit.mp4" muted playsinline data-start="0" data-duration="55.47" data-track-index="0"></video>
+      </div>
+      <audio id="voice" src="assets/edit.mp4" data-start="0" data-duration="55.47" data-track-index="1" data-volume="1"></audio>
+      <audio id="music" src="assets/music/music-bed-cinematic-tech.mp3" data-start="0" data-duration="55.47" data-track-index="2" data-volume="0.07"></audio>
+      <audio id="sfx0" src="assets/sfx/whoosh.mp3" data-start="1.42" data-duration="0.6" data-track-index="10" data-volume="0.22"></audio>
+      <audio id="sfx1" src="assets/sfx/click.wav" data-start="7.28" data-duration="0.46" data-track-index="11" data-volume="0.3"></audio>
+      <audio id="sfx2" src="assets/sfx/error.mp3" data-start="8.84" data-duration="1.2" data-track-index="12" data-volume="0.14"></audio>
+      <audio id="sfx3" src="assets/sfx/paper-flip.mp3" data-start="9.6" data-duration="1.4" data-track-index="13" data-volume="0.32"></audio>
+      <audio id="sfx4" src="assets/sfx/pop.mp3" data-start="16.33" data-duration="0.6" data-track-index="14" data-volume="0.25"></audio>
+      <audio id="sfx5" src="assets/sfx/whoosh.mp3" data-start="18.45" data-duration="0.6" data-track-index="15" data-volume="0.22"></audio>
+      <audio id="sfx6" src="assets/sfx/click.wav" data-start="19.03" data-duration="0.46" data-track-index="16" data-volume="0.28"></audio>
+      <audio id="sfx7" src="assets/sfx/pop.mp3" data-start="24.33" data-duration="0.6" data-track-index="17" data-volume="0.2"></audio>
+      <audio id="sfx8" src="assets/sfx/pop.mp3" data-start="25.43" data-duration="0.6" data-track-index="18" data-volume="0.2"></audio>
+      <audio id="sfx9" src="assets/sfx/pop.mp3" data-start="27.53" data-duration="0.6" data-track-index="19" data-volume="0.2"></audio>
+      <audio id="sfx10" src="assets/sfx/swipe.mp3" data-start="29.08" data-duration="1.0" data-track-index="20" data-volume="0.2"></audio>
+      <audio id="sfx11" src="assets/sfx/click.wav" data-start="32.98" data-duration="0.46" data-track-index="21" data-volume="0.24"></audio>
+      <audio id="sfx12" src="assets/sfx/click.wav" data-start="33.83" data-duration="0.46" data-track-index="22" data-volume="0.24"></audio>
+      <audio id="sfx13" src="assets/sfx/click.wav" data-start="35.33" data-duration="0.46" data-track-index="23" data-volume="0.24"></audio>
+      <audio id="sfx14" src="assets/sfx/slam.mp3" data-start="40.38" data-duration="1.1" data-track-index="24" data-volume="0.3"></audio>
+      <audio id="sfx15" src="assets/sfx/sparkle.mp3" data-start="43.08" data-duration="1.6" data-track-index="25" data-volume="0.18"></audio>
+      <audio id="sfx16" src="assets/sfx/pop.mp3" data-start="47.08" data-duration="0.4" data-track-index="26" data-volume="0.2"></audio>
+      <audio id="sfx17" src="assets/sfx/pop.mp3" data-start="47.46" data-duration="0.4" data-track-index="27" data-volume="0.2"></audio>
+      <audio id="sfx18" src="assets/sfx/pop.mp3" data-start="47.9" data-duration="0.6" data-track-index="28" data-volume="0.2"></audio>
+      <audio id="sfx19" src="assets/sfx/notification.mp3" data-start="48.88" data-duration="0.5" data-track-index="29" data-volume="0.25"></audio>
+
+      <div id="overlay" class="clip" data-start="0" data-duration="55.47" data-track-index="3" style="position:absolute;inset:0;">
+        <div id="vignette"></div>
+        <div id="topshade"></div>
+
+        <!-- rep-range scale -->
+        <div id="scale-group" class="zone" style="opacity:0">
+          <div id="scale-title"><span id="t1">Range di ripetizioni</span><span id="t2">Il range che funziona</span><span id="t3">Dalle 12–15 in su</span><span id="t4">Il range 5–30</span><span id="t5">Range consigliato</span></div>
+          <div id="bar">
+            <div id="z-all" class="zone-fill"></div>
+            <div id="z-red" class="zone-fill"></div>
+            <div id="z-green" class="zone-fill"></div>
+            <div id="lab-all" class="zone-label">5 – 30</div>
+            <div id="lab-red" class="zone-label">12 – 15+</div>
+            <div id="lab-green" class="zone-label">5 – 7</div>
+            <div id="lab-green2" class="zone-label">5 – 10</div>
+          </div>
+          <div id="ticks"></div>
+          <div id="pill-row" style="height:150px">
+            <div class="rowset" id="set-same"><div class="pill white" id="p-same">= stessa ipertrofia?</div></div>
+            <div class="rowset" id="set-checks">
+              <div class="pill green" id="c1">✓ Ipertrofia</div>
+              <div class="pill green" id="c2">✓ Forza</div>
+              <div class="pill glass" id="c3">✓ Poca fatica nervosa</div>
+            </div>
+            <div class="rowset" id="set-negs">
+              <div class="pill red" id="n1">+ danno muscolare</div>
+              <div class="pill red" id="n2">+ stress metabolico</div>
+              <div class="pill red" id="n3">+ recupero del SNC</div>
+            </div>
+            <div class="rowset" id="set-best">
+              <div class="pill green" id="b1">Range consigliato</div>
+              <div class="pill white" id="b2">± 2 reps</div>
+            </div>
+            <div class="rowset" id="set-cards" style="top:0">
+              <div class="repcard" id="r1"><b>5–7</b><span>REPS</span></div>
+              <div class="repcard" id="r2"><b>6–8</b><span>REPS</span></div>
+              <div class="repcard" id="r3"><b>8–10</b><span>REPS</span></div>
+            </div>
+          </div>
+          <div class="stamp" id="stamp-no" style="top:34px">NON È COSÌ</div>
+          <div class="stamp" id="stamp-wrong" style="top:34px">SBAGLIATO</div>
+        </div>
+
+        <!-- generic study card (Luca cites "lo studio" without naming it) -->
+        <div id="study" class="zone" style="opacity:0">
+          <div id="paper">
+            <div class="kicker">STUDIO · IPERTROFIA</div>
+            <div class="title-wrap"><span class="title"><span id="hl"></span><span class="title-text">Ipertrofia simile tra 5 e 30 ripetizioni</span></span></div>
+            <div class="lines"><i style="width:96%"></i><i style="width:88%"></i><i style="width:70%"></i></div>
+          </div>
+          <div class="pill red" id="pill-pratica">In pratica? Non ha senso</div>
+        </div>
+
+        <!-- CTA -->
+        <div id="cta" class="zone" style="opacity:0">
+          <div class="pill white" id="handle">@luca_bandiera_pt</div>
+          <div id="cta-row">
+            <div class="pill red" id="k1">Like</div>
+            <div class="pill glass" id="k2">Iscriviti</div>
+            <div class="pill glass" id="k3">Commenta</div>
+          </div>
+        </div>
+
+        <div id="captions"></div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const DUR = 55.47;
+
+      // ---------- face: punch-in zoom alternation on every jump cut + slow push ----------
+      const CUTS = [0, 2.83, 8.73, 9.58, 15.07, 17.70, 18.53, 20.76, 21.96, 26.24, 28.93, 35.28, 37.93, 41.10, 43.81, 48.78, DUR];
+      const ZOOM = [1.0, 1.1, 1.2, 1.0, 1.12, 1.0, 1.1, 1.0, 1.1, 1.0, 1.1, 1.0, 1.15, 1.0, 1.1, 1.0];
+      for (let i = 0; i < CUTS.length - 1; i++) {
+        const a = CUTS[i], b = CUTS[i + 1], z = ZOOM[i];
+        tl.set("#face-wrap", { scale: z }, a);
+        tl.to("#face-wrap", { scale: z * 1.025, duration: b - a, ease: "none" }, a);
+      }
+
+      // ---------- scale geometry ----------
+      const W = 960, pos = (n) => ((n - 1) / 29) * W;
+      const ticks = document.getElementById("ticks");
+      [1, 5, 10, 15, 20, 25, 30].forEach((n) => {
+        const t = document.createElement("div");
+        t.className = "tick"; t.textContent = n; t.style.left = pos(n) + "px"; ticks.appendChild(t);
+      });
+      const place = (id, a, b) => { const el = document.getElementById(id); el.style.left = pos(a) + "px"; el.style.width = (pos(b) - pos(a)) + "px"; };
+      place("z-all", 5, 30); place("lab-all", 5, 30);
+      place("z-red", 12, 30); place("lab-red", 12, 30);
+      place("z-green", 5, 10); place("lab-green", 7, 11); place("lab-green2", 5, 10);
+      gsap.set(["#set-same", "#set-checks", "#set-negs", "#set-best", "#set-cards"].join(","), { opacity: 1 });
+      gsap.set(".rowset .pill, .repcard", { opacity: 0 });
+      gsap.set("#k1,#k2,#k3,#handle", { opacity: 0 });
+
+      const popIn = (sel, t, ease) => tl.fromTo(sel, { opacity: 0, scale: 0.8, y: 12 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.32, ease: ease || "back.out(2)" }, t);
+      const out = (sel, t, d) => tl.to(sel, { opacity: 0, duration: d || 0.18, ease: "power1.in" }, t);
+      const stamp = (sel, t) => {
+        tl.fromTo(sel, { opacity: 0, scale: 1.8 }, { opacity: 1, scale: 1, duration: 0.22, ease: "power4.in" }, t);
+        tl.fromTo("#scale-group", { x: 0 }, { x: 10, duration: 0.05, repeat: 5, yoyo: true, ease: "none", immediateRender: false }, t + 0.22);
+      };
+
+      // ---------- HOOK: "Perché ci hanno mentito sul range di ripetizioni?" ----------
+      tl.to("#topshade", { opacity: 1, duration: 0.4 }, 1.3);
+      tl.fromTo("#scale-group", { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.45, ease: "expo.out" }, 1.45);
+      tl.from(".tick", { opacity: 0, y: 10, stagger: 0.05, duration: 0.25, ease: "power2.out" }, 1.6);
+      // "tra le 5 alle 30"
+      tl.to("#z-all", { scaleX: 1, duration: 0.6, ease: "power2.inOut" }, 5.45);
+      tl.to("#lab-all", { opacity: 1, duration: 0.2 }, 5.9);
+      popIn("#p-same", 7.3);                           // "vanno bene sempre uguali"
+      stamp("#stamp-no", 8.86);                        // "Non è così."
+      out("#scale-group", 9.45, 0.15);
+
+      // ---------- STUDY: "Lo studio che dice ..." ----------
+      tl.fromTo("#study", { opacity: 0, y: 60, rotation: 2 }, { opacity: 1, y: 0, rotation: 0, duration: 0.5, ease: "expo.out" }, 9.62);
+      tl.fromTo("#hl", { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: "power1.inOut" }, 11.2);   // "l'ipertrofia tra 5 e 30 ripetizioni"
+      tl.to("#paper", { opacity: 0.55, scale: 0.96, duration: 0.4, ease: "power2.out" }, 14.85); // "nella sua praticità"
+      popIn("#pill-pratica", 16.35, "back.out(2.5)");  // "non ha senso"
+      out("#study", 17.6, 0.15);
+      tl.to("#topshade", { opacity: 0, duration: 0.2 }, 17.6);
+
+      // ---------- 5–7 reps: the good range ----------
+      tl.set(["#z-all", "#lab-all"], { opacity: 0 }, 18.4);
+      tl.set(["#stamp-no", "#p-same"], { opacity: 0 }, 18.4);
+      tl.set("#t1", { opacity: 0 }, 18.4); tl.set("#t2", { opacity: 1 }, 18.4);
+      tl.to("#topshade", { opacity: 1, duration: 0.3 }, 18.45);
+      tl.fromTo("#scale-group", { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out", immediateRender: false }, 18.5);
+      tl.fromTo("#z-green", { scaleX: 0 }, { scaleX: (pos(6) - pos(5) + 22) / (pos(10) - pos(5)), duration: 0.45, ease: "power3.out" }, 19.05); // "5-6"
+      tl.to("#z-green", { scaleX: (pos(7) - pos(5)) / (pos(10) - pos(5)), duration: 0.35, ease: "power2.out" }, 20.45); // "7 massimo"
+      tl.to("#lab-green", { opacity: 1, duration: 0.2 }, 20.75);
+      popIn("#c1", 24.35); popIn("#c2", 25.45, "back.out(3)"); popIn("#c3", 27.55, "elastic.out(1,0.6)");
+      out("#c1,#c2,#c3", 28.8);
+
+      // ---------- 12–15+: negatives ----------
+      tl.set("#t2", { opacity: 0 }, 28.85); tl.set("#t3", { opacity: 1 }, 28.85);
+      tl.to("#z-red", { scaleX: 1, duration: 0.7, ease: "power2.inOut" }, 29.1);
+      tl.to("#lab-red", { opacity: 1, duration: 0.2 }, 29.7);
+      tl.fromTo("#z-red", { filter: "brightness(1)" }, { filter: "brightness(1.35)", duration: 0.12, repeat: 3, yoyo: true }, 32.2); // "negativi"
+      popIn("#n1", 33.0); popIn("#n2", 33.85, "back.out(3)"); popIn("#n3", 35.35, "expo.out");
+      out("#n1,#n2,#n3", 37.85);
+
+      // ---------- "quel range di ripetizioni è sbagliato" ----------
+      tl.set("#t3", { opacity: 0 }, 37.9); tl.set("#t4", { opacity: 1 }, 37.9);
+      tl.to(["#z-green", "#lab-green", "#lab-red"], { opacity: 0, duration: 0.2 }, 38.6);
+      tl.set("#z-red", { left: pos(5), width: pos(30) - pos(5), transformOrigin: "0 50%", scaleX: 0 }, 38.85);
+      tl.to("#z-red", { scaleX: 1, duration: 0.5, ease: "power2.inOut" }, 38.9);
+      tl.to("#lab-all", { opacity: 1, duration: 0.2 }, 39.3);
+      stamp("#stamp-wrong", 40.25);                    // "sbagliato"
+
+      // ---------- 5–10 recommended ----------
+      tl.to(["#stamp-wrong", "#z-red", "#lab-all"], { opacity: 0, duration: 0.18 }, 41.05);
+      tl.set("#t4", { opacity: 0 }, 41.1); tl.set("#t5", { opacity: 1 }, 41.1);
+      
+      tl.set("#z-green", { opacity: 1 }, 41.1);
+      tl.fromTo("#z-green", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out", immediateRender: false }, 41.3);  // "un 5 e un 10"
+      tl.to("#lab-green2", { opacity: 1, duration: 0.2 }, 41.85);
+      popIn("#b1", 43.1);                               // "giusto"
+      popIn("#b2", 46.05, "expo.out");                  // "due reps"
+      out("#b1,#b2", 46.95, 0.12);
+      popIn("#r1", 47.1); popIn("#r2", 47.48, "back.out(2.6)"); popIn("#r3", 47.92, "back.out(3)");
+      out("#scale-group", 48.7, 0.15);
+
+      // ---------- CTA ----------
+      tl.fromTo("#cta", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 48.85);
+      popIn("#handle", 48.9, "expo.out");
+      popIn("#k1", 50.2); popIn("#k2", 51.05, "back.out(2.6)"); popIn("#k3", 52.5, "back.out(3)");
+      tl.to("#k1", { scale: 1.08, duration: 0.25, repeat: 1, yoyo: true, ease: "sine.inOut" }, 53.6);
+
+      // ---------- captions: phrase chunks ----------
+      const CAPS = [[0.11, 1.3, "Perché ci hanno mentito"], [1.3, 2.9, "sul range di ripetizioni?"], [2.9, 3.95, "Continuo a sentire quel"], [3.95, 5.33, "range di ripetizioni tra"], [5.33, 6.38, "le 5 alle 30"], [6.38, 8.0, "ripetizioni che vanno bene"], [8.0, 8.84, "sempre uguali."], [8.84, 9.62, "Non è così."], [9.62, 10.88, "Lo studio che dice"], [10.88, 12.46, "che l'ipertrofia tra 5"], [12.46, 13.52, "e 30 ripetizioni è"], [13.52, 14.8, "uguale praticamente,"], [14.8, 16.66, "nella sua praticità non"], [16.66, 17.72, "ha senso."], [17.72, 18.56, "Mi spiego meglio."], [18.56, 19.78, "Se tu fai 5-6"], [19.78, 20.48, "colpi,"], [20.48, 22.06, "7 massimo,"], [22.06, 23.6, "riuscirai sempre a rimanere"], [23.6, 25.28, "su quel range ipertrofico"], [25.28, 26.29, "e di forza senza"], [26.29, 27.59, "compromettere la fatica del"], [27.59, 28.76, "sistema nervoso."], [28.76, 30.86, "Dalle 12-15 in su"], [30.86, 32.2, "avremo tutti questi effetti"], [32.2, 32.98, "negativi."], [32.98, 33.74, "Più danno muscolare,"], [33.74, 35.3, "più stress metabolico,"], [35.3, 36.22, "più capacità di recupero"], [36.22, 38.52, "del sistema nervoso centrale."], [38.52, 39.0, "Ed è per questo"], [39.0, 40.2, "che quel range di ripetizioni"], [40.2, 41.12, "è sbagliato."], [41.12, 41.63, "Tra un 5 e"], [41.63, 42.75, "un 10 colpi può"], [42.75, 44.14, "essere giusto dove poi"], [44.14, 45.84, "limiti quell'escursione"], [45.84, 47.02, "lì di due reps,"], [47.02, 47.52, "quindi 5-7,"], [47.52, 47.96, "6-8,"], [47.96, 48.78, "8-10."], [48.78, 49.38, "Se ti ho chiarito"], [49.38, 50.24, "le idee metti un"], [50.24, 51.1, "like,"], [51.1, 52.18, "iscriviti al mio canale"], [52.18, 53.56, "e scrivi nei commenti"], [53.56, 54.35, "cosa vuoi sapere nel"], [54.35, 55.4, "prossimo video."]];
+      const capBox = document.getElementById("captions");
+      CAPS.forEach(([a, b, text], i) => {
+        const el = document.createElement("div");
+        el.className = "cap"; el.id = "cap" + i; el.textContent = text; capBox.appendChild(el);
+        tl.fromTo(el, { opacity: 0, y: 8, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.09, ease: "power2.out" }, a);
+        tl.set(el, { opacity: 0 }, Math.min(b, DUR - 0.05));
+      });
+
+      tl.set({}, {}, DUR);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

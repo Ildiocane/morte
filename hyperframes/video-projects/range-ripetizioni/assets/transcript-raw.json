@@ -1,0 +1,792 @@
+[
+{
+"text": "Perché",
+"start": 0.11,
+"end": 0.39
+},
+{
+"text": "ci",
+"start": 0.39,
+"end": 0.52
+},
+{
+"text": "hanno",
+"start": 0.52,
+"end": 0.85
+},
+{
+"text": "mentito",
+"start": 0.85,
+"end": 1.3
+},
+{
+"text": "sul",
+"start": 1.3,
+"end": 1.54
+},
+{
+"text": "range",
+"start": 1.54,
+"end": 1.82
+},
+{
+"text": "di",
+"start": 1.82,
+"end": 1.95
+},
+{
+"text": "ripetizioni?",
+"start": 1.95,
+"end": 2.72
+},
+{
+"text": "Continuo",
+"start": 2.9,
+"end": 3.21
+},
+{
+"text": "a",
+"start": 3.21,
+"end": 3.27
+},
+{
+"text": "sentire",
+"start": 3.27,
+"end": 3.7
+},
+{
+"text": "quel",
+"start": 3.7,
+"end": 3.95
+},
+{
+"text": "range",
+"start": 3.95,
+"end": 4.26
+},
+{
+"text": "di",
+"start": 4.26,
+"end": 4.44
+},
+{
+"text": "ripetizioni",
+"start": 4.44,
+"end": 5.12
+},
+{
+"text": "tra",
+"start": 5.12,
+"end": 5.33
+},
+{
+"text": "le",
+"start": 5.33,
+"end": 5.49
+},
+{
+"text": "5",
+"start": 5.49,
+"end": 5.68
+},
+{
+"text": "alle",
+"start": 5.68,
+"end": 5.96
+},
+{
+"text": "30",
+"start": 5.96,
+"end": 6.38
+},
+{
+"text": "ripetizioni",
+"start": 6.38,
+"end": 7.18
+},
+{
+"text": "che",
+"start": 7.18,
+"end": 7.37
+},
+{
+"text": "vanno",
+"start": 7.37,
+"end": 7.68
+},
+{
+"text": "bene",
+"start": 7.68,
+"end": 8.0
+},
+{
+"text": "sempre",
+"start": 8.0,
+"end": 8.34
+},
+{
+"text": "uguali.",
+"start": 8.34,
+"end": 8.74
+},
+{
+"text": "Non",
+"start": 8.84,
+"end": 8.95
+},
+{
+"text": "è",
+"start": 8.95,
+"end": 9.0
+},
+{
+"text": "così.",
+"start": 9.0,
+"end": 9.5
+},
+{
+"text": "Lo",
+"start": 9.62,
+"end": 9.73
+},
+{
+"text": "studio",
+"start": 9.73,
+"end": 10.23
+},
+{
+"text": "che",
+"start": 10.23,
+"end": 10.5
+},
+{
+"text": "dice",
+"start": 10.5,
+"end": 10.88
+},
+{
+"text": "che",
+"start": 10.88,
+"end": 11.18
+},
+{
+"text": "l'ipertrofia",
+"start": 11.18,
+"end": 12.14
+},
+{
+"text": "tra",
+"start": 12.14,
+"end": 12.3
+},
+{
+"text": "5",
+"start": 12.3,
+"end": 12.46
+},
+{
+"text": "e",
+"start": 12.46,
+"end": 12.51
+},
+{
+"text": "30",
+"start": 12.51,
+"end": 12.84
+},
+{
+"text": "ripetizioni",
+"start": 12.84,
+"end": 13.46
+},
+{
+"text": "è",
+"start": 13.46,
+"end": 13.52
+},
+{
+"text": "uguale",
+"start": 13.52,
+"end": 13.94
+},
+{
+"text": "praticamente",
+"start": 13.94,
+"end": 14.8
+},
+{
+"text": "con",
+"start": 14.8,
+"end": 15.08
+},
+{
+"text": "la",
+"start": 15.08,
+"end": 15.26
+},
+{
+"text": "sua",
+"start": 15.26,
+"end": 15.54
+},
+{
+"text": "praticità",
+"start": 15.54,
+"end": 16.38
+},
+{
+"text": "non",
+"start": 16.38,
+"end": 16.66
+},
+{
+"text": "ha",
+"start": 16.66,
+"end": 16.84
+},
+{
+"text": "senso.",
+"start": 16.84,
+"end": 17.64
+},
+{
+"text": "Mi",
+"start": 17.72,
+"end": 17.8
+},
+{
+"text": "spiego",
+"start": 17.8,
+"end": 17.97
+},
+{
+"text": "meglio.",
+"start": 17.97,
+"end": 18.38
+},
+{
+"text": "Se",
+"start": 18.56,
+"end": 18.67
+},
+{
+"text": "tu",
+"start": 18.67,
+"end": 18.78
+},
+{
+"text": "fai",
+"start": 18.78,
+"end": 19.08
+},
+{
+"text": "5-6",
+"start": 19.08,
+"end": 19.78
+},
+{
+"text": "colpi,",
+"start": 19.78,
+"end": 20.48
+},
+{
+"text": "7",
+"start": 20.48,
+"end": 20.78
+},
+{
+"text": "massimo,",
+"start": 20.78,
+"end": 21.74
+},
+{
+"text": "riuscirai",
+"start": 22.06,
+"end": 22.43
+},
+{
+"text": "sempre",
+"start": 22.43,
+"end": 22.89
+},
+{
+"text": "a",
+"start": 22.89,
+"end": 22.96
+},
+{
+"text": "rimanere",
+"start": 22.96,
+"end": 23.6
+},
+{
+"text": "su",
+"start": 23.6,
+"end": 23.72
+},
+{
+"text": "quel",
+"start": 23.72,
+"end": 24.02
+},
+{
+"text": "range",
+"start": 24.02,
+"end": 24.41
+},
+{
+"text": "ipertrofico",
+"start": 24.41,
+"end": 25.28
+},
+{
+"text": "e",
+"start": 25.28,
+"end": 25.32
+},
+{
+"text": "di",
+"start": 25.32,
+"end": 25.47
+},
+{
+"text": "forza",
+"start": 25.47,
+"end": 26.0
+},
+{
+"text": "senza",
+"start": 26.0,
+"end": 26.29
+},
+{
+"text": "compromettere",
+"start": 26.29,
+"end": 27.03
+},
+{
+"text": "la",
+"start": 27.03,
+"end": 27.16
+},
+{
+"text": "fatica",
+"start": 27.16,
+"end": 27.54
+},
+{
+"text": "di",
+"start": 27.54,
+"end": 27.59
+},
+{
+"text": "sistema",
+"start": 27.59,
+"end": 28.0
+},
+{
+"text": "nervoso.",
+"start": 28.0,
+"end": 28.66
+},
+{
+"text": "Dalle",
+"start": 28.76,
+"end": 29.15
+},
+{
+"text": "12-15",
+"start": 29.15,
+"end": 30.42
+},
+{
+"text": "in",
+"start": 30.42,
+"end": 30.62
+},
+{
+"text": "su",
+"start": 30.62,
+"end": 30.86
+},
+{
+"text": "avremo",
+"start": 30.86,
+"end": 31.19
+},
+{
+"text": "tutti",
+"start": 31.19,
+"end": 31.5
+},
+{
+"text": "questi",
+"start": 31.5,
+"end": 31.88
+},
+{
+"text": "effetti",
+"start": 31.88,
+"end": 32.2
+},
+{
+"text": "negativi.",
+"start": 32.2,
+"end": 32.68
+},
+{
+"text": "Più",
+"start": 32.98,
+"end": 33.07
+},
+{
+"text": "danno",
+"start": 33.07,
+"end": 33.12
+},
+{
+"text": "muscolare,",
+"start": 33.12,
+"end": 33.74
+},
+{
+"text": "più",
+"start": 33.74,
+"end": 33.91
+},
+{
+"text": "stress",
+"start": 33.91,
+"end": 34.26
+},
+{
+"text": "metabolico,",
+"start": 34.26,
+"end": 35.02
+},
+{
+"text": "più",
+"start": 35.3,
+"end": 35.41
+},
+{
+"text": "capacità",
+"start": 35.41,
+"end": 35.65
+},
+{
+"text": "di",
+"start": 35.65,
+"end": 35.76
+},
+{
+"text": "recupero",
+"start": 35.76,
+"end": 36.22
+},
+{
+"text": "del",
+"start": 36.22,
+"end": 36.39
+},
+{
+"text": "sistema",
+"start": 36.39,
+"end": 36.84
+},
+{
+"text": "nervoso",
+"start": 36.84,
+"end": 37.2
+},
+{
+"text": "centrale.",
+"start": 37.2,
+"end": 37.74
+},
+{
+"text": "Ed",
+"start": 38.52,
+"end": 38.52
+},
+{
+"text": "è",
+"start": 38.52,
+"end": 38.52
+},
+{
+"text": "per",
+"start": 38.52,
+"end": 38.54
+},
+{
+"text": "questo",
+"start": 38.54,
+"end": 38.63
+},
+{
+"text": "che",
+"start": 38.63,
+"end": 38.74
+},
+{
+"text": "quel",
+"start": 38.74,
+"end": 39.02
+},
+{
+"text": "range",
+"start": 39.02,
+"end": 39.35
+},
+{
+"text": "di",
+"start": 39.35,
+"end": 39.48
+},
+{
+"text": "ripetizioni",
+"start": 39.48,
+"end": 40.21
+},
+{
+"text": "è",
+"start": 40.21,
+"end": 40.27
+},
+{
+"text": "sbagliato.",
+"start": 40.27,
+"end": 41.0
+},
+{
+"text": "Tra",
+"start": 41.12,
+"end": 41.23
+},
+{
+"text": "un",
+"start": 41.23,
+"end": 41.35
+},
+{
+"text": "5",
+"start": 41.35,
+"end": 41.56
+},
+{
+"text": "e",
+"start": 41.56,
+"end": 41.63
+},
+{
+"text": "un",
+"start": 41.63,
+"end": 41.77
+},
+{
+"text": "10",
+"start": 41.77,
+"end": 42.19
+},
+{
+"text": "colpi",
+"start": 42.19,
+"end": 42.54
+},
+{
+"text": "può",
+"start": 42.54,
+"end": 42.75
+},
+{
+"text": "essere",
+"start": 42.75,
+"end": 43.17
+},
+{
+"text": "giusto",
+"start": 43.17,
+"end": 43.6
+},
+{
+"text": "dove",
+"start": 43.6,
+"end": 43.91
+},
+{
+"text": "poi",
+"start": 43.91,
+"end": 44.14
+},
+{
+"text": "limiti",
+"start": 44.14,
+"end": 44.6
+},
+{
+"text": "quelle",
+"start": 44.6,
+"end": 45.07
+},
+{
+"text": "escursioni",
+"start": 45.07,
+"end": 45.84
+},
+{
+"text": "lì",
+"start": 45.84,
+"end": 45.98
+},
+{
+"text": "di",
+"start": 45.98,
+"end": 46.13
+},
+{
+"text": "due",
+"start": 46.13,
+"end": 46.44
+},
+{
+"text": "reps.",
+"start": 46.44,
+"end": 46.76
+},
+{
+"text": "Quindi",
+"start": 47.02,
+"end": 47.13
+},
+{
+"text": "5-7,",
+"start": 47.13,
+"end": 47.52
+},
+{
+"text": "6-8,",
+"start": 47.52,
+"end": 47.96
+},
+{
+"text": "8-10.",
+"start": 47.96,
+"end": 48.66
+},
+{
+"text": "Se",
+"start": 48.78,
+"end": 48.86
+},
+{
+"text": "ti",
+"start": 48.86,
+"end": 48.89
+},
+{
+"text": "ho",
+"start": 48.89,
+"end": 48.96
+},
+{
+"text": "chiarito",
+"start": 48.96,
+"end": 49.38
+},
+{
+"text": "le",
+"start": 49.38,
+"end": 49.48
+},
+{
+"text": "idee",
+"start": 49.48,
+"end": 49.74
+},
+{
+"text": "metti",
+"start": 49.74,
+"end": 50.1
+},
+{
+"text": "un",
+"start": 50.1,
+"end": 50.24
+},
+{
+"text": "like,",
+"start": 50.24,
+"end": 50.7
+},
+{
+"text": "iscriviti",
+"start": 51.1,
+"end": 51.35
+},
+{
+"text": "al",
+"start": 51.35,
+"end": 51.49
+},
+{
+"text": "mio",
+"start": 51.49,
+"end": 51.71
+},
+{
+"text": "canale",
+"start": 51.71,
+"end": 52.18
+},
+{
+"text": "e",
+"start": 52.18,
+"end": 52.56
+},
+{
+"text": "scrivi",
+"start": 52.56,
+"end": 52.9
+},
+{
+"text": "nei",
+"start": 52.9,
+"end": 53.06
+},
+{
+"text": "commenti",
+"start": 53.06,
+"end": 53.56
+},
+{
+"text": "cosa",
+"start": 53.56,
+"end": 53.75
+},
+{
+"text": "vuoi",
+"start": 53.75,
+"end": 53.93
+},
+{
+"text": "sapere",
+"start": 53.93,
+"end": 54.21
+},
+{
+"text": "nel",
+"start": 54.21,
+"end": 54.35
+},
+{
+"text": "prossimo",
+"start": 54.35,
+"end": 54.73
+},
+{
+"text": "video.",
+"start": 54.73,
+"end": 55.16
+}
+]

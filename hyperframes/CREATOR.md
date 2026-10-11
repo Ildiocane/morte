@@ -29,10 +29,15 @@ When putting handles on-screen (lower-thirds, outros, end-cards), use the platfo
 
 ## Workflow — division of labor
 
-**Build from scratch with the assistant** (motion graphics, TTS narration, screen recordings assembled together). For reference, the two modes:
+**Luca sends raw footage; the assistant does the full edit.** Luca records himself talking to camera (vertical, phone, **in Italian**) and shares the raw file (Google Drive link). The assistant:
 
-- **You record + pre-edit your own speaking video** → it's the source of truth; the assistant builds the visual layer on top and does NOT cut your audio, remove pauses, or change your pacing.
-- **You build from scratch with the assistant** → motion graphics, TTS narration, screen-recordings assembled together.
+- cuts silences, false starts, repeated words, and mistakes (Luca explicitly wants this — his raw take is NOT the source of truth for pacing);
+- tightens to the requested length (default hard cap: **60s**);
+- adds captions (Italian), Jeff Nippard–style motion graphics, SFX, and light music.
+
+Also open to faceless builds from scratch (motion graphics + TTS) when asked.
+
+**Language:** videos are in **Italian** — transcribe with a multilingual model (`-l it`), never `small.en`. On-screen text and captions in Italian.
 
 ## Brand identity
 
