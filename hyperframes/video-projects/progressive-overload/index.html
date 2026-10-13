@@ -152,14 +152,14 @@
         <!-- 9 tonnage -->
         <div class="scene" id="s9">
           <div class="kicker">Tonnellaggio</div>
-          <div class="eq"><span class="box" id="e1">kg</span><span>×</span><span class="box" id="e2">reps</span><span>×</span><span class="box" id="e3">serie</span></div>
+          <div class="eq"><span class="box" id="e1">kg</span><span class="op" id="o1">×</span><span class="box" id="e2">reps</span><span class="op" id="o2">×</span><span class="box" id="e3">serie</span></div>
           <div id="tbars"><div class="tb" style="height:70px"></div><div class="tb" style="height:100px"></div><div class="tb" style="height:125px"></div><div class="tb" style="height:150px"></div></div>
         </div>
         <!-- 10 strength -> CSA -->
         <div class="scene" id="s10">
           <div class="row" style="gap:30px">
             <div class="pill green" id="s10-f" style="font-size:52px">Forza ↑</div>
-            <div class="big" style="font-size:70px">→</div>
+            <div class="big op" id="o3" style="font-size:70px">→</div>
             <div id="xs"><div id="xs-in"></div></div>
           </div>
           <div class="stack"><div class="pill white" id="s10-l">Sezione trasversale ↑</div><div class="pill yellow" id="s10-b">Inscindibile · biologico</div></div>
@@ -180,7 +180,7 @@
         </div>
         <!-- 13 payoff -->
         <div class="scene" id="s13">
-          <div class="row"><div class="pill green" id="p1">↑ Carico</div><div class="big" style="font-size:60px">+</div><div class="pill green" id="p2">↑ Reps</div></div>
+          <div class="row"><div class="pill green" id="p1">↑ Carico</div><div class="big op" id="o4" style="font-size:60px">+</div><div class="pill green" id="p2">↑ Reps</div></div>
           <div class="big" id="p3"><span class="hlw"><span class="hl" id="p3-hl"></span><span>Nuovo muscolo</span></span></div>
         </div>
         <!-- 14 CTA -->
@@ -241,7 +241,7 @@
       const out = (sel, t) => tl.to(sel, { opacity: 0, duration: 0.15 }, t);
       const stamp = (sel, t, shake) => { tl.fromTo(sel, { opacity: 0, scale: 1.9 }, { opacity: 1, scale: 1, duration: 0.22, ease: "power4.in" }, t);
         if (shake) tl.fromTo(shake, { x: 0 }, { x: 10, duration: 0.05, repeat: 5, yoyo: true, ease: "none", immediateRender: false }, t + 0.22); };
-      gsap.set(".scene .pill, .scene .stamp, .scene .card, .chip, .st, .tb, .eq .box, #s1-q", { opacity: 0 });
+      gsap.set(".scene .pill, .scene .stamp, .scene .card, .chip, .st, .tb, .eq .box, .op, #xs, #s1-q", { opacity: 0 });
       gsap.set(".chip .x", { scaleX: 0 });
       tl.to("#topshade", { opacity: 1, duration: 0.4 }, 0.1);
 
@@ -289,11 +289,11 @@
       stamp("#s8-basta", 109.7, "#s8");
       // 9 tonnage
       show("#s9", 110.62, 127.6);
-      pop("#e1", 116.2); pop("#e2", 116.5, "back.out(2.6)"); pop("#e3", 116.8, "expo.out");
+      pop("#e1", 116.2); pop("#o1", 116.35); pop("#o2", 116.65); pop("#e2", 116.5, "back.out(2.6)"); pop("#e3", 116.8, "expo.out");
       tl.fromTo("#tbars .tb", { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.35, stagger: 0.4, ease: "power2.out" }, 121.9);
       // 10 strength -> cross-section
       show("#s10", 127.74, 140.4);
-      pop("#s10-f", 129.45);
+      pop("#s10-f", 129.45); pop("#o3", 129.7); pop("#xs", 129.9);
       tl.fromTo("#xs-in", { scale: 0.8 }, { scale: 1.65, duration: 1.6, ease: "power2.inOut" }, 133.4);
       pop("#s10-l", 134.1); out("#s10-l", 136.3); pop("#s10-b", 136.4, "expo.out");
       // 11 rep range
@@ -311,7 +311,7 @@
       pop("#l1", 151.96); pop("#l2", 152.5, "back.out(2.6)"); pop("#l3", 152.9, "expo.out"); pop("#l4", 153.8);
       // 13 payoff
       show("#s13", 155.02, 161.6);
-      pop("#p1", 158.05); pop("#p2", 158.9, "back.out(2.6)");
+      pop("#p1", 158.05); pop("#o4", 158.5); pop("#p2", 158.9, "back.out(2.6)");
       tl.fromTo("#p3", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 160.1);
       tl.fromTo("#p3-hl", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 160.3);
       // 14 CTA
