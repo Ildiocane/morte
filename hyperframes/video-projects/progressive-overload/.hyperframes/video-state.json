@@ -103,5 +103,16 @@
     "latest": null,
     "revisions": {},
     "unversioned": []
-  }
+  },
+  "renders": {
+    "latest": {
+      "id": "d3671bdd-f2cb-4a51-b567-e960ebd23826",
+      "completedAt": 1791890863612,
+      "output": "/home/user/morte/hyperframes/video-projects/progressive-overload/renders/v3.mp4",
+      "status": "completed",
+      "revision": null
+    },
+    "retainedRevisions": []
+  },
+  "pendingArtifactCleanup": []
 }
