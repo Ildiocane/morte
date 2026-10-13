@@ -18,9 +18,8 @@ _(colors, typography, density, placement — populated by /feedback over time)_
 
 ## Pacing
 
-_(scene length, cuts vs. transitions, breathing room — populated by /feedback over time)_
-
-- _no rules captured yet_
+- **Jeff Nippard tight-cut, always.** Zero dead air between sentences: trim every kept segment to the voice (≈30ms lead, ≈60ms tail) and shrink every silence/breath inside it to ≈60ms (energy threshold ≈ −37 dB on the raw take, min run 0.10s). After cutting, measure: no gap > 0.25s should remain. (2026-10-13)
+- **No retakes, false starts or repeated lines survive.** Transcribe with a disfluency prompt (`--prompt "Ehm, allora, cioè… ripeto."`) so whisper doesn't merge repeated phrases into one, and re-check every joint by transcribing the *edited* audio. Drop fillers like "che questo" / "Sono" at sentence starts when they cut cleanly. (2026-10-13)
 
 ## Captions
 
@@ -36,7 +35,7 @@ _(preferred / avoid — populated by /feedback over time)_
 
 ## Audio
 
-_(music vibe, voiceover style, SFX, mix — populated by /feedback over time)_
+- When Luca says "non modificare la qualità audio": no loudnorm/EQ/compression, no music or SFX; only 10ms cut fades, and mux the cut audio into the final MP4 with `-c:a copy`. (2026-10-13)
 
 - _no rules captured yet_
 

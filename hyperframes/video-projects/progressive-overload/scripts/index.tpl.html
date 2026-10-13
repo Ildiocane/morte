@@ -197,6 +197,13 @@
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
       const DUR = __DUR__;
+      // Graphics below are authored in v1-edit time; T() maps them onto the tightened edit (scripts/remap.py).
+      const MAP = __MAP__;
+      const T = (t) => { const x = t / 0.05, i = Math.max(0, Math.min(MAP.length - 2, Math.floor(x))); return MAP[i] + (MAP[i + 1] - MAP[i]) * (x - i); };
+      const raw = { to: tl.to.bind(tl), set: tl.set.bind(tl), fromTo: tl.fromTo.bind(tl) };
+      tl.to = (a, b, p) => raw.to(a, b, typeof p === "number" ? T(p) : p);
+      tl.set = (a, b, p) => raw.set(a, b, typeof p === "number" ? T(p) : p);
+      tl.fromTo = (a, b, c, p) => raw.fromTo(a, b, c, typeof p === "number" ? T(p) : p);
 
       // ---------- zoom plan [t, scale, dur(0 = cut), ease] ----------
       const Z = [
@@ -219,7 +226,7 @@
         [148.9, 1.0, 0], [155.0, 1.06, 0], [160.1, 1.22, 0.4, "expo.out"],  // "nuovo muscolo"
         [161.68, 1.0, 0], [161.7, 1.06, 4.8, "none"],
       ];
-      Z.forEach(([t, s, d, e]) => d ? tl.to("#face-wrap", { scale: s, duration: d, ease: e }, t) : tl.set("#face-wrap", { scale: s }, t));
+      Z.forEach(([t, s, d, e]) => d ? raw.to("#face-wrap", { scale: s, duration: Math.max(0.05, T(t + d) - T(t)), ease: e }, T(t)) : raw.set("#face-wrap", { scale: s }, T(t)));
 
       // ---------- colour plan ----------
       const NORMAL = "grayscale(0) saturate(1) brightness(1) hue-rotate(0deg)";
@@ -323,10 +330,10 @@
       const capBox = document.getElementById("captions");
       CAPS.forEach(([a, b, text], i) => {
         const el = document.createElement("div"); el.className = "cap"; el.id = "cap" + i; el.textContent = text; capBox.appendChild(el);
-        tl.fromTo(el, { opacity: 0, y: 8, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.09, ease: "power2.out" }, a);
-        tl.set(el, { opacity: 0 }, Math.min(b, DUR - 0.05));
+        raw.fromTo(el, { opacity: 0, y: 8, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.09, ease: "power2.out" }, a);
+        raw.set(el, { opacity: 0 }, Math.min(b, DUR - 0.05));
       });
-      tl.set({}, {}, DUR);
+      raw.set({}, {}, DUR);
       window.__timelines["main"] = tl;
     </script>
   </body>
