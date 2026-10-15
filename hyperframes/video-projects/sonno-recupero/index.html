@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="it" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      :root { --ink:#0a0a0f; --paper:#fff; --accent:#3b82f6; --good:#22c55e; --bad:#ef4444; --hl:#f5c518; --night:#0b1020; --moon:#c7d2fe; }
+      * { margin:0; padding:0; box-sizing:border-box; }
+      html, body { width:1080px; height:1920px; overflow:hidden; background:#000; }
+      #root { position:relative; width:1080px; height:1920px; overflow:hidden; font-family: Inter, ui-sans-serif, system-ui, sans-serif; color:#fff; }
+      #face { position:absolute; inset:0; width:1080px; height:1920px; object-fit:cover; }
+      #topshade { position:absolute; left:0; right:0; top:0; height:700px; pointer-events:none;
+        background:linear-gradient(to bottom, rgba(5,5,10,0.66), rgba(5,5,10,0)); opacity:0; }
+
+      .scene { position:absolute; left:50px; width:980px; top:110px; height:440px; opacity:0;
+        display:flex; flex-direction:column; align-items:center; gap:18px; }
+      .kicker { font-weight:800; font-size:40px; letter-spacing:0.06em; text-transform:uppercase; text-shadow:0 2px 10px rgba(0,0,0,0.6); }
+      .pill { display:inline-flex; align-items:center; gap:12px; padding:12px 30px; border-radius:999px; font-weight:800; font-size:42px; white-space:nowrap; box-shadow:0 8px 22px rgba(0,0,0,0.35); }
+      .pill.white { background:var(--paper); color:var(--ink); } .pill.green { background:var(--good); color:#fff; }
+      .pill.red { background:var(--bad); color:#fff; } .pill.yellow { background:var(--hl); color:var(--ink); }
+      .pill.glass { background:rgba(255,255,255,0.2); color:#fff; border:2px solid rgba(255,255,255,0.65); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+      .row { display:flex; gap:16px; justify-content:center; align-items:center; flex-wrap:wrap; position:relative; }
+      .stack { position:relative; width:100%; height:110px; display:flex; justify-content:center; }
+      .stack > * { position:absolute; top:0; }
+      .stamp { border:9px solid var(--bad); color:var(--bad); background:rgba(255,255,255,0.94); font-weight:900; font-size:84px; letter-spacing:0.05em;
+        padding:6px 30px; border-radius:14px; white-space:nowrap; box-shadow:0 12px 30px rgba(0,0,0,0.35); transform:rotate(-5deg); }
+      .big { font-weight:900; font-size:96px; line-height:1.02; text-align:center; text-shadow:0 4px 18px rgba(0,0,0,0.55); }
+      .card { background:var(--paper); color:var(--ink); border-radius:22px; padding:14px 26px; box-shadow:0 10px 26px rgba(0,0,0,0.35); text-align:center; min-width:250px; }
+      .card b { font-size:42px; font-weight:900; display:block; } .card span { font-size:28px; font-weight:800; }
+      .ok { color:#15803d; } .ko { color:#dc2626; }
+      .clock { font-weight:900; font-size:120px; font-variant-numeric:tabular-nums; text-shadow:0 4px 18px rgba(0,0,0,0.55); }
+      .x { position:absolute; left:-8px; right:-8px; top:50%; height:10px; margin-top:-5px; background:var(--bad); border-radius:5px; transform-origin:0 50%; }
+      .hlw { position:relative; display:inline-block; color:var(--ink); padding:4px 22px; }
+      .hl { position:absolute; inset:0; background:var(--hl); border-radius:14px; transform-origin:0 50%; z-index:0; }
+      .hlw > span:last-child { position:relative; z-index:1; }
+      /* balance */
+      #beam { width:760px; height:14px; border-radius:7px; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.4); transform-origin:50% 50%; position:relative; }
+      #fulcrum { width:0; height:0; border-left:40px solid transparent; border-right:40px solid transparent; border-bottom:60px solid #fff; margin-top:-4px; }
+      .pan { position:absolute; top:-74px; }
+
+      /* full-screen voiceover panels */
+      .fs { position:absolute; inset:0; opacity:0; overflow:hidden; }
+      #fs1 { background:radial-gradient(ellipse 90% 60% at 50% 35%, #1b2550 0%, #0b1020 60%, #05070f 100%); }
+      #fs2 { background:radial-gradient(ellipse 90% 60% at 50% 40%, #241018 0%, #0d0a10 65%, #050406 100%); }
+      .fs .inner { position:absolute; left:70px; right:70px; top:170px; bottom:640px; display:flex; flex-direction:column; align-items:center; gap:34px; }
+      .star { position:absolute; width:6px; height:6px; border-radius:50%; background:#fff; }
+      #moon { width:170px; height:170px; border-radius:50%; background:var(--moon); box-shadow:0 0 80px rgba(199,210,254,0.55), inset -40px -10px 0 0 #9aa7e8; }
+      #hypno { width:940px; height:300px; }
+      .bcard { display:flex; align-items:center; gap:22px; width:900px; padding:22px 30px; border-radius:24px; background:rgba(255,255,255,0.1);
+        border:2px solid rgba(255,255,255,0.35); font-size:50px; font-weight:900; }
+      .bcard i { font-style:normal; display:inline-flex; width:72px; height:72px; border-radius:50%; align-items:center; justify-content:center; background:var(--good); font-size:40px; }
+      /* fs2 phone */
+      #phone { width:520px; height:700px; border-radius:60px; background:#111; border:10px solid #2a2a2e; box-shadow:0 30px 80px rgba(0,0,0,0.6), 0 0 120px rgba(239,68,68,0.15);
+        display:flex; flex-direction:column; align-items:center; padding:46px 34px; gap:26px; position:relative; }
+      #phone .time { font-size:110px; font-weight:900; font-variant-numeric:tabular-nums; color:#fff; }
+      .app { width:100%; padding:20px 26px; border-radius:22px; background:#1f1f24; display:flex; justify-content:space-between; align-items:center; font-size:40px; font-weight:800; }
+      .app span:last-child { color:#fca5a5; font-variant-numeric:tabular-nums; }
+      #gym { display:flex; align-items:center; gap:40px; }
+      #battery { width:300px; height:140px; border:10px solid #fff; border-radius:24px; position:relative; padding:10px; }
+      #battery::after { content:""; position:absolute; right:-34px; top:38px; width:20px; height:44px; background:#fff; border-radius:0 8px 8px 0; }
+      #bfill { height:100%; border-radius:10px; background:var(--good); transform-origin:0 50%; }
+      #perf { width:480px; height:220px; }
+
+      #captions { position:absolute; left:70px; right:70px; top:1260px; height:200px; z-index:5; }
+      .cap { position:absolute; left:0; right:0; top:0; text-align:center; font-weight:700; font-size:60px; line-height:1.15; color:#fff; opacity:0;
+        text-shadow:0 0 2px rgba(0,0,0,0.9), 0 2px 6px rgba(0,0,0,0.85), 0 6px 22px rgba(0,0,0,0.55); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="43.633000" data-width="1080" data-height="1920">
+      <video id="face" src="assets/source.mp4" muted playsinline data-start="0" data-duration="43.633000" data-track-index="0"></video>
+      <audio id="voice" src="assets/source.mp4" data-start="0" data-duration="43.633000" data-track-index="1" data-volume="1"></audio>
+      <div id="overlay" class="clip" data-start="0" data-duration="43.633000" data-track-index="3" style="position:absolute;inset:0;">
+        <div id="topshade"></div>
+
+        <!-- 1 hook: perfect diet, 4h sleep -->
+        <div class="scene" id="s1">
+          <div class="row"><div class="card" id="s1-a"><b>Dieta</b><span class="ok">✓ perfetta</span></div><div class="card" id="s1-b"><b>Sonno</b><span class="ko">✕ 4 ore</span></div></div>
+          <div class="stack"><div class="stamp" id="s1-st">PAGLIACCIO</div></div>
+        </div>
+        <!-- 2 calories counted, bed at 3 -->
+        <div class="scene" id="s2">
+          <div class="row"><div class="pill green" id="s2-a">✓ Calorie contate</div><div class="pill green" id="s2-b">✓ Snack proteico</div></div>
+          <div class="clock" id="s2-c">03:00</div>
+          <div class="stack"><div class="stamp" id="s2-st" style="border-color:var(--hl);color:#a16207">GENIALE.</div></div>
+        </div>
+        <!-- 3 recovery = food + sleep -->
+        <div class="scene" id="s3">
+          <div class="kicker">Recupero</div>
+          <div class="row"><div class="card" id="s3-a"><b>Cibo</b></div><div class="big" id="s3-p" style="font-size:72px">+</div><div class="card" id="s3-b" style="outline:8px solid var(--hl)"><b>Sonno</b></div></div>
+        </div>
+
+        <!-- FS1: voiceover — sleep is when you recover -->
+        <div class="fs" id="fs1">
+          <div id="stars"></div>
+          <div class="inner">
+            <div id="moon"></div>
+            <div class="kicker" style="color:#c7d2fe">Mentre dormi</div>
+            <svg id="hypno" viewBox="0 0 940 300">
+              <text x="0" y="40" fill="#94a3b8" font-size="26" font-weight="800">Sveglio</text>
+              <text x="0" y="285" fill="#94a3b8" font-size="26" font-weight="800">Sonno profondo</text>
+              <polyline id="hyp-line" fill="none" stroke="#818cf8" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"
+                points="150,40 230,40 260,120 330,120 360,260 470,260 500,120 560,120 590,60 640,60 670,180 760,180 790,90 860,90 900,40" />
+            </svg>
+            <div class="bcard" id="b1"><i>✓</i>Recuperi davvero</div>
+            <div class="bcard" id="b2"><i>✓</i>Produci ormoni</div>
+            <div class="bcard" id="b3"><i>✓</i>Costruisci adattamento</div>
+          </div>
+        </div>
+
+        <!-- 4 sleep treated as a detail -->
+        <div class="scene" id="s4">
+          <div class="row"><div class="big" style="font-size:80px">Sonno =</div><div class="pill white" id="s4-d" style="font-size:56px;position:relative">"dettaglio"<div class="x" id="s4-x"></div></div></div>
+        </div>
+
+        <!-- FS2: voiceover — late screens, tired at the gym -->
+        <div class="fs" id="fs2">
+          <div class="inner" style="gap:40px">
+            <div id="phone">
+              <div class="time" id="ph-time">23:00</div>
+              <div class="app" id="ap1"><span>Netflix</span><span>2h 10m</span></div>
+              <div class="app" id="ap2"><span>Telefono</span><span>1h 25m</span></div>
+              <div class="app" id="ap3"><span>TikTok</span><span>58m</span></div>
+            </div>
+            <div id="gym">
+              <div id="battery"><div id="bfill"></div></div>
+              <svg id="perf" viewBox="0 0 480 220">
+                <text x="0" y="28" fill="#fca5a5" font-size="28" font-weight="900">PERFORMANCE</text>
+                <polyline id="perf-line" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" points="10,70 120,80 220,110 320,160 470,205" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5 tired body doesn't build -->
+        <div class="scene" id="s5">
+          <div class="row"><div class="pill red" id="s5-a">Corpo stanco</div><div class="big" style="font-size:72px" id="s5-ar">→</div><div class="pill white" id="s5-b" style="position:relative">Costruzione<div class="x" id="s5-x"></div></div></div>
+        </div>
+        <!-- 6 three pillars -->
+        <div class="scene" id="s6">
+          <div class="row"><div class="card" id="p1"><b>Dieta</b><span class="ok">✓ perfetta</span></div><div class="card" id="p2"><b>Allenamento</b><span class="ok">✓ perfetto</span></div><div class="card" id="p3"><b>Recupero</b><span class="ko">✕ scarso</span></div></div>
+          <div class="stack"><div class="stamp" id="s6-st">SABOTAGGIO</div></div>
+        </div>
+        <!-- 7 sleep isn't wasted time -->
+        <div class="scene" id="s7">
+          <div class="row"><div class="pill white" id="s7-a" style="position:relative;font-size:52px">Tempo perso<div class="x" id="s7-x"></div></div></div>
+          <div class="pill green" id="s7-b" style="font-size:52px">Parte del processo</div>
+        </div>
+        <!-- 8 serious physique = serious recovery -->
+        <div class="scene" id="s8">
+          <div class="row"><div class="card" id="s8-a"><b>Fisico</b><span>serio</span></div><div class="big" style="font-size:72px" id="s8-eq">=</div><div class="card" id="s8-b" style="outline:8px solid var(--hl)"><b>Recupero</b><span>serio</span></div></div>
+        </div>
+        <!-- 9 balance recovery vs training -->
+        <div class="scene" id="s9">
+          <div style="position:relative;margin-top:110px">
+            <div id="beam"><div class="pill green pan" id="s9-a" style="left:-30px">Recupero</div><div class="pill white pan" id="s9-b" style="right:-30px">Allenamento</div></div>
+            <div style="display:flex;justify-content:center"><div id="fulcrum"></div></div>
+          </div>
+          <div class="big" id="s9-end" style="font-size:80px;margin-top:20px"><span class="hlw"><span class="hl" id="s9-hl"></span><span>Seriamente.</span></span></div>
+        </div>
+
+        <div id="captions"></div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const DUR = 43.633000;
+      const show = (sel, a, b) => { tl.fromTo(sel, { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, a); tl.to(sel, { opacity: 0, duration: 0.15 }, b - 0.15); };
+      const pop = (sel, t, ease) => tl.fromTo(sel, { opacity: 0, scale: 0.8, y: 12 }, { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: ease || "back.out(2)" }, t);
+      const stamp = (sel, t, shake) => { tl.fromTo(sel, { opacity: 0, scale: 1.9 }, { opacity: 1, scale: 1, duration: 0.2, ease: "power4.in" }, t);
+        if (shake) tl.fromTo(shake, { x: 0 }, { x: 10, duration: 0.05, repeat: 5, yoyo: true, ease: "none", immediateRender: false }, t + 0.2); };
+      const strike = (sel, t) => tl.fromTo(sel, { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power3.out" }, t);
+      gsap.set(".scene .pill, .scene .stamp, .scene .card, #s3-p, #s5-ar, #s8-eq, .bcard, .app, #s9-end", { opacity: 0 });
+      gsap.set(".x", { scaleX: 0 });
+
+      // stars for FS1 (seeded)
+      let seed = 7; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+      const stars = document.getElementById("stars");
+      for (let i = 0; i < 60; i++) { const s = document.createElement("div"); s.className = "star"; s.style.left = (rnd() * 1080) + "px"; s.style.top = (rnd() * 1300) + "px"; s.style.opacity = 0.25 + rnd() * 0.6; stars.appendChild(s); }
+
+      tl.to("#topshade", { opacity: 1, duration: 0.3 }, 0.85);
+      // 1 hook
+      show("#s1", 0.9, 4.25);
+      pop("#s1-a", 1.0); pop("#s1-b", 2.5, "back.out(2.6)");
+      stamp("#s1-st", 3.72, "#s1");
+      // 2
+      show("#s2", 4.28, 8.15);
+      pop("#s2-a", 4.4); pop("#s2-b", 5.1, "back.out(2.6)");
+      tl.fromTo("#s2-c", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, 6.85);
+      tl.fromTo("#s2-c", { color: "#ffffff" }, { color: "#ef4444", duration: 0.2, immediateRender: false }, 7.05);
+      stamp("#s2-st", 7.8, "#s2");
+      // 3
+      show("#s3", 8.2, 11.2);
+      pop("#s3-a", 9.9); pop("#s3-p", 10.4, "expo.out"); pop("#s3-b", 10.62, "back.out(2.6)");
+      tl.fromTo("#s3-b", { scale: 1 }, { scale: 1.1, duration: 0.25, yoyo: true, repeat: 1, ease: "sine.inOut", immediateRender: false }, 10.95);
+      tl.to("#topshade", { opacity: 0, duration: 0.2 }, 11.1);
+
+      // FS1 11.25–16.25 (voiceover)
+      tl.fromTo("#fs1", { opacity: 0, clipPath: "circle(0% at 50% 40%)" }, { opacity: 1, clipPath: "circle(150% at 50% 40%)", duration: 0.5, ease: "power2.inOut" }, 11.2);
+      tl.fromTo("#moon", { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "power3.out" }, 11.35);
+      const hl = document.getElementById("hyp-line"), L = 1500; hl.style.strokeDasharray = L;
+      tl.fromTo(hl, { strokeDashoffset: L }, { strokeDashoffset: 0, duration: 3.6, ease: "none" }, 11.6);
+      tl.fromTo("#b1", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 12.2);
+      tl.fromTo("#b2", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 13.45);
+      tl.fromTo("#b3", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 14.55);
+      tl.to("#fs1", { opacity: 0, duration: 0.3, ease: "power1.in" }, 16.0);
+
+      // 4 detail
+      tl.to("#topshade", { opacity: 1, duration: 0.2 }, 16.3);
+      show("#s4", 16.35, 17.95);
+      pop("#s4-d", 17.5); strike("#s4-x", 17.75);
+
+      // FS2 17.95–23.35 (voiceover)
+      tl.fromTo("#fs2", { opacity: 0, x: 1080 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 17.95);
+      tl.fromTo("#phone", { y: 120, rotation: -4 }, { y: 0, rotation: 0, duration: 0.5, ease: "power3.out" }, 18.0);
+      pop("#ap1", 18.16); pop("#ap2", 18.66, "back.out(2.6)"); pop("#ap3", 19.2, "expo.out");
+      const clk = { m: 23 * 60 }; tl.to(clk, { m: 26 * 60, duration: 1.6, ease: "power1.in", onUpdate: () => { const v = Math.round(clk.m) % 1440; document.getElementById("ph-time").textContent = String(Math.floor(v / 60)).padStart(2, "0") + ":" + String(v % 60).padStart(2, "0"); } }, 18.5);
+      tl.to("#ph-time", { color: "#ef4444", duration: 0.2 }, 20.05);
+      tl.to("#phone", { scale: 0.75, y: -60, duration: 0.4, ease: "power2.inOut" }, 20.35);
+      tl.fromTo("#gym", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, 20.4);
+      tl.fromTo("#bfill", { scaleX: 1, backgroundColor: "#22c55e" }, { scaleX: 0.12, backgroundColor: "#ef4444", duration: 1.0, ease: "power2.in" }, 21.3);
+      const pl = document.getElementById("perf-line"), PL = 520; pl.style.strokeDasharray = PL;
+      tl.fromTo(pl, { strokeDashoffset: PL }, { strokeDashoffset: 0, duration: 0.9, ease: "power1.in" }, 22.2);
+      tl.to("#fs2", { opacity: 0, x: -1080, duration: 0.35, ease: "expo.in" }, 23.1);
+
+      // 5 tired body
+      show("#s5", 23.45, 25.4);
+      pop("#s5-a", 23.5); pop("#s5-ar", 24.2, "expo.out"); pop("#s5-b", 24.38); strike("#s5-x", 24.95);
+      // 6 pillars
+      show("#s6", 25.45, 30.25);
+      pop("#p1", 26.0); pop("#p2", 26.7, "back.out(2.6)"); pop("#p3", 28.4, "expo.out");
+      stamp("#s6-st", 29.3, "#s6");
+      // 7 not wasted time
+      show("#s7", 30.3, 33.85);
+      pop("#s7-a", 30.95); strike("#s7-x", 31.25); pop("#s7-b", 31.75, "back.out(2.4)");
+      // 8 serious
+      show("#s8", 33.9, 36.85);
+      pop("#s8-a", 34.85); pop("#s8-eq", 35.3, "expo.out"); pop("#s8-b", 36.15, "back.out(2.6)");
+      // 9 balance
+      tl.fromTo("#s9", { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, 36.9);
+      pop("#s9-b", 37.0); pop("#s9-a", 38.7, "back.out(2.4)");
+      tl.fromTo("#beam", { rotation: 12 }, { rotation: -10, duration: 0.6, ease: "power2.out" }, 38.75);
+      tl.to("#beam", { rotation: 0, duration: 0.8, ease: "elastic.out(1,0.5)" }, 40.15);
+      tl.fromTo("#s9-end", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 42.8);
+      tl.fromTo("#s9-hl", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 42.95);
+
+      // captions (stay on during the voiceover panels too)
+      const CAPS = [[0.0, 0.94, "Ma cosa cazzo fai?"], [0.94, 2.18, "La dieta è perfetta"], [2.18, 3.09, "e poi dormi 4"], [3.09, 3.7, "ore."], [3.7, 4.28, "Sei un pagliaccio."], [4.28, 5.1, "Conti le calorie,"], [5.1, 6.25, "snack proteico preciso e"], [6.25, 6.94, "poi vuoi dormire alle"], [6.94, 7.82, "3 di notte."], [7.82, 8.21, "Geniale!"], [8.21, 9.51, "Il recupero non dipende"], [9.51, 10.37, "solo dal cibo,"], [10.37, 11.36, "ma dal sonno."], [11.36, 12.22, "È mentre dormi che"], [12.22, 13.29, "recuperi davvero,"], [13.29, 14.41, "che produci ormoni,"], [14.41, 16.36, "che costruisci adattamento."], [16.36, 16.99, "Ma voi trattate il"], [16.99, 18.16, "sonno come un dettaglio."], [18.16, 18.66, "Netflix,"], [18.66, 19.2, "telefono,"], [19.2, 20.34, "TikTok fino alle 2."], [20.34, 21.34, "Poi entrate in palestra"], [21.34, 22.24, "stanchi e vi chiedete"], [22.24, 23.46, "perché non performate."], [23.46, 24.38, "Il corpo stanco non"], [24.38, 25.46, "costruisce bene."], [25.46, 26.21, "Puoi avere la dieta"], [26.21, 26.68, "perfetta,"], [26.68, 28.22, "l'allenamento perfetto."], [28.22, 29.13, "Ma se recuperi male,"], [29.13, 30.3, "stai sabotando tutto."], [30.3, 30.97, "Il sonno non è"], [30.97, 31.74, "tempo perso,"], [31.74, 32.99, "è parte integrante del"], [32.99, 33.9, "processo."], [33.9, 34.78, "E chi prende seriamente"], [34.78, 35.27, "il fisico,"], [35.27, 36.88, "prende seriamente il recupero."], [36.88, 37.76, "Se smetti di vivere"], [37.76, 38.41, "a caso e inizi"], [38.41, 39.43, "a dare rispetto al"], [39.43, 41.28, "recupero quanto all'allenamento,"], [41.28, 42.55, "allora starai finalmente facendo"], [42.55, 43.6, "le cose seriamente."]];
+      const capBox = document.getElementById("captions");
+      CAPS.forEach(([a, b, text], i) => {
+        const el = document.createElement("div"); el.className = "cap"; el.id = "cap" + i; el.textContent = text; capBox.appendChild(el);
+        tl.fromTo(el, { opacity: 0, y: 8, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.09, ease: "power2.out" }, a);
+        tl.set(el, { opacity: 0 }, Math.min(b, DUR - 0.05));
+      });
+      tl.set({}, {}, DUR);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,4 @@
+# Large media: regenerate edit.mp4 from the raw Drive take with scripts/cut.py
+assets/edit.mp4
+*.mp4
+renders/
