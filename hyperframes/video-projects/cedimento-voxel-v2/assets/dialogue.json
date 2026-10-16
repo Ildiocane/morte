@@ -1,0 +1,627 @@
+[
+ {
+  "who": "novice",
+  "text": "Devi fallire ogni serie?",
+  "start": 0.35,
+  "end": 2.19
+ },
+ {
+  "who": "coach",
+  "words": [
+   {
+    "text": "Se",
+    "start": 2.81,
+    "end": 3.06
+   },
+   {
+    "text": "valuti",
+    "start": 3.06,
+    "end": 3.8
+   },
+   {
+    "text": "l'allenamento",
+    "start": 3.8,
+    "end": 4.62
+   },
+   {
+    "text": "solo",
+    "start": 4.62,
+    "end": 4.9
+   },
+   {
+    "text": "da",
+    "start": 4.9,
+    "end": 5.0
+   },
+   {
+    "text": "quanto",
+    "start": 5.0,
+    "end": 5.6
+   },
+   {
+    "text": "sei",
+    "start": 5.6,
+    "end": 5.8
+   },
+   {
+    "text": "distrutto",
+    "start": 5.8,
+    "end": 6.34
+   },
+   {
+    "text": "rischi",
+    "start": 6.34,
+    "end": 6.94
+   },
+   {
+    "text": "di",
+    "start": 6.94,
+    "end": 7.0
+   },
+   {
+    "text": "confondere",
+    "start": 7.0,
+    "end": 7.48
+   },
+   {
+    "text": "la",
+    "start": 7.48,
+    "end": 7.66
+   },
+   {
+    "text": "fatica",
+    "start": 7.66,
+    "end": 8.0
+   },
+   {
+    "text": "con",
+    "start": 8.0,
+    "end": 8.21
+   },
+   {
+    "text": "l'efficacia.",
+    "start": 8.21,
+    "end": 9.13
+   }
+  ],
+  "text": "Se valuti l'allenamento solo da quanto sei distrutto rischi di confondere la fatica con l'efficacia.",
+  "start": 2.81,
+  "end": 9.13
+ },
+ {
+  "who": "coach",
+  "words": [
+   {
+    "text": "Per",
+    "start": 9.13,
+    "end": 9.33
+   },
+   {
+    "text": "costruire",
+    "start": 9.33,
+    "end": 9.93
+   },
+   {
+    "text": "un",
+    "start": 9.93,
+    "end": 10.06
+   },
+   {
+    "text": "muscolo",
+    "start": 10.06,
+    "end": 10.53
+   },
+   {
+    "text": "serve",
+    "start": 10.53,
+    "end": 10.87
+   },
+   {
+    "text": "uno",
+    "start": 10.87,
+    "end": 11.07
+   },
+   {
+    "text": "sforzo",
+    "start": 11.07,
+    "end": 11.6
+   },
+   {
+    "text": "adeguato,",
+    "start": 11.6,
+    "end": 12.34
+   },
+   {
+    "text": "ma",
+    "start": 12.34,
+    "end": 12.58
+   },
+   {
+    "text": "arrivare",
+    "start": 12.58,
+    "end": 12.98
+   },
+   {
+    "text": "sempre",
+    "start": 12.98,
+    "end": 13.33
+   },
+   {
+    "text": "al",
+    "start": 13.33,
+    "end": 13.43
+   },
+   {
+    "text": "punto",
+    "start": 13.43,
+    "end": 13.73
+   },
+   {
+    "text": "di",
+    "start": 13.73,
+    "end": 13.84
+   },
+   {
+    "text": "non",
+    "start": 13.84,
+    "end": 14.01
+   },
+   {
+    "text": "completare",
+    "start": 14.01,
+    "end": 14.59
+   },
+   {
+    "text": "un'altra",
+    "start": 14.59,
+    "end": 15.04
+   },
+   {
+    "text": "ripetizione",
+    "start": 15.04,
+    "end": 15.67
+   },
+   {
+    "text": "non",
+    "start": 15.67,
+    "end": 15.84
+   },
+   {
+    "text": "è",
+    "start": 15.84,
+    "end": 15.89
+   },
+   {
+    "text": "obbligatorio.",
+    "start": 15.89,
+    "end": 16.9
+   }
+  ],
+  "text": "Per costruire un muscolo serve uno sforzo adeguato, ma arrivare sempre al punto di non completare un'altra ripetizione non è obbligatorio.",
+  "start": 9.13,
+  "end": 16.9
+ },
+ {
+  "who": "coach",
+  "words": [
+   {
+    "text": "In",
+    "start": 16.9,
+    "end": 17.42
+   },
+   {
+    "text": "uno",
+    "start": 17.42,
+    "end": 17.88
+   },
+   {
+    "text": "studio",
+    "start": 17.88,
+    "end": 18.18
+   },
+   {
+    "text": "di",
+    "start": 18.18,
+    "end": 18.36
+   },
+   {
+    "text": "8",
+    "start": 18.36,
+    "end": 18.46
+   },
+   {
+    "text": "settimane,",
+    "start": 18.46,
+    "end": 19.08
+   },
+   {
+    "text": "allenarsi",
+    "start": 19.08,
+    "end": 19.6
+   },
+   {
+    "text": "lasciando",
+    "start": 19.6,
+    "end": 20.15
+   },
+   {
+    "text": "una",
+    "start": 20.15,
+    "end": 20.29
+   },
+   {
+    "text": "o",
+    "start": 20.29,
+    "end": 20.34
+   },
+   {
+    "text": "due",
+    "start": 20.34,
+    "end": 20.51
+   },
+   {
+    "text": "ripetizioni",
+    "start": 20.51,
+    "end": 21.13
+   },
+   {
+    "text": "in",
+    "start": 21.13,
+    "end": 21.24
+   },
+   {
+    "text": "riserva",
+    "start": 21.24,
+    "end": 21.63
+   },
+   {
+    "text": "ha",
+    "start": 21.63,
+    "end": 21.74
+   },
+   {
+    "text": "prodotto",
+    "start": 21.74,
+    "end": 22.38
+   },
+   {
+    "text": "una",
+    "start": 22.38,
+    "end": 22.52
+   },
+   {
+    "text": "crescita",
+    "start": 22.52,
+    "end": 22.99
+   },
+   {
+    "text": "del",
+    "start": 22.99,
+    "end": 23.18
+   },
+   {
+    "text": "quadricipite",
+    "start": 23.18,
+    "end": 23.9
+   },
+   {
+    "text": "simile",
+    "start": 23.9,
+    "end": 24.33
+   },
+   {
+    "text": "al",
+    "start": 24.33,
+    "end": 24.38
+   },
+   {
+    "text": "cedimento,",
+    "start": 24.38,
+    "end": 24.98
+   },
+   {
+    "text": "con",
+    "start": 24.98,
+    "end": 25.16
+   },
+   {
+    "text": "meno",
+    "start": 25.16,
+    "end": 25.41
+   },
+   {
+    "text": "fatica",
+    "start": 25.41,
+    "end": 25.76
+   },
+   {
+    "text": "acuta.",
+    "start": 25.76,
+    "end": 26.32
+   }
+  ],
+  "text": "In uno studio di 8 settimane, allenarsi lasciando una o due ripetizioni in riserva ha prodotto una crescita del quadricipite simile al cedimento, con meno fatica acuta.",
+  "start": 16.9,
+  "end": 26.32
+ },
+ {
+  "who": "coach",
+  "words": [
+   {
+    "text": "Attenzione,",
+    "start": 26.32,
+    "end": 27.4
+   },
+   {
+    "text": "due",
+    "start": 27.4,
+    "end": 28.1
+   },
+   {
+    "text": "ripetizioni",
+    "start": 28.1,
+    "end": 28.64
+   },
+   {
+    "text": "in",
+    "start": 28.75,
+    "end": 28.82
+   },
+   {
+    "text": "riserva",
+    "start": 28.82,
+    "end": 29.14
+   },
+   {
+    "text": "devono",
+    "start": 29.14,
+    "end": 29.48
+   },
+   {
+    "text": "essere",
+    "start": 29.48,
+    "end": 29.83
+   },
+   {
+    "text": "una",
+    "start": 29.83,
+    "end": 30.0
+   },
+   {
+    "text": "stima",
+    "start": 30.0,
+    "end": 30.45
+   },
+   {
+    "text": "credibile,",
+    "start": 30.45,
+    "end": 30.91
+   },
+   {
+    "text": "non",
+    "start": 30.91,
+    "end": 31.08
+   },
+   {
+    "text": "5",
+    "start": 31.08,
+    "end": 31.25
+   },
+   {
+    "text": "ripetizioni",
+    "start": 31.25,
+    "end": 31.87
+   },
+   {
+    "text": "mascherate.",
+    "start": 31.87,
+    "end": 33.06
+   }
+  ],
+  "text": "Attenzione, due ripetizioni in riserva devono essere una stima credibile, non 5 ripetizioni mascherate.",
+  "start": 26.32,
+  "end": 33.06
+ },
+ {
+  "who": "coach",
+  "words": [
+   {
+    "text": "Programma",
+    "start": 33.06,
+    "end": 33.76
+   },
+   {
+    "text": "lo",
+    "start": 33.76,
+    "end": 33.98
+   },
+   {
+    "text": "sforzo",
+    "start": 33.98,
+    "end": 34.34
+   },
+   {
+    "text": "in",
+    "start": 34.34,
+    "end": 34.45
+   },
+   {
+    "text": "base",
+    "start": 34.45,
+    "end": 34.7
+   },
+   {
+    "text": "all'esercizio",
+    "start": 34.7,
+    "end": 35.48
+   },
+   {
+    "text": "e",
+    "start": 35.48,
+    "end": 35.54
+   },
+   {
+    "text": "a",
+    "start": 35.54,
+    "end": 35.62
+   },
+   {
+    "text": "come",
+    "start": 35.62,
+    "end": 35.84
+   },
+   {
+    "text": "recuperi.",
+    "start": 35.84,
+    "end": 36.51
+   }
+  ],
+  "text": "Programma lo sforzo in base all'esercizio e a come recuperi.",
+  "start": 33.06,
+  "end": 36.51
+ },
+ {
+  "who": "coach",
+  "words": [
+   {
+    "text": "Il",
+    "start": 36.51,
+    "end": 36.63
+   },
+   {
+    "text": "cedimento",
+    "start": 36.63,
+    "end": 37.18
+   },
+   {
+    "text": "può",
+    "start": 37.18,
+    "end": 37.36
+   },
+   {
+    "text": "essere",
+    "start": 37.36,
+    "end": 37.72
+   },
+   {
+    "text": "uno",
+    "start": 37.72,
+    "end": 37.91
+   },
+   {
+    "text": "strumento,",
+    "start": 37.91,
+    "end": 38.57
+   },
+   {
+    "text": "usarlo",
+    "start": 38.57,
+    "end": 39.06
+   },
+   {
+    "text": "sempre",
+    "start": 39.06,
+    "end": 39.39
+   },
+   {
+    "text": "non",
+    "start": 39.39,
+    "end": 39.54
+   },
+   {
+    "text": "garantisce",
+    "start": 39.54,
+    "end": 40.1
+   },
+   {
+    "text": "di",
+    "start": 40.1,
+    "end": 40.21
+   },
+   {
+    "text": "più.",
+    "start": 40.21,
+    "end": 40.53
+   }
+  ],
+  "text": "Il cedimento può essere uno strumento, usarlo sempre non garantisce di più.",
+  "start": 36.51,
+  "end": 40.53
+ },
+ {
+  "who": "coach",
+  "words": [
+   {
+    "text": "La",
+    "start": 40.53,
+    "end": 40.69
+   },
+   {
+    "text": "qualità",
+    "start": 40.69,
+    "end": 41.04
+   },
+   {
+    "text": "delle",
+    "start": 41.04,
+    "end": 41.3
+   },
+   {
+    "text": "ripetizioni",
+    "start": 41.3,
+    "end": 41.9
+   },
+   {
+    "text": "deve",
+    "start": 41.9,
+    "end": 42.12
+   },
+   {
+    "text": "restare",
+    "start": 42.12,
+    "end": 42.5
+   },
+   {
+    "text": "controllabile.",
+    "start": 42.5,
+    "end": 43.52
+   }
+  ],
+  "text": "La qualità delle ripetizioni deve restare controllabile.",
+  "start": 40.53,
+  "end": 43.52
+ },
+ {
+  "who": "coach",
+  "words": [
+   {
+    "text": "Seguimi",
+    "start": 44.28,
+    "end": 44.28
+   },
+   {
+    "text": "per",
+    "start": 44.28,
+    "end": 44.46
+   },
+   {
+    "text": "allenarti",
+    "start": 44.46,
+    "end": 44.89
+   },
+   {
+    "text": "con",
+    "start": 44.89,
+    "end": 45.12
+   },
+   {
+    "text": "criterio.",
+    "start": 45.12,
+    "end": 45.76
+   }
+  ],
+  "text": "Seguimi per allenarti con criterio.",
+  "start": 44.28,
+  "end": 45.76
+ }
+]
