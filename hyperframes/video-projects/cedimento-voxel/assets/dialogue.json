@@ -1,0 +1,72 @@
+[
+ {
+  "i": 0,
+  "who": "novice",
+  "text": "Devi fallire ogni serie?",
+  "start": 0.6,
+  "end": 2.159
+ },
+ {
+  "i": 1,
+  "who": "coach",
+  "text": "Se valuti l'allenamento solo da quanto sei distrutto, rischi di confondere la fatica con l'efficacia.",
+  "start": 2.579,
+  "end": 8.301
+ },
+ {
+  "i": 2,
+  "who": "coach",
+  "text": "Per costruire muscolo serve uno sforzo adeguato, ma arrivare sempre al punto di non completare un'altra ripetizione non è obbligatorio.",
+  "start": 8.581,
+  "end": 16.74
+ },
+ {
+  "i": 3,
+  "who": "coach",
+  "text": "In uno studio di otto settimane, allenarsi lasciando una o due ripetizioni in riserva ha prodotto una crescita del quadricipite simile al cedimento.",
+  "start": 17.02,
+  "end": 25.529
+ },
+ {
+  "i": 4,
+  "who": "novice",
+  "text": "Con meno fatica acuta?",
+  "start": 25.949,
+  "end": 27.453
+ },
+ {
+  "i": 5,
+  "who": "coach",
+  "text": "Attenzione: due ripetizioni in riserva devono essere una stima credibile, non cinque ripetizioni mascherate.",
+  "start": 27.873,
+  "end": 34.346
+ },
+ {
+  "i": 6,
+  "who": "coach",
+  "text": "Programma lo sforzo in base all'esercizio e a come recuperi.",
+  "start": 34.626,
+  "end": 38.074
+ },
+ {
+  "i": 7,
+  "who": "coach",
+  "text": "Il cedimento può essere uno strumento; usarlo sempre non garantisce di più.",
+  "start": 38.354,
+  "end": 42.645
+ },
+ {
+  "i": 8,
+  "who": "coach",
+  "text": "La qualità delle ripetizioni deve restare controllabile.",
+  "start": 42.925,
+  "end": 46.364
+ },
+ {
+  "i": 9,
+  "who": "coach",
+  "text": "Seguimi per allenarti con criterio.",
+  "start": 46.644,
+  "end": 48.785
+ }
+]
