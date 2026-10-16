@@ -2,7 +2,7 @@
 import re, subprocess, sys
 html = open('index.html').read()
 sfx = re.findall(r'<audio id="sfx\d+" src="([^"]+)" data-start="([\d.]+)" data-duration="([\d.]+)" data-track-index="\d+" data-volume="([\d.]+)"', html)
-inp = ['-i', 'assets/audio/dialogue-clean.wav', '-i', 'assets/audio/music.mp3']
+inp = ['-i', 'assets/audio/dialogue-podcast.wav', '-i', 'assets/audio/music.mp3']
 fc = ['[2]volume=0.022,atrim=0:48.25[m]']; lbl = ['[1]', '[m]']
 for k, (src, st, du, vol) in enumerate(sfx):
     inp += ['-i', src]; d = int(float(st) * 1000)

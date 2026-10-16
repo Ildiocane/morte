@@ -20,3 +20,11 @@ Shots and graphics keep their v1 authoring times; `T()` remaps them onto Luca's 
   → `assets/audio/coach-clean.wav` (room noise −37 → −50 dBFS; a gate variant was rejected because it ate consonants).
 - Dialogue normalised to −14 LUFS (TP −1.2) → `dialogue-clean.wav`; music bed at −43 LUFS (~29 dB under the voice); SFX −4.4 dB.
 - Video stream reused from `renders/v1.mp4` (`python3 scripts/mix.py renders/v1.mp4 renders/final-v2.mp4`).
+
+## v3 "podcast" audio (Luca: "rimbomba ancora, fallo sembrare un podcast")
+1. `python3 scripts/deepfilter.py assets/audio/coach.wav coach-dfn.wav` — DeepFilterNet3 (denoise + dereverb, local CPU;
+   weights from raw.githubusercontent.com/Rikorose/DeepFilterNet/main/models/DeepFilterNet3.zip into ~/.cache/DeepFilterNet).
+2. Blend 92% DFN + 8% `coach-clean.wav` (DFN alone smeared some consonants: "usarlo"→"usato", "allenarti"→"allenato").
+3. Podcast chain: highpass 85 · +2 dB @120 Hz (warmth) · −3.5 dB @320 Hz (boxiness) · +3 dB @4.2 kHz (presence) · de-esser ·
+   compressor 3.5:1 · soft expander · limiter → `coach-podcast.wav`; dialogue loudnorm −14 LUFS → `dialogue-podcast.wav`.
+Reverb tail after word ends (`scripts/reverb_tail.py`): original −7 dB → v2 −14.5 dB → v3 −25.5 dB; noise floor −37 → −63 dBFS.
