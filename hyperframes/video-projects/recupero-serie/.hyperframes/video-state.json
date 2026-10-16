@@ -228,5 +228,18 @@
       ]
     },
     "unversioned": []
-  }
+  },
+  "renders": {
+    "latest": {
+      "id": "9803b5c1-4786-43d7-b86a-bd0c11deddfc",
+      "completedAt": 1792149509586,
+      "output": "/home/user/morte/hyperframes/video-projects/recupero-serie/renders/v1.mp4",
+      "status": "completed",
+      "revision": "6323cc37-f3f2-48c8-a727-972c2aa41107"
+    },
+    "retainedRevisions": [
+      "6323cc37-f3f2-48c8-a727-972c2aa41107"
+    ]
+  },
+  "pendingArtifactCleanup": []
 }
