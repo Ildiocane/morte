@@ -244,5 +244,16 @@
       ]
     },
     "unversioned": []
-  }
+  },
+  "renders": {
+    "latest": {
+      "id": "10369eb1-8f6c-4d74-a1e5-e8571880371e",
+      "completedAt": 1792136215844,
+      "output": "/home/user/morte/hyperframes/video-projects/cedimento-voxel/renders/v1.mp4",
+      "status": "completed",
+      "revision": null
+    },
+    "retainedRevisions": []
+  },
+  "pendingArtifactCleanup": []
 }
