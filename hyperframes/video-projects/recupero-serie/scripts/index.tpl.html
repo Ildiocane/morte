@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="it" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      :root { --y:#ffd21f; --ink:#0d0b14; --card:#15121f; --line:rgba(255,255,255,0.14); --red:#ff4d4d; --green:#2ee07a; --pur:#7c3aed; }
+      * { margin:0; padding:0; box-sizing:border-box; }
+      html, body { width:1080px; height:1920px; overflow:hidden; background:#000; }
+      #root { position:relative; width:1080px; height:1920px; overflow:hidden; font-family: Montserrat, Inter, ui-sans-serif, sans-serif; color:#fff; }
+      #face-wrap { position:absolute; inset:0; transform-origin:50% 40%; }
+      #face { width:1080px; height:1920px; object-fit:cover; filter:contrast(1.06) saturate(1.05); }
+      #grade { position:absolute; inset:0; pointer-events:none; background:linear-gradient(180deg, rgba(124,58,237,0.16), rgba(124,58,237,0) 40%, rgba(124,58,237,0.12)); mix-blend-mode:multiply; }
+      #topshade { position:absolute; left:0; right:0; top:0; height:620px; pointer-events:none; background:linear-gradient(180deg, rgba(8,6,14,0.7), rgba(8,6,14,0)); opacity:0; }
+      #flash { position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; z-index:9; }
+
+      /* top overlay cards (Brandon style: dark rounded card, yellow numbers, small caps labels) */
+      .ov { position:absolute; left:22px; width:756px; top:60px; zoom:1.35; opacity:0; display:flex; flex-direction:column; align-items:center; gap:18px; }
+      .card { background:var(--card); border:2px solid var(--line); border-radius:28px; padding:22px 34px; box-shadow:0 18px 44px rgba(0,0,0,0.5); text-align:center; }
+      .card .n { font-weight:900; font-size:96px; line-height:1; color:var(--y); letter-spacing:-0.02em; font-variant-numeric:tabular-nums; }
+      .card .l { font-weight:800; font-size:26px; letter-spacing:0.16em; color:#d4d0e0; margin-top:8px; text-transform:uppercase; }
+      .pill { display:inline-flex; align-items:center; gap:12px; padding:12px 26px; border-radius:999px; background:var(--card); border:2px solid var(--line); font-weight:800; font-size:34px; letter-spacing:0.04em; text-transform:uppercase; white-space:nowrap; box-shadow:0 10px 26px rgba(0,0,0,0.4); }
+      .pill i { font-style:normal; display:inline-flex; width:36px; height:36px; border-radius:50%; background:var(--y); color:var(--ink); align-items:center; justify-content:center; font-size:24px; font-weight:900; }
+      .tag { display:inline-block; background:var(--y); color:var(--ink); font-weight:900; font-size:54px; letter-spacing:0.02em; padding:8px 26px; border-radius:12px; transform:rotate(-4deg); text-transform:uppercase; box-shadow:0 12px 30px rgba(0,0,0,0.4); white-space:nowrap; }
+      .tag.red { background:var(--red); color:#fff; }
+      .row { display:flex; gap:18px; justify-content:center; align-items:center; }
+      .vs { font-weight:900; font-size:44px; color:var(--y); }
+      .x { position:absolute; left:-6px; right:-6px; top:50%; height:8px; margin-top:-4px; background:var(--red); border-radius:4px; transform-origin:0 50%; }
+      .rel { position:relative; }
+      #chart { width:620px; height:150px; }
+      #range { position:relative; width:740px; height:84px; border-radius:42px; background:var(--card); border:2px solid var(--line); overflow:hidden; }
+      #range-fill { position:absolute; top:0; bottom:0; background:var(--y); transform-origin:0 50%; }
+      #range-lab { position:absolute; top:0; bottom:0; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:40px; color:var(--ink); }
+      #range-ticks { position:relative; width:740px; height:40px; }
+      #range-ticks div { position:absolute; transform:translateX(-50%); font-weight:800; font-size:28px; color:#e9e6f2; text-shadow:0 2px 6px rgba(0,0,0,0.8); }
+
+      /* full-screen graphics */
+      .fs { position:absolute; inset:0; opacity:0; overflow:hidden; background:radial-gradient(ellipse 90% 70% at 50% 35%, #2a1250 0%, #120a22 55%, #07050c 100%); }
+      .fs .grid { position:absolute; inset:-40px; background-image:linear-gradient(rgba(255,255,255,0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,0.05) 2px, transparent 2px); background-size:90px 90px; }
+      .fs .inner { position:absolute; left:70px; right:70px; top:260px; display:flex; flex-direction:column; align-items:center; gap:44px; zoom:1.12; }
+      .fs .kicker { font-weight:900; font-size:40px; letter-spacing:0.22em; color:#cbb8ff; text-transform:uppercase; }
+      .fs .title { font-weight:900; font-size:120px; line-height:0.95; text-align:center; text-transform:uppercase; letter-spacing:-0.01em; }
+      .fs .title span { color:var(--y); }
+      .bigcard { width:900px; display:flex; align-items:center; gap:30px; padding:30px 36px; border-radius:30px; background:rgba(255,255,255,0.06); border:2px solid var(--line); }
+      .bigcard .num { flex:0 0 110px; height:110px; border-radius:24px; background:var(--y); color:var(--ink); font-weight:900; font-size:70px; display:flex; align-items:center; justify-content:center; }
+      .bigcard b { font-weight:900; font-size:64px; text-transform:uppercase; } .bigcard span { display:block; font-weight:700; font-size:30px; color:#c8c2da; margin-top:6px; }
+      .timer { font-weight:900; font-size:240px; line-height:1; color:var(--y); font-variant-numeric:tabular-nums; letter-spacing:-0.02em; text-shadow:0 10px 40px rgba(255,210,31,0.25); }
+      .timer small { font-size:60px; color:#fff; margin-left:12px; letter-spacing:0.1em; }
+
+      /* captions: 2 words, uppercase, active word yellow */
+      #captions { position:absolute; left:40px; right:40px; top:1430px; height:160px; z-index:6; }
+      .cap { position:absolute; left:0; right:0; top:0; text-align:center; font-weight:900; font-size:84px; line-height:1.05; letter-spacing:-0.01em; opacity:0;
+        text-shadow:0 0 3px rgba(0,0,0,0.95), 0 4px 0 rgba(0,0,0,0.85), 0 8px 24px rgba(0,0,0,0.6); }
+      .cap span { color:#fff; } .cap span.on { color:var(--y); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="__DUR__" data-width="1080" data-height="1920">
+      <div id="face-wrap"><video id="face" src="assets/edit.mp4" muted playsinline data-start="0" data-duration="__DUR__" data-track-index="0"></video></div>
+      <audio id="voice" src="assets/edit.mp4" data-start="0" data-duration="__DUR__" data-track-index="1" data-volume="1"></audio>
+      __SFX__
+      <div id="overlay" class="clip" data-start="0" data-duration="__DUR__" data-track-index="3" style="position:absolute;inset:0;">
+        <div id="grade"></div><div id="topshade"></div>
+
+        <!-- O1 hook -->
+        <div class="ov" id="o1"><div class="row" style="gap:10px;transform:scale(0.86)"><div class="pill" id="o1a"><i>1</i>Tra le sedute</div><div class="vs" id="o1v">VS</div><div class="pill" id="o1b"><i>2</i>Tra gli esercizi</div></div>
+          <div class="tag" id="o1t">2 cose diverse</div></div>
+        <!-- O2 critical eye -->
+        <div class="ov" id="o2"><div class="card"><div class="l">Ogni seduta</div><div class="n" style="font-size:72px">ANALIZZATA</div></div><div class="tag" id="o2t">Spirito critico</div></div>
+        <!-- O3 DOMS present -->
+        <div class="ov" id="o3"><div class="row"><div class="card" id="o3a"><div class="n">DOMS</div><div class="l">ancora presenti</div></div><div class="card" id="o3b"><div class="n" style="color:#ff8a8a">🔥</div><div class="l">infiammazione locale</div></div></div>
+          <div class="tag red" id="o3t">Non allenarlo</div></div>
+        <!-- O4 performance stall -->
+        <div class="ov" id="o4"><div class="row"><div class="pill rel" id="o4a">DOMS<div class="x" id="o4x"></div></div><div class="pill" id="o4b">Prestazioni ↓ / stallo</div></div>
+          <svg id="chart" viewBox="0 0 700 200"><polyline id="o4l" fill="none" stroke="#ff4d4d" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" points="20,60 160,52 300,58 440,96 560,128 680,130"/></svg>
+          <div class="tag" id="o4t">+1 giorno di recupero</div></div>
+        <!-- O5 intensity -->
+        <div class="ov" id="o5"><div class="card"><div class="l">Intensità</div><div class="n">RIR 0–1</div></div><div class="row"><div class="pill" id="o5a">O cedimento</div></div></div>
+        <!-- O6 range -->
+        <div class="ov" id="o6"><div class="l" style="font-weight:900;font-size:34px;letter-spacing:0.18em;text-shadow:0 2px 8px #000">RECUPERO TRA LE SERIE</div>
+          <div id="range"><div id="range-fill"></div><div id="range-lab">2:00 – 4:30</div></div><div id="range-ticks"></div></div>
+        <!-- O7 bigger muscles -->
+        <div class="ov" id="o7"><div class="row"><div class="pill" id="o7a">Muscoli grandi</div><div class="vs">+</div><div class="pill" id="o7b">Intensità alta</div></div><div class="tag" id="o7t">= più recupero</div></div>
+        <!-- O8 CTA -->
+        <div class="ov" id="o8"><div class="card"><div class="n" style="font-size:64px">@luca_bandiera_pt</div></div><div class="row"><div class="pill" id="o8a">❤ Like</div><div class="pill" id="o8b">Seguimi</div></div></div>
+
+        <!-- FS1 two factors -->
+        <div class="fs" id="fs1"><div class="grid"></div><div class="inner">
+          <div class="kicker">Recupero tra le sedute</div><div class="title"><span>2</span> fattori</div>
+          <div class="bigcard" id="f1a"><div class="num">1</div><div><b>DOMS</b><span>dolore muscolare a insorgenza ritardata</span></div></div>
+          <div class="bigcard" id="f1b"><div class="num">2</div><div><b>Progressioni</b><span>carico e ripetizioni migliorano?</span></div></div>
+        </div></div>
+        <!-- FS2 rest between sets -->
+        <div class="fs" id="fs2"><div class="grid"></div><div class="inner">
+          <div class="kicker">Tra le serie</div><div class="timer" id="t2">0:00<small>MIN</small></div>
+          <div class="row"><div class="pill" id="f2a" style="font-size:40px">Minimo 2 minuti</div></div>
+          <div class="row" id="f2r"><div class="pill rel" style="font-size:40px">1:00<div class="x" id="f2x1"></div></div><div class="pill rel" style="font-size:40px">1:30<div class="x" id="f2x2"></div></div></div>
+          <div class="tag red" id="f2t">Troppo poco</div>
+        </div></div>
+        <!-- FS3 lateral raise -->
+        <div class="fs" id="fs3"><div class="grid"></div><div class="inner">
+          <div class="kicker">Esempio</div><div class="title">Alzata<br /><span>laterale</span></div>
+          <div class="timer" style="font-size:150px;white-space:nowrap">1:30–2:00</div>
+          <div class="row"><div class="pill" id="f3a">✓ Anche a cedimento</div></div>
+          <div class="row"><div class="pill" id="f3b">+ Parziali in allungamento</div></div>
+        </div></div>
+
+        <div id="captions"></div>
+        <div id="flash"></div>
+      </div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const DUR = __DUR__;
+
+      // zoom plan: alternating punch-ins at cuts / key words
+      const Z = [[0,1.0,0],[0.05,1.08,3.9,"none"],[4.1,1.14,0],[6.8,1.0,0],[6.85,1.06,5.2,"none"],[17.8,1.12,0],[21.9,1.0,0],[22.5,1.22,0.3,"expo.out"],
+        [24.1,1.0,0],[24.15,1.08,5.6,"none"],[40.3,1.14,0],[44.6,1.0,0],[45.3,1.06,4.6,"none"],[50.2,1.12,0],[53.9,1.0,0],[63.0,1.1,0],[63.05,1.16,4.7,"none"]];
+      Z.forEach(([t,s,d,e]) => d ? tl.to("#face-wrap",{scale:s,duration:d,ease:e},t) : tl.set("#face-wrap",{scale:s},t));
+      // b/w drama on "calano o rimangono in stallo"
+      gsap.set("#face",{filter:"contrast(1.06) saturate(1.05) grayscale(0)"});
+      tl.to("#face",{filter:"contrast(1.12) saturate(0.9) grayscale(1)",duration:0.2},25.5);
+      tl.to("#face",{filter:"contrast(1.06) saturate(1.05) grayscale(0)",duration:0.25},27.5);
+
+      const show = (s,a,b) => { tl.fromTo(s,{opacity:0,y:-24},{opacity:1,y:0,duration:0.35,ease:"expo.out"},a); tl.to(s,{opacity:0,duration:0.15},b-0.15); };
+      const pop = (s,t,e) => tl.fromTo(s,{opacity:0,scale:0.8,y:14},{opacity:1,scale:1,y:0,duration:0.3,ease:e||"back.out(2)"},t);
+      const slam = (s,t) => tl.fromTo(s,{opacity:0,scale:1.8},{opacity:1,scale:1,duration:0.22,ease:"power4.in"},t);
+      const strike = (s,t) => tl.fromTo(s,{scaleX:0},{scaleX:1,duration:0.25,ease:"power3.out"},t);
+      const fsIn = (s,a,b) => { tl.fromTo(s,{opacity:0,scale:1.08},{opacity:1,scale:1,duration:0.3,ease:"power3.out"},a); tl.fromTo("#flash",{opacity:0.5},{opacity:0,duration:0.25,immediateRender:false},a);
+        tl.to(s,{opacity:0,scale:0.96,duration:0.25,ease:"power2.in"},b-0.25); };
+      gsap.set(".ov .pill, .ov .tag, .ov .card, .vs, .bigcard, .fs .pill, .fs .tag, #f2r", {opacity:0}); gsap.set(".x",{scaleX:0});
+      tl.to("#topshade",{opacity:1,duration:0.3},0.1);
+
+      show("#o1",0.1,6.7); pop("#o1a",0.6); pop("#o1v",2.1,"expo.out"); pop("#o1b",3.2); slam("#o1t",4.1); 
+      show("#o2",8.2,12.0); tl.set("#o2 .card",{opacity:1},8.2); slam("#o2t",11.1);
+      fsIn("#fs1",12.1,17.7); pop("#f1a",16.2,"expo.out"); pop("#f1b",16.55,"expo.out");
+      show("#o3",17.8,24.0); pop("#o3a",18.3); pop("#o3b",20.6,"back.out(2.6)"); slam("#o3t",22.5);
+      show("#o4",24.1,30.6); pop("#o4a",24.4); strike("#o4x",24.9); pop("#o4b",25.5);
+      const l4 = document.getElementById("o4l"); l4.style.strokeDasharray = 760; tl.fromTo(l4,{strokeDashoffset:760},{strokeDashoffset:0,duration:1.4,ease:"power1.inOut"},25.8);
+      slam("#o4t",28.0);
+      fsIn("#fs2",30.7,40.2);
+      const tm = {v:0}; tl.to(tm,{v:120,duration:1.3,ease:"power2.out",onUpdate:()=>{const s=Math.round(tm.v);document.getElementById("t2").innerHTML=Math.floor(s/60)+":"+String(s%60).padStart(2,"0")+"<small>MIN</small>";}},32.4);
+      pop("#f2a",33.4); tl.set("#f2r",{opacity:1},36.0); tl.fromTo("#f2r",{y:20},{y:0,duration:0.3,ease:"back.out(2)",immediateRender:false},36.0);
+      strike("#f2x1",37.6); strike("#f2x2",37.75); slam("#f2t",37.9);
+      show("#o5",40.3,45.2); tl.set("#o5 .card",{opacity:1},40.3); pop("#o5a",43.6);
+      show("#o6",45.3,50.1);
+      const W=740, pos=(m)=>m/5*W; const tk=document.getElementById("range-ticks"); [0,1,2,3,4,5].forEach(m=>{const d=document.createElement("div");d.textContent=m+"'";d.style.left=pos(m)+"px";tk.appendChild(d);});
+      const rf=document.getElementById("range-fill"), rl=document.getElementById("range-lab"); rf.style.left=rl.style.left=pos(2)+"px"; rf.style.width=rl.style.width=(pos(4.5)-pos(2))+"px";
+      tl.fromTo("#range-fill",{scaleX:0},{scaleX:0.0001,duration:0.01},45.3); tl.to("#range-fill",{scaleX:0.4,duration:0.4,ease:"power2.out"},47.4); tl.to("#range-fill",{scaleX:1,duration:0.6,ease:"power2.out"},48.9);
+      tl.fromTo("#range-lab",{opacity:0},{opacity:1,duration:0.2},49.3);
+      show("#o7",50.2,54.5); pop("#o7a",50.6); pop("#o7b",51.6,"back.out(2.6)"); slam("#o7t",53.2);
+      fsIn("#fs3",54.6,62.8); pop("#f3a",58.1); pop("#f3b",60.4,"expo.out");
+      show("#o8",63.0,DUR); tl.set("#o8 .card",{opacity:1},63.0); pop("#o8a",65.1); pop("#o8b",65.5,"back.out(2.6)");
+
+      // captions
+      const CAPS = __CAPS__; const box = document.getElementById("captions");
+      CAPS.forEach((c,i)=>{ const el=document.createElement("div"); el.className="cap"; el.id="cap"+i; el.innerHTML=c.w.map(x=>`<span>${x[0]}</span>`).join(" "); box.appendChild(el);
+        tl.fromTo(el,{opacity:0,scale:0.9},{opacity:1,scale:1,duration:0.08,ease:"back.out(3)"},c.a);
+        const sp=el.querySelectorAll("span"); c.w.forEach((x,k)=>{ tl.set(sp[k],{className:"on"},x[1]); if(k>0) tl.set(sp[k-1],{className:""},x[1]); });
+        tl.set(el,{opacity:0},Math.min(c.b,DUR-0.05)); });
+      tl.set({},{},DUR);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
