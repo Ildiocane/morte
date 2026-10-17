@@ -20,15 +20,10 @@ def track(): tr[0] += 1; return tr[0]
 
 # ---------------- forehead-height text (y ≈ 470–700) ----------------
 # (start, end, lines[(text, at)]) ; [word] = red highlight box
-FH = [
+FH = [   # only three moments on the face, all in the band above the head
     (t("quanti") - 0.15, 8.25, [("Quanti coach", t("quanti") - 0.15), ("ti spiegano il [perché?]", t("spiegarti"))]),
-    (t("nel", 1, 9) - 0.1, 14.85, [("Il mio piano di coaching", t("nel", 1, 9) - 0.1), ("[livello più alto]", t("più", 1, 11))]),
-    (t("quindi", 1, 28) + 0.1, 33.45, [("Non solo", t("non", 1, 29)), ("[all'inizio]", t("all'inizio"))]),
-    (t("la", 1, 33.4), 37.1, [("La prima", t("la", 1, 33.4)), ("programmazione", t("programmazione", 1, 33))]),
-    (t("ma", 1, 44) , 50.85, [("Poi [cambia]", t("cambieranno")), ("con i tuoi progressi", t("progredirà"))]),
-    (t("ci", 1, 51.5), t("perché", 1, 55) - 0.05, [("Ci serve", t("ci", 1, 51.5)), ("una [risposta]", t("risposta"))]),
-    (t("perché", 1, 55) - 0.05, 58.75, [("Il perché di", t("perché", 1, 55) - 0.05), ("[ogni stimolo]", t("stimolo"))]),
-    (t("quindi", 1, 65) + 0.1, t("allora", 1, 72) - 0.05, [("Il tuo coach", t("coach", 1, 65)), ("[non ti spiega?]", t("spiegando"))]),
+    (t("perché", 1, 55) - 0.05, 58.75, [("Il perché di", t("perché", 1, 55) - 0.05), ("[ogni stimolo]", t("stimolo") - 0.2)]),
+    (t("quindi", 1, 65) + 0.1, t("allora", 1, 72) - 0.05, [("Il tuo coach", t("coach", 1, 65)), ("[non ti spiega?]", t("spiegando") - 0.2)]),
 ]
 for i, (a, e, lines) in enumerate(FH):
     lh = "".join(f'<div class="fl l{j}">{mark(H.escape(x).replace("[", "[").replace("]", "]"))}</div>' for j, (x, at) in enumerate(lines))
@@ -38,18 +33,10 @@ for i, (a, e, lines) in enumerate(FH):
     js.append(f'tl.fromTo("#fh{i} .hl",{{backgroundSize:"0% 100%"}},{{backgroundSize:"100% 100%",duration:0.3,ease:"power2.out"}},{max(a, lines[-1][1]) + 0.15:.3f});')
     js.append(f'tl.to("#fh{i}",{{opacity:0,duration:0.15}},{e - 0.15:.3f});')
 
-# "= BOZZA" stamp on the forehead, and the closing "CAMBIA COACH"
-body.append(f'<div class="fh clip" id="st1" data-start="{t("bozza") - 0.1:.3f}" data-duration="{37.1 - t("bozza") + 0.1:.3f}" data-track-index="{track()}" style="top:690px"><span class="stamp">= bozza</span></div>')
-js.append(f'tl.fromTo("#st1 .stamp",{{opacity:0,scale:2,rotation:-6}},{{opacity:1,scale:1,rotation:-6,duration:0.22,ease:"power4.in"}},{t("bozza"):.3f});')
+# closing stamp, same band above the head
 a = t("allora", 1, 72) - 0.05
-body.append(f'<div class="fh clip" id="end" data-start="{a:.3f}" data-duration="{DUR - a:.3f}" data-track-index="{track()}"><div class="fl e0" style="font-size:78px">Allora forse è meglio</div><div class="fl e1"><span class="stamp big">cambia coach</span></div></div>')
-js.append(f'tl.fromTo("#end .e0",{{opacity:0,y:30}},{{opacity:1,y:0,duration:0.3,ease:"back.out(2)"}},{a:.3f});')
-js.append(f'tl.fromTo("#end .stamp",{{opacity:0,scale:2.2,rotation:-5}},{{opacity:1,scale:1,rotation:-5,duration:0.22,ease:"power4.in"}},{t("cambi", 1, 72):.3f});')
-
-# LB System tag at the top during the closing line
-a = t("quindi", 1, 65) + 0.1
-body.append(f'<div class="tag clip" id="tag" data-start="{a:.3f}" data-duration="{DUR - a:.3f}" data-track-index="{track()}"><span class="lbpill">__LBMARK__<b>LB</b></span><span class="handle">SYSTEM · @luca_bandiera_pt</span></div>')
-js.append(f'tl.fromTo("#tag",{{opacity:0,y:-20}},{{opacity:1,y:0,duration:0.4,ease:"expo.out"}},{a + 0.3:.3f});')
+body.append(f'<div class="fh clip" id="end" data-start="{a:.3f}" data-duration="{DUR - a:.3f}" data-track-index="{track()}"><div class="fl e1"><span class="stamp big">cambia coach</span></div></div>')
+js.append(f'tl.fromTo("#end .stamp",{{opacity:0,scale:2.2,rotation:-4}},{{opacity:1,scale:1,rotation:-4,duration:0.22,ease:"power4.in"}},{t("cambi", 1, 72) - 0.1:.3f});')
 
 # ---------------- b-roll inserts (full screen, face video keeps running underneath) ----------------
 BR = [("pdf1", 0, t("io", 1, 14.5) - 0.02, t("quali", 1, 19)), ("squat", 0.3, t("quali", 1, 19), t("perché", 1, 24)), ("pdf2", 0, t("ed", 1, 58.5) - 0.05, t("quindi", 1, 65))]
@@ -60,9 +47,9 @@ for k, (name, off, a, e) in enumerate(BR):
     js.append(f'tl.fromTo("#bw{k}",{{scale:1.0}},{{scale:1.07,duration:{d:.3f},ease:"none"}},{a:.3f});')
     assert d > e - a - 0.05, f"b-roll {name} too short"
 # text on the b-roll, same forehead band
-BT = [(t("io", 1, 14.5), t("quali", 1, 19) - 0.05, [("Guide in [PDF]", t("guide")), ("cosa succede nel tuo piano", t("cosa", 1, 16))]),
-      (t("quali", 1, 19), t("perché", 1, 24) - 0.05, [("[Progressioni]", t("progressioni")), ("[Scelta esercizi]", t("scelta"))]),
-      (t("ed", 1, 58.5), t("quindi", 1, 65) - 0.05, [("Un [PDF]", t("log")), ("da leggere con calma", t("con", 1, 60.5))])]
+BT = [(t("io", 1, 14.5), t("quali", 1, 19) - 0.05, [("Guide in [PDF]", t("guide"))]),
+      (t("quali", 1, 19), t("perché", 1, 24) - 0.05, [("[Progressioni]", t("progressioni"))]),
+      (t("ed", 1, 58.5), t("quindi", 1, 65) - 0.05, [("Da leggere con [calma]", t("con", 1, 60.5) - 0.3)])]
 for i, (a, e, lines) in enumerate(BT):
     lh = "".join(f'<div class="fl l{j}">{mark(H.escape(x))}</div>' for j, (x, at) in enumerate(lines))
     body.append(f'<div class="fh clip onb" id="bt{i}" data-start="{a:.3f}" data-duration="{e - a:.3f}" data-track-index="{track()}">{lh}</div>')
@@ -97,8 +84,7 @@ js.append(f'tl.fromTo("#fs2 .q1",{{strokeDashoffset:1}},{{strokeDashoffset:0,dur
 js.append(f'tl.fromTo("#fs2 .s1",{{opacity:0,y:20}},{{opacity:1,y:0,duration:0.35}},{t("capire"):.3f});tl.fromTo("#fs2 .s2",{{opacity:0,y:20}},{{opacity:1,y:0,duration:0.35}},{t("esigenze"):.3f});')
 
 # ---------------- gentle punch-ins on the face (no cuts) ----------------
-Z = [(0, 1.0), (t("perché", 1, 5) - 0.1, 1.08), (8.4, 1.0), (t("alto"), 1.07), (t("bozza") - 0.1, 1.1), (t("una", 1, 37), 1.0), (t("stimolo") - 0.1, 1.08),
-     (t("quindi", 1, 65), 1.0), (t("cambi", 1, 72) - 0.1, 1.12)]
+Z = [(0, 1.0), (t("perché", 1, 5) - 0.1, 1.04), (8.4, 1.0), (t("stimolo") - 0.1, 1.04), (t("quindi", 1, 65), 1.0), (t("cambi", 1, 72) - 0.1, 1.05)]
 for tt, sc in Z: js.append(f'tl.to("#facew",{{scale:{sc},duration:0.35,ease:"power2.out"}},{tt:.3f});')
 
 # ---------------- captions: 1–3 words, active word on a red box ----------------
