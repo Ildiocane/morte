@@ -8,9 +8,12 @@ SEED = int(os.environ.get("SEED", 7)); torch.manual_seed(SEED)
 REF = "assets/audio/voice-ref.wav"
 OUT = "assets/tts"
 want = set(sys.argv[1:])
+if os.environ.get("THREADS"): torch.set_num_threads(int(os.environ["THREADS"]))
 m = ChatterboxMultilingualTTS.from_pretrained(device="cpu")
-for sid, _, chunks in SECTIONS:
-    for cid, text in chunks:
+ALL = [c for _, _, ch in SECTIONS for c in ch]
+if os.environ.get("REVERSE"): ALL = ALL[::-1]
+for _ in [0]:
+    for cid, text in ALL:
         if want and cid not in want: continue
         if os.path.exists(f"{OUT}/{cid}.wav") and not want: continue
         t0 = time.time(); torch.manual_seed(SEED)

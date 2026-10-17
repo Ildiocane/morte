@@ -63,6 +63,9 @@ for sid, title, items in SECTIONS:
         hw = [w for w in ww if w[1] >= a - 0.25 and w[1] < b + 0.1]
         sw = text.split()
         sm = difflib.SequenceMatcher(None, [norm(w) for w in sw], [norm(w[0]) for w in hw], autojunk=False)
+        dur = b - a
+        if sm.ratio() < 0.88 or len(sw) / dur < 1.8 or len(sw) / dur > 3.6:
+            print(f"CHECK {cid}: sim {sm.ratio():.2f}  {len(sw) / dur:.2f} w/s\n   script: {text}\n   heard : {' '.join(w[0] for w in hw)}")
         T = [None] * len(sw)
         for blk in sm.get_matching_blocks():
             for k in range(blk.size): T[blk.a + k] = (hw[blk.b + k][1], hw[blk.b + k][2])
