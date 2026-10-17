@@ -97,8 +97,12 @@ for k, w in enumerate(WORDS):
 flush()
 cap_html, cap_js = [], []
 for i, g in enumerate(caps):
-    a = g[0]["s"]; e = g[-1]["e"] + 0.25
-    if i + 1 < len(caps): e = min(max(e, caps[i + 1][0]["s"] - 0.02) if caps[i + 1][0]["s"] - g[-1]["e"] < 0.6 else e, caps[i + 1][0]["s"] - 0.02)
+    a = g[0]["s"]; e = max(g[-1]["e"] + 0.25, a + 0.6)
+    if i + 1 < len(caps):
+        nxt = caps[i + 1][0]["s"]
+        if nxt - g[-1]["e"] < 0.6: e = max(e, nxt - 0.02)
+        e = min(e, nxt - 0.02)
+    if e <= a + 0.05: raise SystemExit(f"caption {i} has no screen time: {[x['w'] for x in g]}")
     txt = " ".join(x["w"] for x in g).rstrip(",;:")
     cap_html.append(f'<div class="cap" id="c{i}">{H.escape(txt)}</div>')
     cap_js.append(f'tl.set("#c{i}",{{opacity:1}},{a:.3f});tl.set("#c{i}",{{opacity:0}},{e:.3f});')

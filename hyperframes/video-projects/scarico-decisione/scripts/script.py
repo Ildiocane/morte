@@ -64,7 +64,7 @@ SECTIONS = [
     ]),
     ("s6", "Un esempio pratico", [
         ("s6a", "Vediamo ora un esempio pratico. Lo dico chiaramente: è un esempio illustrativo, non una prescrizione da copiare."),
-        ("s6b", "Prendiamo una persona che si trova nel caso due. Calo su più esercizi, recupero difficile, e le cause più ovvie sono già state controllate."),
+        ("s6b", "Prendiamo una persona che si trova nel caso due. Calo su più esercizi, recupero difficile, e le cause più evidenti sono già state controllate."),
         ("s6c", "Il suo programma prevede, per esempio: squat, quattro serie da sei a otto ripetizioni, lasciando una o due ripetizioni in riserva. Panca piana, quattro serie. Rematore, quattro serie. Più qualche esercizio complementare."),
         ("s6d", "Un intervento ragionevole potrebbe essere questo. Per una settimana, ridurre le serie di alcuni esercizi, da quattro a due. Tenere gli stessi esercizi, con carichi simili. E lasciare più margine: tre o quattro ripetizioni in riserva, invece di una o due."),
         ("s6e", "Perché tenere gli stessi esercizi? Perché i gesti familiari ti permettono di continuare a praticare il movimento. Non perdi il ritmo, non devi riabituarti, e quando torni al lavoro pieno il passaggio è naturale."),
