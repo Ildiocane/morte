@@ -1,0 +1,14 @@
+# media + personal material stay local (voice clone audio, user logos, renders)
+renders/
+broll/renders/
+assets/audio/
+assets/tts/
+assets/broll/
+assets/img/
+broll/assets/nexus-dark.png
+broll/assets/nexus-data.js
+*.mp4
+*.wav
+*.mp3
+.hyperframes/
+__pycache__/

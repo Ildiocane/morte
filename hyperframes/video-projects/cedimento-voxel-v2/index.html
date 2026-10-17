@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="it" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <script src="assets/three.min.js"></script>
+    <style>
+      * { margin:0; padding:0; box-sizing:border-box; }
+      html, body { width:1080px; height:1920px; overflow:hidden; background:#0d0f14; }
+      #root { position:relative; width:1080px; height:1920px; overflow:hidden; font-family: Inter, ui-sans-serif, system-ui, sans-serif; color:#fff; }
+      canvas { position:absolute; inset:0; width:1080px; height:1920px; display:block; }
+      #bg { filter: blur(0px); }
+      #vignette { position:absolute; inset:0; pointer-events:none;
+        background:radial-gradient(ellipse 75% 60% at 50% 48%, transparent 55%, rgba(5,6,10,0.65) 100%); }
+      #grain { position:absolute; inset:0; pointer-events:none; opacity:0.06;
+        background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.5) 0 1px, transparent 1px 3px); mix-blend-mode:overlay; }
+      #flash { position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; }
+      #fade { position:absolute; inset:0; background:#000; opacity:1; pointer-events:none; }
+
+      /* captions — reference style: white, bold, keyword on yellow block */
+      #captions { position:absolute; left:60px; right:60px; top:200px; height:240px; z-index:5; }
+      .cap { position:absolute; left:0; right:0; top:0; text-align:center; font-weight:800; font-size:62px; line-height:1.18; opacity:0;
+        text-shadow:0 0 3px rgba(0,0,0,0.95), 0 3px 8px rgba(0,0,0,0.85), 0 8px 26px rgba(0,0,0,0.5); }
+      .cap .k { background:#e6ff3c; color:#111; padding:0 10px; border-radius:6px; text-shadow:none; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+
+      /* UI cards (app-insert look from the references) */
+      .ui { position:absolute; left:90px; right:90px; opacity:0; z-index:4; }
+      .card { background:rgba(250,250,252,0.97); color:#111; border-radius:34px; padding:34px 40px; box-shadow:0 24px 60px rgba(0,0,0,0.45); }
+      .card h3 { font-size:30px; font-weight:900; letter-spacing:0.12em; color:#6b7280; margin-bottom:18px; }
+      .row { display:flex; gap:18px; align-items:center; }
+      .chip { display:inline-flex; align-items:center; gap:12px; padding:14px 26px; border-radius:999px; font-weight:900; font-size:42px; white-space:nowrap; box-shadow:0 10px 26px rgba(0,0,0,0.35); }
+      .chip.ok { background:#22c55e; color:#fff; } .chip.no { background:#ef4444; color:#fff; } .chip.y { background:#e6ff3c; color:#111; } .chip.w { background:#fff; color:#111; }
+      .bars { display:flex; align-items:flex-end; gap:60px; height:330px; padding:0 30px; margin-top:10px; }
+      .bar { flex:1; display:flex; flex-direction:column; align-items:center; gap:12px; }
+      .bar .col { width:100%; border-radius:16px 16px 6px 6px; transform-origin:50% 100%; }
+      .bar b { font-size:36px; font-weight:900; } .bar span { font-size:26px; font-weight:700; color:#6b7280; }
+      .meter { height:34px; border-radius:17px; background:#e5e7eb; overflow:hidden; flex:1; }
+      .meter i { display:block; height:100%; border-radius:17px; transform-origin:0 50%; }
+      .lbl { font-size:30px; font-weight:800; width:260px; }
+      .gauge { display:flex; gap:14px; justify-content:center; margin:14px 0 6px; }
+      .rep { width:110px; height:150px; border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:56px; font-weight:900; color:#fff; }
+      .stamp { display:inline-block; border:9px solid #ef4444; color:#ef4444; background:#fff; font-weight:900; font-size:72px; letter-spacing:0.04em;
+        padding:4px 26px; border-radius:16px; transform:rotate(-6deg); box-shadow:0 14px 34px rgba(0,0,0,0.4); }
+      #logo { position:absolute; left:0; right:0; top:1360px; text-align:center; opacity:0; z-index:4; }
+      #logo .lb { display:inline-block; font-weight:900; font-size:120px; letter-spacing:0.06em; color:#fff; background:#111; padding:10px 40px; border-radius:24px; border:6px solid #e6ff3c; }
+      #logo .sub { margin-top:22px; font-weight:800; font-size:44px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="48.25" data-width="1080" data-height="1920">
+      <canvas id="bg" class="clip" data-start="0" data-duration="48.25" data-track-index="0" width="1080" height="1920"></canvas>
+      <canvas id="fg" class="clip" data-start="0" data-duration="48.25" data-track-index="1" width="1080" height="1920"></canvas>
+      <audio id="dlg" src="assets/audio/dialogue.wav" data-start="0" data-duration="48.25" data-track-index="2" data-volume="1"></audio>
+      <audio id="music" src="assets/audio/music.mp3" data-start="0" data-duration="48.25" data-track-index="3" data-volume="0.09"></audio>
+      <audio id="sfx0" src="assets/sfx/whoosh.mp3" data-start="2.52" data-duration="0.6" data-track-index="10" data-volume="0.12"></audio>
+      <audio id="sfx1" src="assets/sfx/pop.mp3" data-start="5.13" data-duration="0.5" data-track-index="11" data-volume="0.18"></audio>
+      <audio id="sfx2" src="assets/sfx/pop.mp3" data-start="8.00" data-duration="0.5" data-track-index="12" data-volume="0.18"></audio>
+      <audio id="sfx3" src="assets/sfx/whoosh.mp3" data-start="9.13" data-duration="0.6" data-track-index="13" data-volume="0.12"></audio>
+      <audio id="sfx4" src="assets/sfx/pop.mp3" data-start="10.75" data-duration="0.5" data-track-index="14" data-volume="0.16"></audio>
+      <audio id="sfx5" src="assets/sfx/pop.mp3" data-start="12.37" data-duration="0.5" data-track-index="15" data-volume="0.16"></audio>
+      <audio id="sfx6" src="assets/sfx/click.wav" data-start="15.99" data-duration="0.46" data-track-index="16" data-volume="0.2"></audio>
+      <audio id="sfx7" src="assets/sfx/whoosh.mp3" data-start="16.90" data-duration="0.6" data-track-index="17" data-volume="0.14"></audio>
+      <audio id="sfx8" src="assets/sfx/click.wav" data-start="19.93" data-duration="0.46" data-track-index="18" data-volume="0.18"></audio>
+      <audio id="sfx9" src="assets/sfx/pop.mp3" data-start="22.82" data-duration="0.5" data-track-index="19" data-volume="0.16"></audio>
+      <audio id="sfx10" src="assets/sfx/whoosh.mp3" data-start="24.81" data-duration="0.6" data-track-index="20" data-volume="0.12"></audio>
+      <audio id="sfx11" src="assets/sfx/pop.mp3" data-start="30.18" data-duration="0.5" data-track-index="21" data-volume="0.16"></audio>
+      <audio id="sfx12" src="assets/sfx/pop.mp3" data-start="31.53" data-duration="0.5" data-track-index="22" data-volume="0.16"></audio>
+      <audio id="sfx13" src="assets/sfx/whoosh.mp3" data-start="33.06" data-duration="0.6" data-track-index="23" data-volume="0.12"></audio>
+      <audio id="sfx14" src="assets/sfx/pop.mp3" data-start="34.41" data-duration="0.5" data-track-index="24" data-volume="0.16"></audio>
+      <audio id="sfx15" src="assets/sfx/slam.mp3" data-start="38.90" data-duration="1.1" data-track-index="25" data-volume="0.18"></audio>
+      <audio id="sfx16" src="assets/sfx/pop.mp3" data-start="42.14" data-duration="0.5" data-track-index="26" data-volume="0.16"></audio>
+      <audio id="sfx17" src="assets/sfx/whoosh.mp3" data-start="43.83" data-duration="0.6" data-track-index="27" data-volume="0.14"></audio>
+      <div id="overlay" class="clip" data-start="0" data-duration="48.25" data-track-index="4" style="position:absolute;inset:0;">
+        <div id="vignette"></div><div id="grain"></div>
+
+        <!-- UI 1: fatigue != effectiveness -->
+        <div class="ui" id="u1" style="top:1340px"><div class="row" style="justify-content:center">
+          <div class="chip no" id="u1a">Distrutto</div><div class="chip w" style="font-size:52px">≠</div><div class="chip ok" id="u1b">Efficace</div></div></div>
+        <!-- UI 2: effort -->
+        <div class="ui" id="u2" style="top:1300px"><div class="card">
+          <h3>PER COSTRUIRE MUSCOLO</h3>
+          <div class="row" style="margin-bottom:16px"><div class="chip ok" id="u2a">✓ Sforzo adeguato</div></div>
+          <div class="row"><div class="chip no" id="u2b" style="position:relative">Cedimento ogni serie</div><div class="chip w" id="u2c">non obbligatorio</div></div>
+        </div></div>
+        <!-- UI 3: study insert -->
+        <div class="ui" id="u3" style="top:620px"><div class="card">
+          <h3>STUDIO · 8 SETTIMANE · QUADRICIPITE</h3>
+          <div class="bars">
+            <div class="bar"><div class="col" id="u3b1" style="height:250px;background:#22c55e"></div><b>1–2 RIR</b><span>reps in riserva</span></div>
+            <div class="bar"><div class="col" id="u3b2" style="height:262px;background:#64748b"></div><b>Cedimento</b><span>0 RIR</span></div>
+          </div>
+          <div style="margin-top:26px;font-size:34px;font-weight:900;text-align:center" id="u3sim">Crescita <span style="background:#e6ff3c;padding:0 10px;border-radius:6px">simile</span></div>
+          <div style="margin-top:26px" id="u3fat">
+            <div class="row" style="margin-bottom:12px"><div class="lbl">Fatica · 1–2 RIR</div><div class="meter"><i id="u3m1" style="background:#22c55e;width:45%"></i></div></div>
+            <div class="row"><div class="lbl">Fatica · cedimento</div><div class="meter"><i id="u3m2" style="background:#ef4444;width:90%"></i></div></div>
+          </div>
+        </div></div>
+        <!-- UI 4: credible RIR -->
+        <div class="ui" id="u4" style="top:1280px"><div class="card">
+          <h3>REPS IN RISERVA</h3>
+          <div class="row" style="justify-content:space-between">
+            <div style="text-align:center"><div class="gauge"><div class="rep" style="background:#22c55e">1</div><div class="rep" style="background:#22c55e">2</div></div><div class="chip ok" id="u4a" style="font-size:34px">✓ Stima credibile</div></div>
+            <div style="text-align:center"><div class="gauge" id="u4g"><div class="rep" style="background:#ef4444;width:70px">1</div><div class="rep" style="background:#ef4444;width:70px">2</div><div class="rep" style="background:#ef4444;width:70px">3</div><div class="rep" style="background:#ef4444;width:70px">4</div><div class="rep" style="background:#ef4444;width:70px">5</div></div><div class="chip no" id="u4b" style="font-size:34px">✕ Mascherate</div></div>
+          </div>
+        </div></div>
+        <!-- UI 5: program effort -->
+        <div class="ui" id="u5" style="top:1360px"><div class="row" style="justify-content:center;gap:22px">
+          <div class="chip w" id="u5a">🏋️ Esercizio</div><div class="chip w" style="font-size:52px" id="u5p">+</div><div class="chip w" id="u5b">😴 Recupero</div></div></div>
+        <!-- UI 6: failure is a tool -->
+        <div class="ui" id="u6" style="top:1320px;text-align:center">
+          <div class="chip y" id="u6a" style="font-size:50px">🛠 Cedimento = strumento</div>
+          <div style="margin-top:34px"><span class="stamp" id="u6b">SEMPRE ≠ DI PIÙ</span></div></div>
+        <!-- UI 7: quality -->
+        <div class="ui" id="u7" style="top:1360px;text-align:center"><div class="chip ok" id="u7a" style="font-size:50px">✓ Qualità controllabile</div></div>
+
+        <div id="logo"><div class="lb">LB SYSTEM</div><div class="sub">Allenati con criterio</div></div>
+        <div id="captions"></div>
+        <div id="flash"></div><div id="fade"></div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const DUR = 48.25;
+      // graphics/shots are authored on the v1 timeline; T() maps them onto Luca's real recording (assets/anchors.json)
+      const ANCH = [[0, 0], [0.6, 0.35], [2.159, 2.19], [2.579, 2.81], [8.301, 9.13], [8.581, 9.13], [16.74, 16.9], [17.02, 16.9], [27.453, 26.32], [27.873, 26.32], [34.346, 33.06], [34.626, 33.06], [38.074, 36.51], [38.354, 36.51], [42.645, 40.53], [42.925, 40.53], [46.364, 43.52], [46.644, 44.28], [48.785, 45.76], [50.2, 48.25333333333333]];
+      const T = (t) => { if (t <= ANCH[0][0]) return t; for (let i = 1; i < ANCH.length; i++) { const [o0, n0] = ANCH[i - 1], [o1, n1] = ANCH[i];
+        if (t <= o1) return n0 + (n1 - n0) * (t - o0) / Math.max(1e-6, o1 - o0); } return ANCH[ANCH.length - 1][1]; };
+      const MOUTH = {"coach": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.12, 0.2, 0.17, 0.14, 0.14, 0.12, 0.1, 0.09, 0.09, 0.09, 0.09, 0.09, 0.08, 0.08, 0.1, 0.09, 0.09, 0.09, 0.08, 0.1, 0.2, 0.35, 0.47, 0.3, 1.0, 0.89, 0.41, 0.53, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.99, 1.0, 1.0, 0.86, 0.7, 0.63, 0.55, 0.4, 0.79, 0.84, 0.42, 0.36, 0.53, 0.31, 0.18, 0.21, 0.38, 0.23, 0.28, 0.6, 0.66, 0.72, 0.45, 0.65, 0.99, 1.0, 1.0, 1.0, 0.93, 1.0, 0.83, 0.51, 0.41, 0.43, 0.31, 0.16, 0.15, 0.42, 1.0, 1.0, 1.0, 1.0, 1.0, 0.69, 0.76, 0.64, 0.26, 0.38, 0.5, 0.39, 0.34, 0.28, 0.64, 0.58, 0.57, 0.39, 0.47, 0.3, 0.19, 0.15, 0.54, 0.47, 0.33, 0.4, 0.23, 0.15, 0.12, 0.11, 0.41, 0.52, 0.29, 0.21, 0.13, 0.12, 0.13, 0.12, 0.12, 0.1, 0.08, 0.09, 0.16, 0.58, 0.77, 0.88, 0.84, 0.59, 0.27, 0.3, 0.99, 0.89, 0.6, 0.34, 0.24, 1.0, 1.0, 1.0, 0.54, 0.48, 0.38, 0.9, 1.0, 1.0, 0.83, 0.69, 1.0, 0.68, 1.0, 1.0, 0.78, 0.69, 0.52, 0.8, 1.0, 0.63, 0.35, 0.82, 1.0, 0.77, 0.67, 1.0, 1.0, 0.67, 0.56, 0.34, 0.8, 1.0, 0.63, 0.47, 0.71, 1.0, 0.88, 0.56, 0.51, 0.25, 0.16, 0.39, 0.2, 0.2, 0.64, 1.0, 0.84, 0.55, 0.35, 0.3, 0.23, 0.19, 0.16, 0.13, 0.12, 0.11, 0.09, 0.11, 0.08, 0.08, 0.1, 0.08, 0.09, 0.1, 0.08, 0.09, 0.09, 0.09, 0.09, 0.08, 0.09, 0.09, 0.07, 0.11, 0.09, 0.13, 1.0, 1.0, 0.9, 0.72, 0.67, 1.0, 1.0, 1.0, 0.88, 0.62, 0.54, 0.54, 0.93, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.81, 0.68, 0.4, 0.34, 0.22, 0.75, 0.41, 0.63, 0.52, 0.27, 0.18, 0.14, 0.12, 0.09, 0.11, 0.12, 0.1, 0.09, 0.11, 0.16, 0.68, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.97, 0.64, 0.63, 0.35, 0.23, 0.9, 1.0, 0.95, 0.6, 0.79, 0.78, 1.0, 0.89, 0.87, 0.83, 0.56, 0.61, 1.0, 1.0, 1.0, 1.0, 0.64, 0.64, 0.49, 0.48, 0.31, 0.23, 0.2, 0.14, 0.13, 0.11, 0.09, 0.12, 0.1, 0.08, 0.1, 0.09, 0.21, 0.46, 1.0, 1.0, 1.0, 1.0, 0.88, 0.98, 1.0, 0.93, 0.99, 1.0, 1.0, 1.0, 1.0, 0.63, 0.79, 0.62, 0.53, 1.0, 0.9, 0.99, 0.44, 0.45, 1.0, 0.91, 0.98, 1.0, 0.67, 0.54, 0.37, 0.51, 0.97, 1.0, 1.0, 0.94, 0.78, 0.67, 0.83, 0.62, 0.51, 0.82, 0.46, 0.81, 1.0, 1.0, 0.98, 1.0, 0.41, 0.27, 0.93, 1.0, 0.77, 0.53, 0.3, 0.57, 0.86, 0.66, 0.26, 0.39, 0.85, 1.0, 1.0, 1.0, 1.0, 0.9, 0.91, 0.79, 0.67, 0.53, 0.28, 0.46, 0.59, 0.72, 0.78, 0.94, 1.0, 1.0, 0.77, 0.73, 0.59, 0.56, 0.39, 0.44, 0.36, 0.29, 0.27, 0.15, 0.57, 0.58, 0.17, 0.34, 0.44, 0.23, 0.61, 0.4, 0.38, 0.27, 0.31, 0.21, 0.26, 0.12, 0.12, 0.1, 0.38, 1.0, 1.0, 1.0, 0.77, 0.84, 1.0, 1.0, 0.8, 0.74, 0.85, 0.85, 0.99, 0.45, 0.6, 1.0, 0.75, 0.43, 0.98, 1.0, 0.94, 1.0, 1.0, 1.0, 0.77, 0.39, 0.48, 0.35, 0.32, 0.26, 0.21, 0.15, 0.13, 0.12, 0.11, 0.1, 0.12, 0.1, 0.11, 0.08, 0.08, 0.12, 0.09, 0.1, 0.08, 0.09, 0.11, 0.09, 0.09, 0.08, 0.09, 0.11, 0.61, 1.0, 0.89, 0.82, 1.0, 1.0, 1.0, 1.0, 1.0, 0.71, 0.56, 1.0, 0.97, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.96, 0.81, 0.95, 0.58, 0.39, 0.62, 0.2, 0.15, 0.16, 0.65, 0.38, 0.73, 1.0, 1.0, 0.79, 0.68, 0.48, 0.42, 0.39, 0.24, 0.21, 0.15, 0.14, 0.12, 0.1, 0.26, 1.0, 1.0, 1.0, 1.0, 1.0, 0.95, 0.91, 1.0, 1.0, 0.76, 0.51, 0.41, 0.31, 0.44, 0.49, 0.66, 0.53, 0.38, 0.53, 0.44, 0.75, 1.0, 0.84, 0.97, 0.95, 1.0, 0.92, 1.0, 1.0, 1.0, 0.93, 0.92, 1.0, 1.0, 1.0, 0.71, 0.46, 1.0, 1.0, 1.0, 1.0, 0.77, 0.38, 0.39, 0.51, 0.78, 0.86, 0.58, 0.36, 0.39, 0.94, 1.0, 0.77, 0.69, 0.81, 0.76, 1.0, 0.65, 0.38, 0.89, 0.84, 0.74, 0.67, 0.39, 0.39, 0.27, 0.53, 0.49, 0.28, 0.25, 0.16, 0.16, 0.11, 0.11, 0.11, 0.1, 0.1, 0.1, 0.17, 1.0, 1.0, 0.81, 0.59, 0.67, 1.0, 1.0, 0.93, 1.0, 1.0, 1.0, 0.68, 0.6, 0.39, 0.69, 0.62, 0.65, 0.75, 0.51, 0.56, 0.36, 0.29, 0.76, 1.0, 1.0, 0.57, 0.61, 0.37, 0.21, 0.94, 0.93, 0.72, 1.0, 0.9, 0.78, 0.53, 0.37, 1.0, 1.0, 1.0, 0.96, 1.0, 0.86, 0.83, 0.72, 0.49, 0.37, 0.49, 0.24, 0.24, 0.41, 0.19, 0.55, 0.81, 0.72, 0.3, 0.32, 0.18, 0.13, 0.14, 0.11, 0.12, 0.2, 0.37, 0.46, 0.39, 0.85, 1.0, 1.0, 1.0, 1.0, 0.46, 1.0, 1.0, 0.84, 0.65, 0.43, 0.51, 0.69, 0.63, 0.49, 0.39, 0.63, 0.53, 0.3, 0.21, 0.23, 0.19, 0.25, 0.25, 0.13, 0.12, 0.11, 0.09, 0.08, 0.08, 0.09, 0.07, 0.08, 0.09, 0.06, 0.09, 0.11, 0.94, 1.0, 1.0, 1.0, 1.0, 0.82, 0.79, 0.97, 0.51, 0.35, 1.0, 1.0, 0.77, 0.91, 1.0, 0.61, 0.52, 0.81, 0.99, 0.62, 0.48, 0.28, 0.34, 0.29, 0.24, 0.24, 0.16, 0.3, 0.41, 0.22, 0.2, 0.17, 0.14, 0.12, 0.09, 0.08, 0.1, 0.08, 0.08, 0.07, 0.08, 0.09, 0.07, 0.08, 0.08, 0.09, 0.07, 0.09, 0.44, 0.27, 0.17, 0.37, 0.63, 0.45, 0.41, 0.98, 0.57, 1.0, 1.0, 1.0, 0.76, 0.72, 0.37, 0.31, 0.21, 0.11, 0.14, 0.11, 0.08, 0.07, 0.06, 0.06, 0.06, 0.05, 0.05, 0.21, 0.51, 0.56, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.98, 0.76, 0.98, 0.88, 0.6, 0.63, 0.32, 0.71, 0.79, 0.48, 0.97, 0.71, 1.0, 1.0, 1.0, 0.75, 0.41, 0.38, 0.33, 1.0, 1.0, 1.0, 0.81, 0.75, 0.47, 0.37, 0.56, 0.68, 0.6, 0.39, 0.31, 0.37, 1.0, 0.79, 0.28, 0.67, 0.62, 0.84, 0.62, 1.0, 1.0, 1.0, 0.76, 0.72, 0.52, 0.34, 0.57, 0.83, 0.46, 0.61, 0.41, 0.33, 0.54, 0.68, 0.43, 0.46, 0.4, 0.26, 0.19, 0.67, 0.58, 0.33, 0.7, 1.0, 0.67, 0.42, 0.51, 0.86, 0.7, 0.51, 0.75, 0.58, 0.35, 0.63, 0.59, 0.59, 0.72, 0.56, 0.67, 0.38, 0.18, 0.21, 0.14, 0.13, 0.08, 0.09, 0.11, 0.08, 0.12, 0.43, 1.0, 1.0, 1.0, 1.0, 0.88, 0.86, 0.73, 0.57, 0.82, 0.5, 0.64, 1.0, 0.37, 1.0, 1.0, 1.0, 1.0, 0.71, 0.59, 0.59, 0.41, 0.88, 0.61, 0.41, 0.55, 0.41, 1.0, 0.79, 0.82, 0.27, 0.68, 0.65, 0.54, 0.59, 0.39, 0.25, 0.34, 0.76, 0.66, 0.7, 0.72, 0.59, 0.46, 0.25, 0.28, 0.27, 0.18, 0.18, 0.14, 0.12, 0.12, 0.09, 0.12, 0.09, 0.1, 0.1, 0.09, 0.1, 0.1, 0.08, 0.12, 0.09, 0.1, 0.11, 0.09, 0.1, 0.11, 0.09, 0.12, 0.46, 1.0, 1.0, 0.44, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.6, 0.4, 0.33, 0.37, 1.0, 1.0, 1.0, 1.0, 0.72, 0.81, 0.41, 0.91, 0.71, 0.76, 1.0, 0.95, 1.0, 1.0, 1.0, 1.0, 1.0, 0.98, 0.96, 0.64, 0.89, 0.71, 0.32, 0.68, 0.91, 0.85, 0.22, 0.27, 0.3, 0.6, 0.89, 0.4, 0.21, 0.62, 0.46, 0.8, 0.75, 0.43, 0.44, 0.32, 0.39, 0.78, 0.88, 0.72, 0.41, 0.44, 1.0, 1.0, 1.0, 1.0, 0.71, 0.71, 0.39, 0.37, 0.56, 0.41, 0.32, 0.25, 0.44, 0.4, 0.24, 0.19, 0.15, 0.12, 0.13, 0.1, 0.12, 0.11, 0.1, 0.1, 0.1, 0.1, 0.09, 0.09, 0.1, 0.1, 0.41, 0.86, 0.4, 0.48, 0.47, 1.0, 1.0, 1.0, 1.0, 0.9, 1.0, 1.0, 1.0, 0.82, 0.79, 0.76, 0.77, 0.45, 0.23, 1.0, 1.0, 1.0, 0.61, 0.35, 0.3, 0.26, 0.16, 0.15, 0.13, 0.17, 1.0, 1.0, 1.0, 0.78, 0.77, 0.56, 1.0, 0.91, 1.0, 1.0, 0.46, 0.53, 0.31, 0.59, 0.89, 0.88, 1.0, 0.91, 0.95, 0.57, 0.64, 0.55, 0.28, 0.21, 0.27, 0.45, 0.25, 0.17, 0.15, 0.13, 0.1, 0.07, 0.13, 0.62, 0.79, 1.0, 0.43, 1.0, 1.0, 1.0, 0.94, 0.98, 0.87, 0.7, 0.47, 0.42, 1.0, 1.0, 1.0, 0.62, 0.41, 0.66, 1.0, 0.69, 0.59, 0.98, 1.0, 0.96, 0.94, 0.85, 1.0, 1.0, 1.0, 1.0, 1.0, 0.64, 0.44, 1.0, 1.0, 0.87, 0.67, 0.78, 1.0, 0.38, 0.76, 0.5, 0.35, 0.27, 0.34, 0.4, 0.16, 0.11, 0.07, 0.04, 0.01, 0.01, 0.02, 0.0, 0.0, 0.01, 0.0, 0.01, 0.0, 0.0, 0.0, 0.15, 0.81, 1.0, 0.65, 0.49, 0.68, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.69, 1.0, 1.0, 0.92, 1.0, 0.48, 0.51, 0.7, 0.59, 0.5, 0.57, 0.33, 0.23, 0.14, 0.8, 1.0, 0.89, 0.53, 0.79, 1.0, 0.69, 0.65, 0.54, 0.93, 0.88, 0.5, 0.79, 1.0, 0.96, 0.79, 1.0, 1.0, 0.55, 0.32, 0.22, 0.2, 0.6, 0.85, 1.0, 1.0, 0.91, 1.0, 0.57, 0.33, 0.21, 0.45, 1.0, 1.0, 1.0, 0.68, 0.35, 0.58, 0.72, 0.62, 0.7, 0.54, 0.61, 0.61, 0.36, 0.3, 0.24, 0.25, 0.26, 0.35, 0.27, 0.17, 0.14, 0.13, 0.11, 0.11, 0.1, 0.1, 0.12, 0.09, 0.09, 0.12, 0.09, 0.11, 0.1, 0.09, 0.11, 0.1, 0.1, 0.1, 0.1, 0.14, 0.21, 0.21, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.99, 0.42, 0.43, 0.37, 1.0, 1.0, 1.0, 1.0, 1.0, 0.93, 0.48, 0.53, 0.84, 1.0, 0.79, 0.61, 0.34, 0.24, 0.49, 0.13, 0.53, 1.0, 0.95, 0.5, 0.12, 0.76, 0.62, 0.41, 0.35, 0.48, 0.78, 0.57, 0.51, 0.31, 0.33, 0.31, 0.3, 0.13, 0.06, 0.09, 0.04, 0.02, 0.01, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "novice": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.07, 0.17, 0.61, 0.63, 0.45, 0.13, 0.46, 0.71, 0.43, 0.14, 0.18, 0.66, 0.48, 0.51, 0.53, 0.73, 0.91, 0.77, 0.58, 0.59, 0.6, 0.6, 0.63, 0.69, 0.71, 0.53, 0.73, 0.67, 0.64, 0.65, 0.38, 0.22, 0.28, 0.2, 0.66, 0.61, 0.68, 0.68, 0.49, 0.42, 0.68, 0.66, 0.77, 0.82, 0.63, 0.52, 0.4, 0.14, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]};
+      const CAPS = [{"a": 0.35, "b": 2.39, "w": ["Devi", "fallire", "ogni", "serie?"], "hl": [1], "who": "novice"}, {"a": 2.81, "b": 4.9, "w": ["Se", "valuti", "l'allenamento", "solo"], "hl": [], "who": "coach"}, {"a": 4.9, "b": 6.34, "w": ["da", "quanto", "sei", "distrutto"], "hl": [3], "who": "coach"}, {"a": 6.34, "b": 7.66, "w": ["rischi", "di", "confondere", "la"], "hl": [], "who": "coach"}, {"a": 7.66, "b": 9.13, "w": ["fatica", "con", "l'efficacia."], "hl": [0, 2], "who": "coach"}, {"a": 9.13, "b": 10.53, "w": ["Per", "costruire", "un", "muscolo"], "hl": [3], "who": "coach"}, {"a": 10.53, "b": 12.34, "w": ["serve", "uno", "sforzo", "adeguato,"], "hl": [2, 3], "who": "coach"}, {"a": 12.34, "b": 13.43, "w": ["ma", "arrivare", "sempre", "al"], "hl": [], "who": "coach"}, {"a": 13.43, "b": 14.59, "w": ["punto", "di", "non", "completare"], "hl": [], "who": "coach"}, {"a": 14.59, "b": 15.89, "w": ["un'altra", "ripetizione", "non", "è"], "hl": [], "who": "coach"}, {"a": 15.89, "b": 16.9, "w": ["obbligatorio."], "hl": [0], "who": "coach"}, {"a": 16.9, "b": 18.36, "w": ["In", "uno", "studio", "di"], "hl": [], "who": "coach"}, {"a": 18.36, "b": 19.08, "w": ["8", "settimane,"], "hl": [0, 1], "who": "coach"}, {"a": 19.08, "b": 20.34, "w": ["allenarsi", "lasciando", "una", "o"], "hl": [], "who": "coach"}, {"a": 20.34, "b": 21.63, "w": ["due", "ripetizioni", "in", "riserva"], "hl": [0, 3], "who": "coach"}, {"a": 21.63, "b": 22.99, "w": ["ha", "prodotto", "una", "crescita"], "hl": [], "who": "coach"}, {"a": 22.99, "b": 24.38, "w": ["del", "quadricipite", "simile", "al"], "hl": [2], "who": "coach"}, {"a": 24.38, "b": 24.98, "w": ["cedimento,"], "hl": [0], "who": "coach"}, {"a": 24.98, "b": 26.32, "w": ["con", "meno", "fatica", "acuta."], "hl": [1, 2, 3], "who": "coach"}, {"a": 26.32, "b": 27.4, "w": ["Attenzione,"], "hl": [0], "who": "coach"}, {"a": 27.4, "b": 29.14, "w": ["due", "ripetizioni", "in", "riserva"], "hl": [0, 3], "who": "coach"}, {"a": 29.14, "b": 30.45, "w": ["devono", "essere", "una", "stima"], "hl": [], "who": "coach"}, {"a": 30.45, "b": 30.91, "w": ["credibile,"], "hl": [0], "who": "coach"}, {"a": 30.91, "b": 33.06, "w": ["non", "5", "ripetizioni", "mascherate."], "hl": [1, 3], "who": "coach"}, {"a": 33.06, "b": 34.45, "w": ["Programma", "lo", "sforzo", "in"], "hl": [2], "who": "coach"}, {"a": 34.45, "b": 35.62, "w": ["base", "all'esercizio", "e", "a"], "hl": [1], "who": "coach"}, {"a": 35.62, "b": 36.51, "w": ["come", "recuperi."], "hl": [1], "who": "coach"}, {"a": 36.51, "b": 37.72, "w": ["Il", "cedimento", "può", "essere"], "hl": [1], "who": "coach"}, {"a": 37.72, "b": 38.57, "w": ["uno", "strumento,"], "hl": [1], "who": "coach"}, {"a": 38.57, "b": 40.1, "w": ["usarlo", "sempre", "non", "garantisce"], "hl": [], "who": "coach"}, {"a": 40.1, "b": 40.53, "w": ["di", "più."], "hl": [], "who": "coach"}, {"a": 40.53, "b": 41.9, "w": ["La", "qualità", "delle", "ripetizioni"], "hl": [1], "who": "coach"}, {"a": 41.9, "b": 43.64, "w": ["deve", "restare", "controllabile."], "hl": [2], "who": "coach"}, {"a": 44.28, "b": 45.12, "w": ["Seguimi", "per", "allenarti", "con"], "hl": [0], "who": "coach"}, {"a": 45.12, "b": 45.879999999999995, "w": ["criterio."], "hl": [0], "who": "coach"}];
+      const W = 1080, H = 1920;
+
+      // ---------------- renderers (bg = environment, blurred per shot; fg = characters, sharp) ----------------
+      const mk = (id, alpha) => { const r = new THREE.WebGLRenderer({ canvas: document.getElementById(id), antialias: true, alpha, preserveDrawingBuffer: true });
+        r.setPixelRatio(1); r.setSize(W, H, false); r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05; return r; };
+      const rBg = mk("bg", false), rFg = mk("fg", true);
+      rFg.setClearColor(0x000000, 0);
+      const sceneBg = new THREE.Scene(), sceneFg = new THREE.Scene();
+      sceneBg.background = new THREE.Color(0x2a2520);
+      sceneBg.fog = new THREE.Fog(0x2a2520, 9, 22);
+      const cam = new THREE.PerspectiveCamera(30, W / H, 0.05, 60);
+      const lights = (s, k) => {
+        s.add(new THREE.HemisphereLight(0xfff1e0, 0x2a2430, 0.9 * k));
+        const key = new THREE.DirectionalLight(0xffe2b8, 2.1 * k); key.position.set(3.5, 5, 4); s.add(key);
+        const rim = new THREE.DirectionalLight(0x9db8ff, 1.1 * k); rim.position.set(-4, 3, -3); s.add(rim);
+      };
+      lights(sceneBg, 0.9); lights(sceneFg, 1.0);
+      const M = (c, e) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.85, metalness: 0.0, emissive: e || 0x000000 });
+      const box = (w, h, d, mat, x, y, z, parent) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); (parent || sceneBg).add(m); return m; };
+      const canvasTex = (w, h, draw) => { const c = document.createElement("canvas"); c.width = w; c.height = h; draw(c.getContext("2d"), w, h);
+        const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
+
+      // ---------------- gym environment ----------------
+      const floorTex = canvasTex(512, 512, (g, w, h) => { g.fillStyle = "#26252a"; g.fillRect(0, 0, w, h); g.strokeStyle = "#1a191d"; g.lineWidth = 6;
+        for (let i = 0; i <= 4; i++) { g.beginPath(); g.moveTo(i * 128, 0); g.lineTo(i * 128, h); g.stroke(); g.beginPath(); g.moveTo(0, i * 128); g.lineTo(w, i * 128); g.stroke(); } });
+      floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping; floorTex.repeat.set(10, 10);
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.95 }));
+      floor.rotation.x = -Math.PI / 2; sceneBg.add(floor);
+      box(30, 7, 0.3, M(0x4a4550), 0, 3.5, -6.5);                     // back wall
+      box(0.3, 7, 20, M(0x332f38), -6.5, 3.5, 0);                      // left wall
+      box(0.3, 7, 20, M(0x332f38), 6.5, 3.5, 0);                       // right wall
+      // big warm windows (bokeh sources when blurred)
+      for (let i = -2; i <= 2; i++) { box(2.1, 2.2, 0.1, M(0xffd9a0, 0xffb35c), i * 2.5, 3.6, -6.3); box(0.12, 2.3, 0.15, M(0x2a2630), i * 2.5, 3.6, -6.25); }
+      // string lights
+      for (let i = 0; i < 26; i++) { const x = -6 + i * 0.48, y = 5.15 + Math.sin(i * 0.6) * 0.12; box(0.09, 0.09, 0.09, M(0xffe7a8, 0xffc260), x, y, -6.2); }
+      // wall sign
+      const signTex = canvasTex(1024, 256, (g, w, h) => { g.fillStyle = "#111"; g.fillRect(0, 0, w, h); g.fillStyle = "#e6ff3c"; g.font = "900 150px Inter, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("LB SYSTEM", w / 2, h / 2 + 8); });
+      const sign = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.85, 0.08), [M(0x111111), M(0x111111), M(0x111111), M(0x111111), new THREE.MeshStandardMaterial({ map: signTex, emissive: 0xffffff, emissiveMap: signTex, emissiveIntensity: 0.7 }), M(0x111111)]);
+      sign.position.set(0.6, 2.05, -6.3); sceneBg.add(sign);
+      // power rack + barbell
+      const steel = M(0x1b1c20), plate = M(0x101012), chrome = M(0xb8bcc4);
+      [[-3.6, -2.2], [-3.6, -0.9], [-2.0, -2.2], [-2.0, -0.9]].forEach(([x, z]) => box(0.14, 2.6, 0.14, steel, x, 1.3, z));
+      box(1.75, 0.12, 0.12, steel, -2.8, 2.6, -2.2); box(1.75, 0.12, 0.12, steel, -2.8, 2.6, -0.9);
+      box(2.4, 0.06, 0.06, chrome, -2.8, 1.45, -1.55);
+      [-3.85, -3.95, -1.75, -1.65].forEach((x) => box(0.08, 0.5, 0.5, plate, x, 1.45, -1.55));
+      // dumbbell rack right
+      box(2.6, 0.12, 0.7, steel, 3.6, 0.75, -4.6); box(2.6, 0.12, 0.7, steel, 3.6, 0.35, -4.6);
+      for (let i = 0; i < 6; i++) { const x = 2.5 + i * 0.44; box(0.28, 0.12, 0.12, chrome, x, 0.88, -4.6); box(0.08, 0.2, 0.2, plate, x - 0.16, 0.88, -4.6); box(0.08, 0.2, 0.2, plate, x + 0.16, 0.88, -4.6); }
+      // bench
+      box(0.42, 0.12, 1.4, M(0x7a1f1f), -1.9, 0.5, 1.2); box(0.1, 0.45, 0.1, steel, -1.9, 0.22, 0.65); box(0.1, 0.45, 0.1, steel, -1.9, 0.22, 1.75);
+      // kettlebells + plates on floor
+      [[2.4, -1.8], [2.85, -1.8], [3.3, -1.8]].forEach(([x, z], i) => { box(0.3, 0.3, 0.3, M([0x1d4ed8, 0xe11d48, 0x16a34a][i]), x, 0.15, z); box(0.2, 0.1, 0.06, steel, x, 0.36, z); });
+      for (let i = 0; i < 4; i++) box(0.12, 0.6 - i * 0.08, 0.6 - i * 0.08, plate, 4.6 + i * 0.14, 0.3 - i * 0.04, -2.6);
+      // mirror strip on right wall
+      box(0.05, 2.2, 6, new THREE.MeshStandardMaterial({ color: 0x8a95a8, metalness: 0.6, roughness: 0.2 }), 6.32, 1.6, -1.5);
+
+      // ---------------- voxel characters ----------------
+      function makeChar(o) {
+        const g = new THREE.Group(); sceneFg.add(g);
+        const skin = M(o.skin), skinD = M(o.skinDark), hair = M(o.hair), shirt = M(o.shirt), pants = M(o.pants), shoe = M(0xf2f2f2), dark = M(0x161012), white = M(0xffffff);
+        const S = o.scale;
+        // legs
+        const legL = box(0.3 * S.leg, 0.88, 0.32, pants, -0.17 * S.w, 0.56, 0, g), legR = box(0.3 * S.leg, 0.88, 0.32, pants, 0.17 * S.w, 0.56, 0, g);
+        if (o.shorts) { legL.scale.y = 0.45; legL.position.y = 0.78; legR.scale.y = 0.45; legR.position.y = 0.78; box(0.22 * S.leg, 0.5, 0.24, skin, -0.17 * S.w, 0.36, 0, g); box(0.22 * S.leg, 0.5, 0.24, skin, 0.17 * S.w, 0.36, 0, g); }
+        box(0.32 * S.leg, 0.13, 0.44, shoe, -0.17 * S.w, 0.065, 0.05, g); box(0.32 * S.leg, 0.13, 0.44, shoe, 0.17 * S.w, 0.065, 0.05, g);
+        // torso (front face textured)
+        const torsoMats = [shirt, shirt, shirt, shirt, o.chestTex ? new THREE.MeshStandardMaterial({ map: o.chestTex, roughness: 0.85 }) : shirt, shirt];
+        const torso = new THREE.Mesh(new THREE.BoxGeometry(0.78 * S.w, 0.78, 0.44 * S.d), torsoMats); torso.position.set(0, 1.39, 0); g.add(torso);
+        if (o.tank) { box(0.16, 0.2, 0.3, skin, -0.33 * S.w, 1.7, 0, g); box(0.16, 0.2, 0.3, skin, 0.33 * S.w, 1.7, 0, g); }
+        // arms (pivot at shoulder)
+        const arm = (side) => { const p = new THREE.Group(); p.position.set(side * (0.39 * S.w + 0.13 * S.arm), 1.7, 0); g.add(p);
+          const up = box(0.24 * S.arm, 0.32, 0.26 * S.arm, o.tank ? skin : shirt, 0, -0.14, 0, p);
+          const fore = box(0.21 * S.arm, 0.46, 0.22 * S.arm, skin, 0, -0.52, 0, p);
+          box(0.2 * S.arm, 0.14, 0.2 * S.arm, skinD, 0, -0.82, 0, p); return p; };
+        const armL = arm(-1), armR = arm(1);
+        // neck + head
+        box(0.2 * S.w, 0.12, 0.2, skin, 0, 1.83, 0, g);
+        const head = new THREE.Group(); head.position.set(0, 2.15, 0); g.add(head);
+        box(0.52, 0.56, 0.5, skin, 0, 0, 0, head);
+        box(0.06, 0.12, 0.1, skinD, -0.29, -0.02, 0, head); box(0.06, 0.12, 0.1, skinD, 0.29, -0.02, 0, head);          // ears
+        const eyeW = (x) => { box(0.11, 0.08, 0.02, white, x, 0.05, 0.255, head); return box(0.055, 0.075, 0.02, dark, x + (x < 0 ? 0.02 : -0.02), 0.05, 0.268, head); };
+        const pupL = eyeW(-0.12), pupR = eyeW(0.12);
+        const lidL = box(0.12, 0.09, 0.03, skin, -0.12, 0.11, 0.27, head), lidR = box(0.12, 0.09, 0.03, skin, 0.12, 0.11, 0.27, head);
+        lidL.scale.y = 0.01; lidR.scale.y = 0.01;
+        const browL = box(0.14, 0.035, 0.03, hair, -0.12, 0.15, 0.27, head), browR = box(0.14, 0.035, 0.03, hair, 0.12, 0.15, 0.27, head);
+        box(0.08, 0.13, 0.08, skinD, 0, -0.03, 0.28, head);                                                                 // nose
+        if (o.beard) { const bd = M(o.beard);
+          box(0.54, 0.2, 0.06, bd, 0, -0.2, 0.25, head); box(0.06, 0.32, 0.46, bd, -0.265, -0.1, 0.02, head); box(0.06, 0.32, 0.46, bd, 0.265, -0.1, 0.02, head);
+          box(0.34, 0.12, 0.08, bd, 0, -0.33, 0.2, head); box(0.24, 0.05, 0.04, bd, 0, -0.105, 0.28, head); }
+        const mouth = box(0.18, 0.04, 0.03, M(0x7a2328), 0, -0.155, 0.315, head);
+        // hair / cap
+        if (o.cap) { const cp = M(o.cap); box(0.55, 0.17, 0.54, cp, 0, 0.32, 0, head); box(0.4, 0.04, 0.26, cp, 0, 0.25, 0.36, head); box(0.12, 0.06, 0.12, M(0xffffff), 0, 0.42, 0, head);
+          box(0.56, 0.12, 0.08, hair, 0, 0.19, -0.24, head); }
+        else { box(0.56, 0.15, 0.55, hair, 0, 0.33, -0.01, head); box(0.56, 0.12, 0.08, hair, 0.05, 0.25, 0.25, head); box(0.08, 0.3, 0.5, hair, -0.28, 0.17, -0.03, head); box(0.08, 0.3, 0.5, hair, 0.28, 0.17, -0.03, head); box(0.56, 0.35, 0.08, hair, 0, 0.12, -0.27, head);
+          box(0.2, 0.1, 0.1, hair, 0.12, 0.42, 0.08, head); }
+        if (o.sweat) { o.sweatDrops = [box(0.04, 0.07, 0.04, M(0x7dd3fc, 0x3b82f6), 0.3, 0.12, 0.2, head), box(0.035, 0.06, 0.035, M(0x7dd3fc, 0x3b82f6), -0.3, 0.02, 0.22, head)]; }
+        // blob shadow
+        const sh = new THREE.Mesh(new THREE.CircleGeometry(0.55 * S.w, 24), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35 }));
+        sh.rotation.x = -Math.PI / 2; sh.position.y = 0.005; g.add(sh);
+        return { g, head, mouth, lidL, lidR, browL, browR, armL, armR, torso, pupL, pupR, sweat: o.sweatDrops };
+      }
+      const lbTex = canvasTex(512, 512, (g, w, h) => { g.fillStyle = "#26334d"; g.fillRect(0, 0, w, h);
+        g.fillStyle = "#ffffff"; g.textAlign = "center"; g.textBaseline = "middle"; g.font = "900 150px Inter, sans-serif"; g.fillText("LB", w / 2, h * 0.36);
+        g.font = "900 86px Inter, sans-serif"; g.fillText("SYSTEM", w / 2, h * 0.62); g.fillStyle = "#e6ff3c"; g.fillRect(w * 0.2, h * 0.76, w * 0.6, 12); });
+      const coach = makeChar({ skin: 0xd9a27c, skinDark: 0xc08664, hair: 0x5a3a22, beard: 0x4a2c18, shirt: 0x26334d, pants: 0x1c1d22, chestTex: lbTex,
+        scale: { w: 1.22, d: 1.15, arm: 1.35, leg: 1.15 } });
+      const novice = makeChar({ skin: 0xf2c6a0, skinDark: 0xdaa984, hair: 0x2b2118, cap: 0xc62f2f, shirt: 0x9ca3af, pants: 0x2563eb, tank: true, shorts: true, sweat: true,
+        scale: { w: 0.86, d: 0.9, arm: 0.8, leg: 0.9 } });
+      coach.g.position.set(0.72, 0, 0); coach.g.rotation.y = -0.62;
+      novice.g.position.set(-0.72, 0, 0.05); novice.g.rotation.y = 0.6; novice.g.scale.setScalar(0.95);
+
+      // ---------------- shots ----------------
+      // [start, camFrom, camTo, lookFrom, lookTo, fov, bgBlur]
+      const V = (x, y, z) => new THREE.Vector3(x, y, z);
+      const SHOTS = [
+        [0.0,  V(0.55, 1.98, 3.2),   V(0.45, 1.98, 2.85), V(-0.72, 1.92, 0), V(-0.72, 1.92, 0), 30, 7],     // novice CU (asks)
+        [2.4,  V(-0.35, 2.05, 3.3),  V(-0.3, 2.05, 2.95), V(0.72, 1.98, 0), V(0.72, 1.98, 0), 30, 7],      // coach CU
+        [8.45, V(0.0, 1.6, 6.4),     V(0.35, 1.65, 5.9),  V(0.0, 1.3, 0), V(0.05, 1.35, 0), 36, 2.5],     // wide two-shot
+        [12.6, V(-2.4, 2.25, 2.6),   V(-2.2, 2.2, 2.35),  V(0.72, 1.9, 0), V(0.72, 1.9, 0), 30, 6],       // OTS novice -> coach
+        [16.88,V(0.6, 1.9, 4.6),     V(0.6, 1.95, 4.0),   V(0.2, 1.7, 0), V(0.25, 1.75, 0), 34, 10],      // study insert behind card
+        [25.8, V(0.6, 1.95, 2.9),    V(0.5, 1.95, 2.6),   V(-0.72, 1.92, 0), V(-0.72, 1.92, 0), 30, 8],   // novice CU surprised
+        [27.7, V(-0.2, 2.05, 3.3),   V(-0.15, 2.05, 2.95),V(0.72, 1.98, 0), V(0.72, 1.98, 0), 30, 7],     // coach CU "attenzione"
+        [34.5, V(-0.55, 0.85, 3.3),  V(-0.45, 0.9, 3.0),  V(0.7, 1.7, 0), V(0.7, 1.75, 0), 34, 5],      // low angle coach
+        [38.25,V(-2.5, 2.25, 2.4),   V(-2.3, 2.2, 2.2),   V(0.72, 1.9, 0), V(0.72, 1.9, 0), 30, 6],       // OTS
+        [42.8, V(-2.8, 1.6, 4.8),    V(-2.5, 1.65, 4.4),  V(0.1, 1.4, 0), V(0.15, 1.45, 0), 34, 3.5],     // side two-shot
+        [46.5, V(-0.4, 2.0, 3.4),    V(-0.35, 2.0, 3.0),  V(0.72, 1.98, 0), V(0.72, 1.98, 0), 30, 7],     // coach CU CTA
+      ];
+      SHOTS.forEach((sh) => { sh[0] = T(sh[0]); });
+      const shotAt = (t) => { let i = 0; for (let k = 0; k < SHOTS.length; k++) if (t >= SHOTS[k][0]) i = k; return i; };
+      const ease = (x) => x * x * (3 - 2 * x);
+      const bgEl = document.getElementById("bg");
+
+      // speaker facing: during coach lines the coach turns slightly to camera on CU shots
+      const DLG = [{"who": "novice", "start": 0.35, "end": 2.19}, {"who": "coach", "start": 2.81, "end": 9.13}, {"who": "coach", "start": 9.13, "end": 16.9}, {"who": "coach", "start": 16.9, "end": 26.32}, {"who": "coach", "start": 26.32, "end": 33.06}, {"who": "coach", "start": 33.06, "end": 36.51}, {"who": "coach", "start": 36.51, "end": 40.53}, {"who": "coach", "start": 40.53, "end": 43.52}, {"who": "coach", "start": 44.28, "end": 45.76}];
+      const speakerAt = (t) => { for (const l of DLG) if (t >= l.start - 0.1 && t <= l.end + 0.1) return l.who; return null; };
+
+      function render(t) {
+        const si = shotAt(t), s = SHOTS[si], s2 = SHOTS[si + 1], end = s2 ? s2[0] : DUR, p = ease(Math.min(1, (t - s[0]) / Math.max(0.1, end - s[0])));
+        cam.position.lerpVectors(s[1], s[2], p); const look = new THREE.Vector3().lerpVectors(s[3], s[4], p); cam.lookAt(look);
+        cam.fov = s[5]; cam.updateProjectionMatrix(); bgEl.style.filter = `blur(${s[6]}px) brightness(1.12)`;
+        const f = Math.min(MOUTH.coach.length - 1, Math.round(t * 30));
+        const who = speakerAt(t);
+        [[coach, "coach", 0.0], [novice, "novice", 1.7]].forEach(([c, key, ph]) => {
+          const m = MOUTH[key][f] || 0; c.mouth.scale.y = 1 + m * 2.3; c.mouth.position.y = -0.155 - m * 0.04;
+          const talking = who === key;
+          c.head.rotation.x = Math.sin(t * 2.1 + ph) * 0.03 + (talking ? m * 0.06 : 0);
+          c.head.rotation.y = Math.sin(t * 0.7 + ph) * 0.05 + (talking ? 0.12 * (key === "coach" ? 1 : -1) : 0);
+          c.torso.scale.y = 1 + Math.sin(t * 2.4 + ph) * 0.012;
+          // blinks at fixed times
+          const bt = (t + ph * 1.3) % 3.7; const bl = bt < 0.12 ? Math.sin(bt / 0.12 * Math.PI) : 0;
+          c.lidL.scale.y = c.lidR.scale.y = 0.01 + bl;
+          // gestures
+          const gest = talking ? Math.max(0, Math.sin(t * 3.1 + ph)) * 0.55 + m * 0.4 : 0;
+          c.armR.rotation.x = -0.15 - gest; c.armR.rotation.z = 0.12 + (talking ? 0.1 : 0);
+          c.armL.rotation.x = -0.08 - (talking ? Math.max(0, Math.sin(t * 2.3 + ph + 1)) * 0.3 : 0); c.armL.rotation.z = -0.12;
+        });
+        // novice: hunched + sweaty at the start, eyebrows up when surprised
+        const tired = Math.max(0, 1 - t / T(8));
+        novice.g.rotation.x = 0; novice.torso.rotation.x = tired * 0.12; novice.head.position.y = 2.15 - tired * 0.05;
+        novice.armL.rotation.x += tired * 0.1; if (novice.sweat) novice.sweat.forEach((d, i) => { d.visible = t < T(9); d.position.y = 0.12 - i * 0.1 - ((t * 0.35 + i * 0.4) % 0.4); });
+        const surprised = t > T(25.6) && t < T(28.2) ? 1 : 0;
+        novice.browL.position.y = novice.browR.position.y = 0.15 + surprised * 0.05;
+        coach.browL.rotation.z = coach.browR.rotation.z = 0;
+        if (t > T(27.7) && t < T(29.0)) { coach.browL.rotation.z = -0.25; coach.browR.rotation.z = 0.25; } // "Attenzione"
+        rBg.render(sceneBg, cam); rFg.render(sceneFg, cam);
+      }
+
+      const tl = gsap.timeline({ paused: true });
+      const raw = { to: tl.to.bind(tl), set: tl.set.bind(tl), fromTo: tl.fromTo.bind(tl) };
+      const clock = { t: 0 };
+      tl.to(clock, { t: DUR, duration: DUR, ease: "none", onUpdate: () => render(clock.t) }, 0);
+      tl.fromTo("#fade", { opacity: 1 }, { opacity: 0, duration: 0.45, ease: "power1.out" }, 0);
+      // cut flashes (subtle) on shot changes
+      SHOTS.slice(1).forEach((s) => tl.fromTo("#flash", { opacity: 0.12 }, { opacity: 0, duration: 0.18, immediateRender: false }, s[0]));
+      tl.to = (x, y, p) => raw.to(x, y, typeof p === "number" ? T(p) : p);
+      tl.set = (x, y, p) => raw.set(x, y, typeof p === "number" ? T(p) : p);
+      tl.fromTo = (x, y, z, p) => raw.fromTo(x, y, z, typeof p === "number" ? T(p) : p);
+
+      const pop = (sel, t, e) => tl.fromTo(sel, { opacity: 0, scale: 0.85, y: 16 }, { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: e || "back.out(2)" }, t);
+      const panel = (sel, a, b) => { tl.fromTo(sel, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, a); tl.to(sel, { opacity: 0, y: 20, duration: 0.2 }, b - 0.2); };
+      gsap.set(".chip, .stamp, #u3sim, #u3fat", { opacity: 0 });
+      // UI 1
+      panel("#u1", 4.6, 8.4); pop("#u1a", 4.7); tl.set("#u1 .chip.w", { opacity: 1 }, 7.0); pop("#u1b", 7.3, "expo.out");
+      // UI 2
+      panel("#u2", 10.2, 16.85); pop("#u2a", 10.3); pop("#u2b", 12.0); pop("#u2c", 15.8, "back.out(2.6)");
+      tl.to("#u2b", { opacity: 0.45, duration: 0.2 }, 15.8);
+      // UI 3 study
+      panel("#u3", 17.05, 25.75);
+      tl.fromTo(["#u3b1", "#u3b2"], { scaleY: 0 }, { scaleY: 1, duration: 0.9, ease: "power2.out", stagger: 0.25 }, 20.4);
+      tl.fromTo("#u3sim", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 23.6);
+      tl.fromTo("#u3fat", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 24.6);
+      tl.fromTo(["#u3m1", "#u3m2"], { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out", stagger: 0.2 }, 24.7);
+      // UI 4 RIR
+      panel("#u4", 28.6, 34.45); pop("#u4a", 31.6); pop("#u4b", 32.9, "expo.out");
+      tl.fromTo("#u4g .rep", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.2, stagger: 0.12 }, 32.4);
+      // UI 5
+      panel("#u5", 35.9, 38.2); pop("#u5a", 36.0); pop("#u5p", 36.6); pop("#u5b", 37.2, "back.out(2.6)");
+      // UI 6
+      panel("#u6", 38.6, 42.75); pop("#u6a", 38.7);
+      tl.fromTo("#u6b", { opacity: 0, scale: 1.8 }, { opacity: 1, scale: 1, duration: 0.22, ease: "power4.in" }, 40.9);
+      // UI 7
+      panel("#u7", 44.7, 46.45); pop("#u7a", 44.8);
+      // logo / CTA
+      tl.fromTo("#logo", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.45, ease: "back.out(1.8)" }, 46.7);
+      raw.to("#fade", { opacity: 1, duration: 0.6 }, DUR - 0.6);
+
+      // captions
+      const box2 = document.getElementById("captions");
+      CAPS.forEach((c, i) => { const el = document.createElement("div"); el.className = "cap"; el.id = "cap" + i;
+        el.innerHTML = c.w.map((w, k) => c.hl.includes(k) ? `<span class="k">${w}</span>` : w).join(" "); box2.appendChild(el);
+        raw.fromTo(el, { opacity: 0, y: 10, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.1, ease: "power2.out" }, c.a);
+        raw.set(el, { opacity: 0 }, Math.min(c.b, DUR - 0.05)); });
+
+      raw.set({}, {}, DUR);
+      render(0);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
