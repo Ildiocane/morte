@@ -1,0 +1,11 @@
+renders/
+broll/renders/
+assets/face.mp4
+assets/broll/
+assets/img/
+assets/words.json
+broll/assets/nexus-dark.png
+broll/assets/nexus-data.js
+*.mp4
+*.wav
+.hyperframes/

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="it" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: Saira; src: url(assets/fonts/saira-900-italic.woff2) format("woff2"); font-weight: 900; font-style: italic; }
+      @font-face { font-family: Saira; src: url(assets/fonts/saira-800-italic.woff2) format("woff2"); font-weight: 800; font-style: italic; }
+      @font-face { font-family: Saira; src: url(assets/fonts/saira-600-italic.woff2) format("woff2"); font-weight: 600; font-style: italic; }
+      * { margin:0; padding:0; box-sizing:border-box; }
+      html, body { width:1080px; height:1920px; overflow:hidden; background:#000; }
+      #root { position:relative; width:1080px; height:1920px; overflow:hidden; font-family:Inter, ui-sans-serif, sans-serif; color:#fff; }
+      #facew { position:absolute; inset:0; transform-origin:50% 34%; }
+      #facew video, .bw video { position:absolute; inset:0; width:1080px; height:1920px; object-fit:cover; }
+      .bw { position:absolute; inset:0; overflow:hidden; }
+
+      /* forehead-height text band */
+      .fh { position:absolute; left:40px; right:40px; top:470px; text-align:center; }
+      .fl { font:italic 900 94px/1.02 Saira, sans-serif; text-transform:uppercase; letter-spacing:-0.005em; color:#fff;
+        -webkit-text-stroke:3px rgba(0,0,0,0.85); paint-order:stroke fill; text-shadow:0 6px 22px rgba(0,0,0,0.55); margin-bottom:8px; }
+      .hl { background-image:linear-gradient(#e0302a, #e0302a); background-repeat:no-repeat; background-size:0% 100%; padding:0 16px;
+        -webkit-box-decoration-break:clone; box-decoration-break:clone; border-radius:10px; -webkit-text-stroke:0; }
+      .stamp { display:inline-block; border:9px solid #ef4b40; color:#ef4b40; background:rgba(10,10,12,0.55); font:italic 900 96px/1 Saira, sans-serif;
+        text-transform:uppercase; padding:14px 34px 8px; border-radius:18px; transform:rotate(-6deg); -webkit-text-stroke:0; }
+      .stamp.big { font-size:100px; background:#e0302a; color:#fff; border-color:#fff; }
+      .tag { position:absolute; left:0; right:0; top:300px; display:flex; justify-content:center; align-items:center; gap:16px; }
+      .lbpill { display:inline-flex; align-items:center; gap:10px; background:#c2c2c2; border-radius:999px; padding:8px 22px 8px 16px; }
+      .lbpill b { font:italic 900 40px/1 Inter, sans-serif; color:#0b0b0b; }
+      .handle { font:italic 800 34px/1 Saira, sans-serif; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.8); letter-spacing:0.04em; }
+
+      /* full-screen graphics */
+      .fs { position:absolute; inset:0; background:radial-gradient(ellipse 90% 70% at 50% 38%, #1a1a1f 0%, #0b0b0d 75%); overflow:hidden; }
+      .fs .grid { position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px); background-size:90px 90px; }
+      .fsin { position:absolute; left:60px; right:60px; text-align:center; }
+      .kick { font:italic 800 42px/1 Saira, sans-serif; color:#ef4b40; text-transform:uppercase; letter-spacing:0.08em; }
+      .big { font:italic 900 132px/0.95 Saira, sans-serif; text-transform:uppercase; margin-top:22px; }
+      .red { color:#ef4b40; }
+      .wlist { margin-top:70px; }
+      .why { display:flex; justify-content:center; align-items:baseline; gap:20px; margin:26px 0; white-space:nowrap; }
+      .wq { font:italic 900 56px/1 Saira, sans-serif; color:#ef4b40; text-transform:uppercase; }
+      .wt { font:italic 900 66px/1 Saira, sans-serif; text-transform:uppercase; white-space:nowrap; }
+      .paper { position:relative; width:680px; height:620px; margin:56px auto 40px; background:#f4f1ea; border-radius:20px; box-shadow:0 40px 80px rgba(0,0,0,0.5); padding:20px; }
+      .ptag { position:absolute; left:26px; top:24px; background:#0b0b0d; color:#fff; font:italic 800 30px/1 Saira, sans-serif; padding:10px 18px; border-radius:10px; text-transform:uppercase; }
+      .sticky { position:absolute; right:-30px; top:-30px; background:#fde047; color:#1c1917; font:italic 800 34px/1.05 Saira, sans-serif; padding:22px 26px; text-transform:uppercase; box-shadow:0 14px 30px rgba(0,0,0,0.4); }
+      .sub { font:italic 800 66px/1.05 Saira, sans-serif; text-transform:uppercase; }
+
+      /* captions (chest height) */
+      #caps { position:absolute; left:50px; right:50px; top:1370px; height:160px; }
+      .cap { position:absolute; left:0; right:0; top:0; text-align:center; opacity:0; font:italic 900 76px/1.15 Saira, sans-serif; text-transform:uppercase;
+        -webkit-text-stroke:3px rgba(0,0,0,0.9); paint-order:stroke fill; text-shadow:0 6px 20px rgba(0,0,0,0.6); }
+      .cw { display:inline-block; padding:0 12px; border-radius:12px; background-color:rgba(224,48,42,0); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="__DUR__" data-width="1080" data-height="1920">
+      <div id="facew"><video id="face" src="assets/face.mp4" muted playsinline data-start="0" data-duration="__DUR__" data-track-index="0"></video></div>
+      __BODY__
+      <div id="capl" class="clip" data-start="0" data-duration="__DUR__" data-track-index="5">
+        <div id="caps">
+        __CAPS__
+        </div>
+      </div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      __JS__
+      tl.set({}, {}, __DUR__);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
