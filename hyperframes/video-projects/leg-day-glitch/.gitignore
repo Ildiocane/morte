@@ -1,0 +1,7 @@
+renders/
+assets/*.mp4
+assets/*.mkv
+assets/*.wav
+assets/*.torchscript
+assets/*.ttf
+__pycache__/
