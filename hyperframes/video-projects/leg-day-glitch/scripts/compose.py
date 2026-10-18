@@ -90,7 +90,7 @@ def put_text(bg, solid, rng, state):
 def seq_of(t):
     k = 0
     for i, c in enumerate(CUTS):
-        if t >= c - 1e-6: k = i
+        if t >= c - 0.5 / FPS: k = i                                       # CUTS are rounded to 4 decimals: compare to the nearest frame
     return k
 bars = [b for i, b in enumerate(BEATS) if i % 4 == 0]
 
