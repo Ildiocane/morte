@@ -1,0 +1,7 @@
+# Large media / Luca's voice: regenerate from the raw Drive take (scripts/cut.py), never commit
+*.mp4
+assets/raw16k.wav
+assets/edit16k.wav
+# Pexels photos: re-download by id (see README)
+assets/img/
+renders/

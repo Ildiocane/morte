@@ -1,0 +1,785 @@
+{
+  "version": 1,
+  "historyId": "546cb5d1-c1df-4922-926a-54af78624b48",
+  "currentRevision": "48ef6e56-da32-42b5-9a3b-c0db45706011",
+  "pendingChanges": false,
+  "files": {
+    "AGENTS.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/1d/1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "CLAUDE.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/1d/1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "assets/captions.json": {
+      "hash": "490295a1c9d09c8dfcddbbaf702a2e52a49c32df2ba42d831648b8a83b1662d3",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/49/490295a1c9d09c8dfcddbbaf702a2e52a49c32df2ba42d831648b8a83b1662d3"
+    },
+    "assets/edit.cutmap.json": {
+      "hash": "8952ee108380b02ea4152b41658d651f81a7bb7e98b3820f858de0b35db04613",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/89/8952ee108380b02ea4152b41658d651f81a7bb7e98b3820f858de0b35db04613"
+    },
+    "assets/gsap.min.js": {
+      "hash": "c174bfce53a729418d57a8ad8625e7247c793a22fef8e2851e3cfa3de9cd8280",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/c1/c174bfce53a729418d57a8ad8625e7247c793a22fef8e2851e3cfa3de9cd8280"
+    },
+    "assets/img/cable-fly.jpg": {
+      "hash": "72e482160c7e9d2e5c59b996ff8beed220cfbe2e4eb0f8ee9ef68b9e5a6c08a4",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/72/72e482160c7e9d2e5c59b996ff8beed220cfbe2e4eb0f8ee9ef68b9e5a6c08a4"
+    },
+    "assets/img/chest-press.jpg": {
+      "hash": "e3a2be470b3fcdc3a15712dbe1ab8476720e1d8058aed32d685cc28ef3889c35",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/e3/e3a2be470b3fcdc3a15712dbe1ab8476720e1d8058aed32d685cc28ef3889c35"
+    },
+    "assets/img/squat.jpg": {
+      "hash": "3fa3ca4d80ccdfe579c21c6a66f43eda93fa4ccc15410f4c0d02948fa57ce3aa",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/3f/3fa3ca4d80ccdfe579c21c6a66f43eda93fa4ccc15410f4c0d02948fa57ce3aa"
+    },
+    "assets/sfx/click.wav": {
+      "hash": "47dea6aa6e244f2e902736b0efc1f7abed9069fe5c2a666842bf119a91a4d9ab",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/47/47dea6aa6e244f2e902736b0efc1f7abed9069fe5c2a666842bf119a91a4d9ab"
+    },
+    "assets/sfx/pop.mp3": {
+      "hash": "bb343a49535045ee3350f30fe01848ce8f933b1394710a71069c96435116af54",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/bb/bb343a49535045ee3350f30fe01848ce8f933b1394710a71069c96435116af54"
+    },
+    "assets/sfx/slam.mp3": {
+      "hash": "ee2c5c74158dd95bbcc6275181d846293cdfcc69596563e563a5f438ff407135",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/ee/ee2c5c74158dd95bbcc6275181d846293cdfcc69596563e563a5f438ff407135"
+    },
+    "assets/sfx/sparkle.mp3": {
+      "hash": "7ef89d2e8bbc02e558b0bdbad3e0ae67b171ff8759e59a24bcd69ba0124f71e8",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/7e/7ef89d2e8bbc02e558b0bdbad3e0ae67b171ff8759e59a24bcd69ba0124f71e8"
+    },
+    "assets/sfx/swipe.mp3": {
+      "hash": "6d86a334b13f162c592af68ff75e5597b45e4fc552890a3ec3e79052e6b8c2f6",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/6d/6d86a334b13f162c592af68ff75e5597b45e4fc552890a3ec3e79052e6b8c2f6"
+    },
+    "assets/sfx/whoosh.mp3": {
+      "hash": "c2efd9d902a59bf9ec5019035d7deadd17762136896b6e3cb6dd99ea50997a30",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/c2/c2efd9d902a59bf9ec5019035d7deadd17762136896b6e3cb6dd99ea50997a30"
+    },
+    "assets/transcript-edit.json": {
+      "hash": "462ce1f659c935e7a466531388a4c08ddbcea4280f60a34b2f904806a5e34caa",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/46/462ce1f659c935e7a466531388a4c08ddbcea4280f60a34b2f904806a5e34caa"
+    },
+    "assets/transcript-raw.json": {
+      "hash": "a0fa4865f8c9cb757faa24bce3df69f5d888828341b6c053a916ff9b57ef7e4f",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/a0/a0fa4865f8c9cb757faa24bce3df69f5d888828341b6c053a916ff9b57ef7e4f"
+    },
+    "assets/transcript.json": {
+      "hash": "9e76b0432d438dc9c814cb1908815a0b90b1db008c987d1034edad86ed22eb46",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/9e/9e76b0432d438dc9c814cb1908815a0b90b1db008c987d1034edad86ed22eb46"
+    },
+    "hyperframes.json": {
+      "hash": "53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/53/53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50"
+    },
+    "index.html": {
+      "hash": "f8baddb0be62fdbfb744abd0773fb4855f4ed2be30c72c3e2f3788dc2b44838a",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/f8/f8baddb0be62fdbfb744abd0773fb4855f4ed2be30c72c3e2f3788dc2b44838a"
+    },
+    "meta.json": {
+      "hash": "bcd3db4aa727fb234fa89411a1a19df4f76fc1ab1946902e2ba8a7d25bac7571",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/bc/bcd3db4aa727fb234fa89411a1a19df4f76fc1ab1946902e2ba8a7d25bac7571"
+    },
+    "package.json": {
+      "hash": "11779ee89518a94512c611a636089144b5c78a09dc0daca34508b30593d7d33d",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/11/11779ee89518a94512c611a636089144b5c78a09dc0daca34508b30593d7d33d"
+    },
+    "scripts/build.py": {
+      "hash": "b2ac3d15b6b021b86bf4d4df291301a2791cbd76aa599a0b7b262b91fc81960f",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/b2/b2ac3d15b6b021b86bf4d4df291301a2791cbd76aa599a0b7b262b91fc81960f"
+    },
+    "scripts/captions.py": {
+      "hash": "8f97f880f7d206f198dcd3c70dfbeec9c5f9393c44eac9a313a26f99be991768",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/8f/8f97f880f7d206f198dcd3c70dfbeec9c5f9393c44eac9a313a26f99be991768"
+    },
+    "scripts/cut.py": {
+      "hash": "0d788005624c6d4a0f6a9d124c6a596977d78d4da0f8c2655f3cda7551f24166",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/0d/0d788005624c6d4a0f6a9d124c6a596977d78d4da0f8c2655f3cda7551f24166"
+    },
+    "scripts/index.tpl.html": {
+      "hash": "386aa92960263ba1b0e92bf377f0f81624910331c8860d2638e6aec13237a6e2",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/38/386aa92960263ba1b0e92bf377f0f81624910331c8860d2638e6aec13237a6e2"
+    },
+    "assets/edit.mp4": {
+      "hash": "3c7ab9ba55de4ffdf0a1c0be28bed03cf44aea06fbc62ee0e1eb26b758a45fb7",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/3c/3c7ab9ba55de4ffdf0a1c0be28bed03cf44aea06fbc62ee0e1eb26b758a45fb7"
+    },
+    "assets/edit16k.wav": {
+      "hash": "7a329448aa70c6712a26fda0a4af1e23bf370c97a89b22cdb2a9c6274b317e50",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/7a/7a329448aa70c6712a26fda0a4af1e23bf370c97a89b22cdb2a9c6274b317e50"
+    },
+    "assets/music.mp3": {
+      "hash": "feb24a76ae454c219a9f58540bc8b3b890364c93d75075cc2a66ed6f1a22fa66",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/fe/feb24a76ae454c219a9f58540bc8b3b890364c93d75075cc2a66ed6f1a22fa66"
+    },
+    "assets/raw.mp4": {
+      "hash": "8f411028d77c7bc25cdb9371b09bbd200ec0556dee347c85b6c4ed4ef1d27fb5",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/8f/8f411028d77c7bc25cdb9371b09bbd200ec0556dee347c85b6c4ed4ef1d27fb5"
+    },
+    "assets/raw16k.wav": {
+      "hash": "5998a45bb53b66d20c8f2775b561e9699fbcc4f53f047195cbc926a201f51026",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/59/5998a45bb53b66d20c8f2775b561e9699fbcc4f53f047195cbc926a201f51026"
+    },
+    "README.md": {
+      "hash": "c3ecf2fe34e59bfdabcda5a0bd5573833da3933538c5193c98e9ae276e885412",
+      "content": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/c3/c3ecf2fe34e59bfdabcda5a0bd5573833da3933538c5193c98e9ae276e885412"
+    }
+  },
+  "revisions": {
+    "834915c9-d3f2-40f4-9979-4e1f368a36bd": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792510405293,
+      "endedAt": 1792510405307,
+      "files": {
+        "index.html": {
+          "before": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/58/58300b19e4e844e2241930d5569cab7a636f13f99000c9183f8449fd255a6e17",
+          "after": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/a8/a871941c7340570718b63825d1523d5c6953b90b1f7e9fb0fb6a1303ecda784c"
+        },
+        "scripts/index.tpl.html": {
+          "before": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/91/91da3ff4346e2c8cdce30966de61c2ad9b6b724bcf3dca4ad48e5975a34b4e79",
+          "after": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/98/98a264082885cfe5b71c7ad6db529e81b79d7af8253f25f1129ee273665d0890"
+        }
+      }
+    },
+    "764ee976-1a4d-419d-a173-d67587e25e4e": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792511031304,
+      "endedAt": 1792511031323,
+      "files": {
+        "index.html": {
+          "before": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/a8/a871941c7340570718b63825d1523d5c6953b90b1f7e9fb0fb6a1303ecda784c",
+          "after": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/41/414d37b3cc88c24a56fb2d54588e4016cce89c87cb83c732b156b555a9caf6e9"
+        },
+        "README.md": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/c3/c3ecf2fe34e59bfdabcda5a0bd5573833da3933538c5193c98e9ae276e885412"
+        },
+        "scripts/build.py": {
+          "before": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/bd/bd524e2c30c97ecfbd6d1bbf7bd23d793fa0e76bc445bcd3cf8ee832bc419afe",
+          "after": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/b2/b2ac3d15b6b021b86bf4d4df291301a2791cbd76aa599a0b7b262b91fc81960f"
+        },
+        "scripts/index.tpl.html": {
+          "before": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/98/98a264082885cfe5b71c7ad6db529e81b79d7af8253f25f1129ee273665d0890",
+          "after": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/1c/1cb9f4595e7be85968cd9623567ebea5c7b09837cc97537c21e87b9f271db811"
+        }
+      }
+    },
+    "48ef6e56-da32-42b5-9a3b-c0db45706011": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792511567452,
+      "endedAt": 1792511567461,
+      "files": {
+        "assets/sfx/error.mp3": {
+          "before": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/2a/2a157d002908abc24ba6cb868478774587374610ebfc6f68e40f0dce69342f56",
+          "after": null
+        },
+        "index.html": {
+          "before": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/41/414d37b3cc88c24a56fb2d54588e4016cce89c87cb83c732b156b555a9caf6e9",
+          "after": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/f8/f8baddb0be62fdbfb744abd0773fb4855f4ed2be30c72c3e2f3788dc2b44838a"
+        },
+        "scripts/index.tpl.html": {
+          "before": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/1c/1cb9f4595e7be85968cd9623567ebea5c7b09837cc97537c21e87b9f271db811",
+          "after": "/root/.cache/hyperframes/history/546cb5d1-c1df-4922-926a-54af78624b48/blobs/38/386aa92960263ba1b0e92bf377f0f81624910331c8860d2638e6aec13237a6e2"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "snapshots": {
+    "latest": {
+      "revision": "48ef6e56-da32-42b5-9a3b-c0db45706011",
+      "id": "9f8054c6-5de1-4b1c-8a1a-8b4a55e75a60-3"
+    },
+    "revisions": {
+      "834915c9-d3f2-40f4-9979-4e1f368a36bd": [
+        {
+          "scope": "crop",
+          "id": "81e2947d-923b-4501-8daf-ecf25fcafe46-0",
+          "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snapz/frame-00-at-49s.png",
+          "time": 49,
+          "metadata": {
+            "width": 1008,
+            "height": 388,
+            "crop": {
+              "x": 36,
+              "y": 94,
+              "width": 1008,
+              "height": 388
+            },
+            "zoom": {
+              "kind": "selector",
+              "selector": "#o6card"
+            },
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792510412907,
+          "contentHash": "780f2883beddcf7788ab4c77f9f6dd2e1ddd326dadf5fa76e5274b46d57380c6",
+          "revision": "834915c9-d3f2-40f4-9979-4e1f368a36bd",
+          "inputFingerprint": "c5849b0cc77fd123fd452c6a2a25c80d4de327cfb6c28c17ccaeb77a33acd1ec",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "crop",
+          "id": "81e2947d-923b-4501-8daf-ecf25fcafe46-1",
+          "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snapz/frame-01-at-51.6s.png",
+          "time": 51.6,
+          "metadata": {
+            "width": 1008,
+            "height": 388,
+            "crop": {
+              "x": 36,
+              "y": 94,
+              "width": 1008,
+              "height": 388
+            },
+            "zoom": {
+              "kind": "selector",
+              "selector": "#o6card"
+            },
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792510412907,
+          "contentHash": "47db3eb15951789aa3a66b5f2c7c783c3c69b9e68a17de0bc0614cb50f505c7b",
+          "revision": "834915c9-d3f2-40f4-9979-4e1f368a36bd",
+          "inputFingerprint": "c5849b0cc77fd123fd452c6a2a25c80d4de327cfb6c28c17ccaeb77a33acd1ec",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "crop",
+          "id": "fb8653b9-9726-42f9-ae2d-78bca28822f2-0",
+          "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snapz2/frame-00-at-11.5s.png",
+          "time": 11.5,
+          "metadata": {
+            "width": 1048,
+            "height": 398,
+            "crop": {
+              "x": 16,
+              "y": 94,
+              "width": 1048,
+              "height": 398
+            },
+            "zoom": {
+              "kind": "selector",
+              "selector": "#o2"
+            },
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792510420871,
+          "contentHash": "e045d310f44d4d9f550f2d784705655f2e2a291149ea447685502f0e70e5e092",
+          "revision": "834915c9-d3f2-40f4-9979-4e1f368a36bd",
+          "inputFingerprint": "c5849b0cc77fd123fd452c6a2a25c80d4de327cfb6c28c17ccaeb77a33acd1ec",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ],
+      "764ee976-1a4d-419d-a173-d67587e25e4e": [
+        {
+          "scope": "full",
+          "id": "05d7f0be-73b6-4aa5-b4ba-256cbe690981-0",
+          "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap2/frame-00-at-29.5s.png",
+          "time": 29.5,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792511044943,
+          "contentHash": "d44d1a8a097e95bd7199778724b2fe6c86a12364da6655178c15614030b089ee",
+          "revision": "764ee976-1a4d-419d-a173-d67587e25e4e",
+          "inputFingerprint": "a336a5d4b009d1989c11eabc5627c9d2b4deb25f942ca23abd30b58c116b4dbb",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "05d7f0be-73b6-4aa5-b4ba-256cbe690981-1",
+          "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap2/frame-01-at-33.9s.png",
+          "time": 33.9,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792511044943,
+          "contentHash": "c6707ebd18dfb20673b807ad1c7d29b5a43875eb8157b26bc62592b807d05dd0",
+          "revision": "764ee976-1a4d-419d-a173-d67587e25e4e",
+          "inputFingerprint": "a336a5d4b009d1989c11eabc5627c9d2b4deb25f942ca23abd30b58c116b4dbb",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "05d7f0be-73b6-4aa5-b4ba-256cbe690981-2",
+          "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap2/frame-02-at-36.8s.png",
+          "time": 36.8,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792511044943,
+          "contentHash": "454c611b2b0dccba75ae9bdb5055c6786a503440078aeee27e04c8ff2c79ce64",
+          "revision": "764ee976-1a4d-419d-a173-d67587e25e4e",
+          "inputFingerprint": "a336a5d4b009d1989c11eabc5627c9d2b4deb25f942ca23abd30b58c116b4dbb",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "05d7f0be-73b6-4aa5-b4ba-256cbe690981-3",
+          "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap2/frame-03-at-39.9s.png",
+          "time": 39.9,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792511044943,
+          "contentHash": "18a55608e1dc76b5e96cc1d8d752fe653bb43558868538096238f56a26fe6a87",
+          "revision": "764ee976-1a4d-419d-a173-d67587e25e4e",
+          "inputFingerprint": "a336a5d4b009d1989c11eabc5627c9d2b4deb25f942ca23abd30b58c116b4dbb",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "05d7f0be-73b6-4aa5-b4ba-256cbe690981-4",
+          "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap2/frame-04-at-70.43s.png",
+          "time": 70.43,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792511044943,
+          "contentHash": "901338c16621f3ecf4adf25e40e7f3594306ae45d18310c2ee73a5cd74678156",
+          "revision": "764ee976-1a4d-419d-a173-d67587e25e4e",
+          "inputFingerprint": "a336a5d4b009d1989c11eabc5627c9d2b4deb25f942ca23abd30b58c116b4dbb",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ],
+      "48ef6e56-da32-42b5-9a3b-c0db45706011": [
+        {
+          "scope": "full",
+          "id": "9f8054c6-5de1-4b1c-8a1a-8b4a55e75a60-0",
+          "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap3/frame-00-at-67.2s.png",
+          "time": 67.2,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792511580032,
+          "contentHash": "8612ad12271e6e84e723d321df95beeb1134aabd0f3fc12baf6d3d5eed5480d0",
+          "revision": "48ef6e56-da32-42b5-9a3b-c0db45706011",
+          "inputFingerprint": "8110469c9813540158d5d41e72288759ec0c304e8704ef77a32c9978c10c00bd",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "9f8054c6-5de1-4b1c-8a1a-8b4a55e75a60-1",
+          "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap3/frame-01-at-68s.png",
+          "time": 68,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792511580032,
+          "contentHash": "d262db86e73821795cca67482e7f5fec836d1093f64e446f0137e2a541f49a8d",
+          "revision": "48ef6e56-da32-42b5-9a3b-c0db45706011",
+          "inputFingerprint": "8110469c9813540158d5d41e72288759ec0c304e8704ef77a32c9978c10c00bd",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "9f8054c6-5de1-4b1c-8a1a-8b4a55e75a60-2",
+          "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap3/frame-02-at-69s.png",
+          "time": 69,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792511580032,
+          "contentHash": "7cebac39797b6f5a5988c297796abf1a56d5d451d011aff6ad196b101876532f",
+          "revision": "48ef6e56-da32-42b5-9a3b-c0db45706011",
+          "inputFingerprint": "8110469c9813540158d5d41e72288759ec0c304e8704ef77a32c9978c10c00bd",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "9f8054c6-5de1-4b1c-8a1a-8b4a55e75a60-3",
+          "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap3/frame-03-at-70.4s.png",
+          "time": 70.4,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792511580032,
+          "contentHash": "10a02b2f342a92a626e78a1bdefdc4580d61a750141ab5bc120d68f2c662a1f0",
+          "revision": "48ef6e56-da32-42b5-9a3b-c0db45706011",
+          "inputFingerprint": "8110469c9813540158d5d41e72288759ec0c304e8704ef77a32c9978c10c00bd",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": [
+      {
+        "scope": "full",
+        "id": "f3964b98-ebb6-466c-a718-24def1a9aa26-0",
+        "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap/frame-00-at-5.6s.png",
+        "time": 5.6,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1792510322511,
+        "contentHash": "08c3ccff8eb5d02ec1d5ec53a22f6787027294b22f4d88ecc06305e2bd92ecdf",
+        "revision": null,
+        "inputFingerprint": "eea53901a356331170afa855eacb624cd65b7f1712319f2375499f272e3f7d8d",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "f3964b98-ebb6-466c-a718-24def1a9aa26-1",
+        "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap/frame-01-at-11.5s.png",
+        "time": 11.5,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1792510322511,
+        "contentHash": "c2edea14e3ad7dd0fd29c7990b110695b37d993f1b69121615f3612e89afb8bd",
+        "revision": null,
+        "inputFingerprint": "eea53901a356331170afa855eacb624cd65b7f1712319f2375499f272e3f7d8d",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "f3964b98-ebb6-466c-a718-24def1a9aa26-2",
+        "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap/frame-02-at-14.8s.png",
+        "time": 14.8,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1792510322511,
+        "contentHash": "7734a47723ee4c142e3a10602bf162b0f0e79141fbbb4a8f4ed841452f1b4bfe",
+        "revision": null,
+        "inputFingerprint": "eea53901a356331170afa855eacb624cd65b7f1712319f2375499f272e3f7d8d",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "f3964b98-ebb6-466c-a718-24def1a9aa26-3",
+        "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap/frame-03-at-21.5s.png",
+        "time": 21.5,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1792510322511,
+        "contentHash": "840caf35ef49ff7295c5d1f8a7d070b32721de09cf164b8f7e20d6305c72cf1d",
+        "revision": null,
+        "inputFingerprint": "eea53901a356331170afa855eacb624cd65b7f1712319f2375499f272e3f7d8d",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "f3964b98-ebb6-466c-a718-24def1a9aa26-4",
+        "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap/frame-04-at-22.9s.png",
+        "time": 22.9,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1792510322511,
+        "contentHash": "68203ed77dd09c2a1c13dd26b00a736c2dd75e776717a484483c1341c2cabe2a",
+        "revision": null,
+        "inputFingerprint": "eea53901a356331170afa855eacb624cd65b7f1712319f2375499f272e3f7d8d",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "f3964b98-ebb6-466c-a718-24def1a9aa26-5",
+        "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap/frame-05-at-27.6s.png",
+        "time": 27.6,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1792510322511,
+        "contentHash": "c8e57b1dfd3d64d5e76bb42c2a27ea0115e48ed5bac599d2d5997ddbc805ff2e",
+        "revision": null,
+        "inputFingerprint": "eea53901a356331170afa855eacb624cd65b7f1712319f2375499f272e3f7d8d",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "f3964b98-ebb6-466c-a718-24def1a9aa26-6",
+        "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap/frame-06-at-34.9s.png",
+        "time": 34.9,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1792510322511,
+        "contentHash": "159fe58fc7d1fcd27c616c81a09e0d9fe36e0e705a367bac29c38a382f27f7c0",
+        "revision": null,
+        "inputFingerprint": "eea53901a356331170afa855eacb624cd65b7f1712319f2375499f272e3f7d8d",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "f3964b98-ebb6-466c-a718-24def1a9aa26-7",
+        "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap/frame-07-at-40.6s.png",
+        "time": 40.6,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1792510322511,
+        "contentHash": "0cd2b3dfddce1f483680718143a139aecd40a60845c4b42ef6a859c3af8df65a",
+        "revision": null,
+        "inputFingerprint": "eea53901a356331170afa855eacb624cd65b7f1712319f2375499f272e3f7d8d",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "f3964b98-ebb6-466c-a718-24def1a9aa26-8",
+        "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap/frame-08-at-45.5s.png",
+        "time": 45.5,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1792510322511,
+        "contentHash": "9bdf7fe5ceffc9bed77c94c869e403ed7f1699b5a526ff6d8fc05b120f248e1d",
+        "revision": null,
+        "inputFingerprint": "eea53901a356331170afa855eacb624cd65b7f1712319f2375499f272e3f7d8d",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "f3964b98-ebb6-466c-a718-24def1a9aa26-9",
+        "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap/frame-09-at-51.6s.png",
+        "time": 51.6,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1792510322511,
+        "contentHash": "ad597d60034879a6b1266db3be8b32f111365ebf878d83229e65590f4b0fa1c0",
+        "revision": null,
+        "inputFingerprint": "eea53901a356331170afa855eacb624cd65b7f1712319f2375499f272e3f7d8d",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "f3964b98-ebb6-466c-a718-24def1a9aa26-10",
+        "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap/frame-10-at-56.7s.png",
+        "time": 56.7,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1792510322511,
+        "contentHash": "ea6c9b016a3e2ceafadd0b7484c082213e3b0c287416a02adbef9e97604cb5c7",
+        "revision": null,
+        "inputFingerprint": "eea53901a356331170afa855eacb624cd65b7f1712319f2375499f272e3f7d8d",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "f3964b98-ebb6-466c-a718-24def1a9aa26-11",
+        "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap/frame-11-at-62.3s.png",
+        "time": 62.3,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1792510322511,
+        "contentHash": "b9942823fe96ad7449aec2778b8c014665f7379cb19b8abdc8285c9b69653147",
+        "revision": null,
+        "inputFingerprint": "eea53901a356331170afa855eacb624cd65b7f1712319f2375499f272e3f7d8d",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "f3964b98-ebb6-466c-a718-24def1a9aa26-12",
+        "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap/frame-12-at-68s.png",
+        "time": 68,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1792510322511,
+        "contentHash": "d262db86e73821795cca67482e7f5fec836d1093f64e446f0137e2a541f49a8d",
+        "revision": null,
+        "inputFingerprint": "eea53901a356331170afa855eacb624cd65b7f1712319f2375499f272e3f7d8d",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      },
+      {
+        "scope": "full",
+        "id": "f3964b98-ebb6-466c-a718-24def1a9aa26-13",
+        "image": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/snap/frame-13-at-70.2s.png",
+        "time": 70.2,
+        "metadata": {
+          "width": 1080,
+          "height": 1920,
+          "zoomScale": 1,
+          "browserGpuMode": "auto",
+          "warnings": [],
+          "partial": false
+        },
+        "createdAt": 1792510322511,
+        "contentHash": "b778725ee827bca732b969fde2211357cac97b35fa232b351d41b3ca5bed178c",
+        "revision": null,
+        "inputFingerprint": "eea53901a356331170afa855eacb624cd65b7f1712319f2375499f272e3f7d8d",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  },
+  "renders": {
+    "latest": {
+      "id": "ecb236c3-e221-4acd-97fa-0be71b2fca93",
+      "completedAt": 1792511522287,
+      "output": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/final.mp4",
+      "status": "completed",
+      "revision": null
+    },
+    "retainedRevisions": []
+  },
+  "pendingArtifactCleanup": []
+}
