@@ -773,13 +773,15 @@
   },
   "renders": {
     "latest": {
-      "id": "ecb236c3-e221-4acd-97fa-0be71b2fca93",
-      "completedAt": 1792511522287,
+      "id": "c7bf8ee3-3562-4bc0-a3aa-61ef025228a3",
+      "completedAt": 1792512052974,
       "output": "/home/user/morte/hyperframes/video-projects/rom-completo/renders/final.mp4",
       "status": "completed",
-      "revision": null
+      "revision": "48ef6e56-da32-42b5-9a3b-c0db45706011"
     },
-    "retainedRevisions": []
+    "retainedRevisions": [
+      "48ef6e56-da32-42b5-9a3b-c0db45706011"
+    ]
   },
   "pendingArtifactCleanup": []
 }
