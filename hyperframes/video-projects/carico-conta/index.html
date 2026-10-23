@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="it" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family:"Saira"; src:url(assets/fonts/saira-900-italic.woff2) format("woff2"); font-weight:900; font-style:italic; }
+      @font-face { font-family:"Saira"; src:url(assets/fonts/saira-800-italic.woff2) format("woff2"); font-weight:800; font-style:italic; }
+      @font-face { font-family:"Saira"; src:url(assets/fonts/saira-600-italic.woff2) format("woff2"); font-weight:600; font-style:italic; }
+      @font-face { font-family:"Saira"; src:url(assets/fonts/saira-900-normal.woff2) format("woff2"); font-weight:900; font-style:normal; }
+      @font-face { font-family:"Saira"; src:url(assets/fonts/saira-800-normal.woff2) format("woff2"); font-weight:800; font-style:normal; }
+      @font-face { font-family:"Saira"; src:url(assets/fonts/saira-600-normal.woff2) format("woff2"); font-weight:600; font-style:normal; }
+      /* LB System + NEXUS Private Gym: black / white / red, heavy italic, slanted speed bars */
+      :root { --ink:#0b0b0d; --panel:#16161a; --white:#f4f4f5; --red:#c0241e; --nx:#a8171a; --red2:#ef4b40; --grey:#c2c2c2; --mute:#a1a1aa; }
+      * { margin:0; padding:0; box-sizing:border-box; }
+      html, body { width:1080px; height:1920px; overflow:hidden; background:#000; }
+      #root { position:relative; width:1080px; height:1920px; overflow:hidden; font-family:"Saira", Inter, sans-serif; color:var(--white); }
+      #face-wrap { position:absolute; inset:0; transform-origin:50% 42%; }
+      #face { width:1080px; height:1920px; object-fit:cover; filter:contrast(1.05) saturate(1.02); }
+      .bw { position:absolute; inset:0; transform-origin:50% 45%; }
+      .bw video { width:1080px; height:1920px; object-fit:cover; }
+      #topshade { position:absolute; left:0; right:0; top:0; height:620px; pointer-events:none; background:linear-gradient(180deg, rgba(8,8,10,0.6), rgba(8,8,10,0.3) 55%, rgba(8,8,10,0)); }
+      #botshade { position:absolute; left:0; right:0; bottom:0; height:560px; pointer-events:none; background:linear-gradient(0deg, rgba(8,8,10,0.5), rgba(8,8,10,0)); }
+      #flash { position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; z-index:9; }
+      /* NEXUS-style wipe: a slanted black bar with a red edge sweeps across on every full-screen in/out */
+      #wipe { position:absolute; top:-200px; left:-2300px; width:2000px; height:2320px; background:var(--ink); transform:skewX(-14deg); z-index:8; box-shadow:26px 0 0 var(--nx), 52px 0 0 rgba(244,244,245,0.9); }
+      .glitch { position:absolute; left:0; right:0; height:46px; opacity:0; z-index:8; mix-blend-mode:screen; }
+
+      /* brand atoms */
+      .lbm { width:44px; height:52px; display:block; overflow:visible; flex:0 0 auto; }
+      .nx { display:inline-flex; align-items:center; gap:16px; padding:10px 34px; background:var(--ink); transform:skewX(-12deg); box-shadow:0 14px 34px rgba(0,0,0,0.5); white-space:nowrap; }
+      .nx > * { transform:skewX(12deg); }
+      .nx b { font-weight:900; font-style:italic; font-size:52px; letter-spacing:0.01em; line-height:1.05; text-transform:uppercase; }
+      .nx.white { background:var(--white); color:var(--ink); } .nx.red { background:var(--nx); color:#fff; } .nx.line { border-left:10px solid var(--nx); }
+      .nx b i { font-style:italic; color:var(--red2); }
+      .nx.white b i { color:var(--nx); }
+      .stripes { display:inline-block; width:150px; height:44px; transform:skewX(-12deg); background:repeating-linear-gradient(90deg, var(--grey) 0 9px, transparent 9px 19px);
+        -webkit-mask-image:linear-gradient(90deg, transparent, #000 85%); mask-image:linear-gradient(90deg, transparent, #000 85%); }
+      .big { font-weight:900; font-style:italic; font-size:138px; line-height:0.95; letter-spacing:-0.01em; text-transform:uppercase; text-shadow:0 8px 30px rgba(0,0,0,0.55); white-space:nowrap; }
+      .big i { color:var(--red2); font-style:italic; }
+      .small { font-weight:800; font-style:italic; font-size:34px; color:var(--grey); text-transform:uppercase; letter-spacing:0.04em; text-shadow:0 3px 10px rgba(0,0,0,0.8); white-space:nowrap; }
+      .x { position:absolute; left:-12px; right:-12px; top:50%; height:10px; margin-top:-5px; background:var(--red2); transform-origin:0 50%; transform:rotate(-5deg); }
+      .rel { position:relative; }
+
+      /* top-third pop-ups: y 110-470, above the hairline */
+      .ov { position:absolute; left:40px; right:40px; top:110px; height:360px; opacity:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:16px; }
+      .row { display:flex; align-items:center; justify-content:center; gap:18px; }
+      .chk { display:flex; align-items:center; gap:18px; padding:8px 30px 8px 16px; background:rgba(11,11,13,0.92); transform:skewX(-12deg); border-left:8px solid var(--nx); box-shadow:0 10px 26px rgba(0,0,0,0.45); width:820px; }
+      .chk > * { transform:skewX(12deg); }
+      .chk .bx { width:52px; height:52px; background:var(--nx); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:36px; color:#fff; }
+      .chk b { font-weight:900; font-style:italic; font-size:46px; text-transform:uppercase; white-space:nowrap; }
+      .chk span.n { font-weight:900; font-style:italic; font-size:40px; color:var(--red2); width:40px; }
+      #rng { position:relative; width:860px; height:64px; background:rgba(11,11,13,0.9); transform:skewX(-12deg); border:2px solid rgba(244,244,245,0.25); }
+      #rngf { position:absolute; top:0; bottom:0; background:var(--nx); transform-origin:0 50%; }
+      #rngl { position:absolute; top:0; bottom:0; display:flex; align-items:center; justify-content:center; font-weight:900; font-style:italic; font-size:40px; color:#fff; transform:skewX(12deg); }
+      #rngt { position:relative; width:860px; height:40px; }
+      #rngt div { position:absolute; transform:translateX(-50%); font-weight:800; font-style:italic; font-size:28px; color:var(--grey); text-shadow:0 2px 8px rgba(0,0,0,0.9); }
+
+      /* full-screen slides over B-roll */
+      .fs { position:absolute; inset:0; opacity:0; overflow:hidden; }
+      .fs .tint { position:absolute; inset:0; background:radial-gradient(ellipse 85% 65% at 50% 45%, rgba(11,11,13,0), rgba(11,11,13,0.55) 100%), linear-gradient(180deg, rgba(11,11,13,0.5), rgba(11,11,13,0) 35%, rgba(11,11,13,0) 65%, rgba(11,11,13,0.55)); }
+      .fs .redglow { position:absolute; width:900px; height:900px; border-radius:50%; background:radial-gradient(circle, rgba(192,36,30,0.42), rgba(192,36,30,0) 65%); mix-blend-mode:screen; }
+      .fs .speed { position:absolute; inset:-200px; background:repeating-linear-gradient(-76deg, rgba(244,244,245,0.07) 0 3px, transparent 3px 46px); }
+      .brand { position:absolute; left:56px; top:72px; display:flex; align-items:center; gap:18px; }
+      .brand img { height:84px; width:auto; display:block; }
+      .step { position:absolute; }
+      .step .nx b { font-size:92px; }
+      .step .up { color:var(--red2); font-weight:900; font-size:80px; }
+      .photo { position:absolute; overflow:hidden; border:6px solid var(--white); box-shadow:0 22px 50px rgba(0,0,0,0.6); background:#111; }
+      .photo img { width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(1) contrast(1.15); }
+      .photo .tagr { position:absolute; left:0; bottom:0; padding:6px 18px; background:var(--nx); font-weight:900; font-style:italic; font-size:30px; text-transform:uppercase; }
+      #line1 { position:absolute; left:0; top:0; width:1080px; height:1920px; overflow:visible; }
+      .count { font-weight:900; font-style:italic; font-size:230px; line-height:0.9; letter-spacing:-0.02em; text-shadow:0 10px 40px rgba(0,0,0,0.6); white-space:nowrap; }
+      .count i { color:var(--red2); font-style:italic; }
+      #plates { width:920px; height:240px; display:block; overflow:visible; }
+
+      /* captions: brand italic, keywords in NEXUS red, on the shirt below the beard */
+      #captions { position:absolute; left:40px; right:40px; top:1530px; height:110px; z-index:6; }
+      .cap { position:absolute; left:0; right:0; top:0; text-align:center; font-weight:800; font-style:italic; font-size:72px; line-height:1.05; opacity:0; white-space:nowrap; text-transform:uppercase;
+        text-shadow:0 0 3px rgba(0,0,0,0.95), 0 4px 0 rgba(0,0,0,0.75), 0 8px 24px rgba(0,0,0,0.6); }
+      .cap .k { color:var(--red2); }
+    </style>
+  </head>
+  <body>
+    <svg width="0" height="0" style="position:absolute"><defs><symbol id="lbsym" viewBox="-8 -8 116 136"><line x1="50" y1="0" x2="100" y2="58" stroke="#c2c2c2" stroke-width="22" stroke-linecap="round"/><line x1="50" y1="0" x2="100" y2="58" stroke="#a8171a" stroke-width="10" stroke-linecap="round"/><line x1="6" y1="4" x2="94" y2="114" stroke="#c2c2c2" stroke-width="22" stroke-linecap="round"/><line x1="6" y1="4" x2="94" y2="114" stroke="#a8171a" stroke-width="10" stroke-linecap="round"/><line x1="0" y1="58" x2="50" y2="120" stroke="#c2c2c2" stroke-width="22" stroke-linecap="round"/><line x1="0" y1="58" x2="50" y2="120" stroke="#a8171a" stroke-width="10" stroke-linecap="round"/><line x1="94" y1="4" x2="6" y2="114" stroke="#c2c2c2" stroke-width="22" stroke-linecap="round"/><line x1="94" y1="4" x2="6" y2="114" stroke="#a8171a" stroke-width="10" stroke-linecap="round"/><line x1="50" y1="0" x2="0" y2="58" stroke="#c2c2c2" stroke-width="22" stroke-linecap="round"/><line x1="50" y1="0" x2="0" y2="58" stroke="#a8171a" stroke-width="10" stroke-linecap="round"/><line x1="100" y1="58" x2="50" y2="120" stroke="#c2c2c2" stroke-width="22" stroke-linecap="round"/><line x1="100" y1="58" x2="50" y2="120" stroke="#a8171a" stroke-width="10" stroke-linecap="round"/></symbol></defs></svg>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="60.533333" data-width="1080" data-height="1920">
+      <div id="face-wrap"><video id="face" src="assets/face.mp4" muted playsinline data-start="0" data-duration="60.533333" data-track-index="0"></video></div>
+      <audio id="voice" src="assets/face.mp4" data-start="0" data-duration="60.533333" data-track-index="1" data-volume="1"></audio>
+      <!-- B-roll (full-screen slides) -->
+      <div class="bw" id="bw1"><video id="vb1" src="assets/broll/plate.mp4" muted playsinline data-start="14.05" data-duration="2.6" data-media-start="0" data-track-index="4"></video></div>
+      <div class="bw" id="bw2"><video id="vb2" src="assets/broll/squat.mp4" muted playsinline data-start="16.65" data-duration="3.5" data-media-start="0" data-track-index="5"></video></div>
+      <div class="bw" id="bw3"><video id="vb3" src="assets/broll/loading.mp4" muted playsinline data-start="45.55" data-duration="7.9" data-media-start="0" data-track-index="6"></video></div>
+      <audio id="sfx0" src="assets/sfx/swipe.mp3" data-start="0.3" data-duration="1.05" data-track-index="10" data-volume="0.12"></audio>
+      <audio id="sfx1" src="assets/sfx/slam.mp3" data-start="2.35" data-duration="1.22" data-track-index="11" data-volume="0.15"></audio>
+      <audio id="sfx2" src="assets/sfx/pop.mp3" data-start="3.0" data-duration="0.72" data-track-index="12" data-volume="0.14"></audio>
+      <audio id="sfx3" src="assets/sfx/pop.mp3" data-start="6.65" data-duration="0.72" data-track-index="13" data-volume="0.14"></audio>
+      <audio id="sfx4" src="assets/sfx/swipe.mp3" data-start="8.8" data-duration="1.05" data-track-index="14" data-volume="0.12"></audio>
+      <audio id="sfx5" src="assets/sfx/click.wav" data-start="9.89" data-duration="0.45" data-track-index="15" data-volume="0.16"></audio>
+      <audio id="sfx6" src="assets/sfx/click.wav" data-start="11.33" data-duration="0.45" data-track-index="16" data-volume="0.16"></audio>
+      <audio id="sfx7" src="assets/sfx/click.wav" data-start="12.88" data-duration="0.45" data-track-index="17" data-volume="0.16"></audio>
+      <audio id="sfx8" src="assets/sfx/whoosh.mp3" data-start="13.8" data-duration="0.57" data-track-index="18" data-volume="0.18"></audio>
+      <audio id="sfx9" src="assets/sfx/glitch.mp3" data-start="14.07" data-duration="1.20" data-track-index="19" data-volume="0.12"></audio>
+      <audio id="sfx10" src="assets/sfx/pop.mp3" data-start="14.6" data-duration="0.72" data-track-index="20" data-volume="0.14"></audio>
+      <audio id="sfx11" src="assets/sfx/glitch.mp3" data-start="16.62" data-duration="1.20" data-track-index="21" data-volume="0.12"></audio>
+      <audio id="sfx12" src="assets/sfx/slam.mp3" data-start="18.58" data-duration="1.22" data-track-index="22" data-volume="0.15"></audio>
+      <audio id="sfx13" src="assets/sfx/swipe.mp3" data-start="18.86" data-duration="1.05" data-track-index="23" data-volume="0.12"></audio>
+      <audio id="sfx14" src="assets/sfx/slam.mp3" data-start="19.51" data-duration="1.22" data-track-index="24" data-volume="0.15"></audio>
+      <audio id="sfx15" src="assets/sfx/whoosh.mp3" data-start="19.9" data-duration="0.57" data-track-index="25" data-volume="0.18"></audio>
+      <audio id="sfx16" src="assets/sfx/pop.mp3" data-start="20.24" data-duration="0.72" data-track-index="26" data-volume="0.14"></audio>
+      <audio id="sfx17" src="assets/sfx/slam.mp3" data-start="25.71" data-duration="1.22" data-track-index="27" data-volume="0.15"></audio>
+      <audio id="sfx18" src="assets/sfx/swipe.mp3" data-start="26.33" data-duration="1.05" data-track-index="28" data-volume="0.12"></audio>
+      <audio id="sfx19" src="assets/sfx/swipe.mp3" data-start="29.66" data-duration="1.05" data-track-index="29" data-volume="0.12"></audio>
+      <audio id="sfx20" src="assets/sfx/slam.mp3" data-start="33.54" data-duration="1.22" data-track-index="30" data-volume="0.15"></audio>
+      <audio id="sfx21" src="assets/sfx/pop.mp3" data-start="34.95" data-duration="0.72" data-track-index="31" data-volume="0.14"></audio>
+      <audio id="sfx22" src="assets/sfx/slam.mp3" data-start="35.63" data-duration="1.22" data-track-index="32" data-volume="0.15"></audio>
+      <audio id="sfx23" src="assets/sfx/click.wav" data-start="36.94" data-duration="0.45" data-track-index="33" data-volume="0.16"></audio>
+      <audio id="sfx24" src="assets/sfx/click.wav" data-start="39.24" data-duration="0.45" data-track-index="34" data-volume="0.16"></audio>
+      <audio id="sfx25" src="assets/sfx/click.wav" data-start="40.88" data-duration="0.45" data-track-index="35" data-volume="0.16"></audio>
+      <audio id="sfx26" src="assets/sfx/slam.mp3" data-start="44.14" data-duration="1.22" data-track-index="36" data-volume="0.15"></audio>
+      <audio id="sfx27" src="assets/sfx/slam.mp3" data-start="45.08" data-duration="1.22" data-track-index="37" data-volume="0.15"></audio>
+      <audio id="sfx28" src="assets/sfx/whoosh.mp3" data-start="45.33" data-duration="0.57" data-track-index="38" data-volume="0.18"></audio>
+      <audio id="sfx29" src="assets/sfx/glitch.mp3" data-start="45.6" data-duration="1.20" data-track-index="39" data-volume="0.12"></audio>
+      <audio id="sfx30" src="assets/sfx/swipe.mp3" data-start="45.9" data-duration="1.05" data-track-index="40" data-volume="0.12"></audio>
+      <audio id="sfx31" src="assets/sfx/slam.mp3" data-start="47.55" data-duration="1.22" data-track-index="41" data-volume="0.15"></audio>
+      <audio id="sfx32" src="assets/sfx/slam.mp3" data-start="48.71" data-duration="1.22" data-track-index="42" data-volume="0.15"></audio>
+      <audio id="sfx33" src="assets/sfx/click.wav" data-start="49.7" data-duration="0.45" data-track-index="43" data-volume="0.16"></audio>
+      <audio id="sfx34" src="assets/sfx/click.wav" data-start="50.14" data-duration="0.45" data-track-index="44" data-volume="0.16"></audio>
+      <audio id="sfx35" src="assets/sfx/glitch.mp3" data-start="52.6" data-duration="1.20" data-track-index="45" data-volume="0.12"></audio>
+      <audio id="sfx36" src="assets/sfx/whoosh.mp3" data-start="53.2" data-duration="0.57" data-track-index="46" data-volume="0.18"></audio>
+      <audio id="sfx37" src="assets/sfx/swipe.mp3" data-start="55.65" data-duration="1.05" data-track-index="47" data-volume="0.12"></audio>
+      <audio id="sfx38" src="assets/sfx/pop.mp3" data-start="57.45" data-duration="0.72" data-track-index="48" data-volume="0.14"></audio>
+      <audio id="sfx39" src="assets/sfx/slam.mp3" data-start="59.35" data-duration="1.18" data-track-index="49" data-volume="0.15"></audio>
+      <audio id="music" src="assets/music.mp3" data-start="0" data-duration="60.533333" data-track-index="2" data-volume="0.04"></audio>
+      <div id="overlay" class="clip" data-start="0" data-duration="60.533333" data-track-index="3" style="position:absolute;inset:0;">
+        <div id="topshade"></div><div id="botshade"></div>
+
+        <!-- P1 hook: "il carico è l'unica cosa che ti deve interessare, o quasi" -->
+        <div class="ov" id="p1"><div class="row" id="p1k"><span class="stripes"></span><span class="small">Per quanto sembrerà strano…</span></div>
+          <div class="big" id="p1b">Il <i>carico</i></div>
+          <div class="row"><div class="nx red" id="p1n"><svg class="lbm"><use href="#lbsym" /></svg><b style="font-size:44px">L'unica cosa che conta</b></div><div class="small" id="p1q" style="color:#fff">*o quasi</div></div></div>
+        <!-- P2 the conditions -->
+        <div class="ov" id="p2" style="gap:20px"><div class="row" id="p2k"><svg class="lbm"><use href="#lbsym" /></svg><span class="small" style="color:#fff">Se hai…</span><span class="stripes"></span></div>
+          <div class="chk" id="p2a"><div class="bx">✓</div><b>Tecnica corretta</b></div>
+          <div class="chk" id="p2b"><div class="bx">✓</div><b>Stesso range di movimento</b></div>
+          <div class="chk" id="p2c"><div class="bx">✓</div><b>Recupero adeguato</b></div></div>
+        <!-- P3 strong without mass -->
+        <div class="ov" id="p3"><div class="row"><div class="nx" id="p3a"><b>Ok? Non vuoi sentire altro.</b></div></div>
+          <div class="big" id="p3b" style="font-size:92px">Puoi essere <i>forte</i></div>
+          <div class="row"><div class="nx white rel" id="p3c"><svg class="lbm"><use href="#lbsym" /></svg><b style="font-size:42px">Anche senza montagne di massa</b></div></div></div>
+        <!-- P4 the order -->
+        <div class="ov" id="p4"><div class="row" id="p4k"><span class="stripes"></span><span class="small" style="color:#fff">Sempre in quest'ordine</span></div>
+          <div class="row" style="gap:26px;margin-top:22px"><div class="nx red" id="p4a"><b style="font-size:64px">1 · Forza</b></div><div class="big" id="p4r" style="font-size:80px">→</div><div class="nx white" id="p4b"><b style="font-size:64px">2 · Muscolo</b></div></div></div>
+        <!-- P5 the rules -->
+        <div class="ov" id="p5" style="gap:18px">
+          <div class="chk" id="p5a" style="width:900px"><span class="n">1</span><svg class="lbm"><use href="#lbsym" /></svg><b>Meccanizza ogni ripetizione</b></div>
+          <div class="chk" id="p5b" style="width:900px"><span class="n">2</span><svg class="lbm"><use href="#lbsym" /></svg><b>Recupera adeguatamente</b></div>
+          <div class="chk rel" id="p5c" style="width:900px"><span class="n">3</span><svg class="lbm"><use href="#lbsym" /></svg><b>Non cancellare il ROM</b></div>
+          <div class="row" style="position:absolute;left:0;right:0;top:70px;gap:26px"><div class="nx red" id="p5d"><b style="font-size:84px">E crescerai.</b></div><div class="nx white" id="p5e"><b style="font-size:84px">Basta.</b></div></div></div>
+        <!-- P6 keep adding load, 4-10 reps -->
+        <div class="ov" id="p6" style="gap:14px"><div class="row"><div class="nx red" id="p6a"><svg class="lbm"><use href="#lbsym" /></svg><b>+ Carico, sempre</b></div></div>
+          <div class="small" id="p6k" style="color:#fff;margin-top:8px">Range di ripetizioni relativamente basso</div>
+          <div id="rng"><div id="rngf"></div><div id="rngl">4 – 10 rep</div></div><div id="rngt"></div></div>
+
+        <!-- FS1 load -> strength -> hypertrophy, linear -->
+        <div class="fs" id="fs1"><div class="redglow" id="g1" style="left:-200px;top:300px"></div><div class="speed" id="sp1"></div><div class="tint"></div>
+          <svg id="line1" viewBox="0 0 1080 1920"><line id="l1" x1="80" y1="1330" x2="1000" y2="560" stroke="#ef4b40" stroke-width="12" stroke-linecap="round" /><polygon id="l1h" points="1000,560 950,568 985,600" fill="#ef4b40" /></svg>
+          <div class="brand" id="f1brand"><svg class="lbm" style="width:58px;height:68px"><use href="#lbsym" /></svg><img src="assets/img/nexus-dark.png" alt="" /></div>
+          <div class="step" style="left:0;right:0;top:250px;display:flex;justify-content:center"><div class="nx white" id="f1k"><b style="font-size:58px">Il carico deve aumentare</b></div></div>
+          <div class="step" id="f1a" style="left:60px;top:1130px"><div class="nx line"><b>Carico <span class="up">↑</span></b></div></div>
+          <div class="step" id="f1b" style="left:230px;top:900px"><div class="nx line"><b>Forza <span class="up">↑</span></b></div></div>
+          <div class="step" id="f1c" style="left:330px;top:670px"><div class="nx red"><b>Ipertrofia ↑</b></div></div>
+          <div class="photo" id="f1p" style="left:700px;top:960px;width:320px;height:430px;transform:rotate(4deg)"><img src="assets/img/physique.jpg" alt="" style="object-position:50% 30%" /><div class="tagr">Ipertrofia</div></div>
+          <div class="step" id="f1l" style="right:70px;top:430px"><div class="nx red"><b style="font-size:70px">Lineare.</b></div></div>
+        </div>
+        <!-- FS2 +1 kg, +1.5 kg, microplates: imperceptible but important -->
+        <div class="fs" id="fs2"><div class="redglow" id="g2" style="left:300px;top:200px"></div><div class="speed" id="sp2"></div><div class="tint"></div>
+          <div class="brand" id="f2brand"><svg class="lbm" style="width:58px;height:68px"><use href="#lbsym" /></svg><img src="assets/img/nexus-dark.png" alt="" /></div>
+          <div class="step" style="left:0;right:0;top:250px;display:flex;justify-content:center"><div class="nx white" id="f2k"><b style="font-size:64px">Aumenta sempre</b></div></div>
+          <div class="step" style="left:0;right:0;top:380px;height:220px"><div class="count" id="f2n" style="position:absolute;left:0;right:0;text-align:center"><i>+</i>1 kg</div><div class="count" id="f2n2" style="position:absolute;left:0;right:0;text-align:center"><i>+</i>1,5 kg</div></div>
+          <div class="step" id="f2pl" style="left:80px;top:690px"><svg id="plates" viewBox="0 0 920 240">
+            <rect x="0" y="104" width="920" height="32" rx="6" fill="#c2c2c2" /><rect x="40" y="70" width="34" height="100" rx="4" fill="#8f8f96" />
+            <g id="mp1"><rect x="120" y="20" width="44" height="200" rx="8" fill="#a8171a" stroke="#f4f4f5" stroke-width="4" /><text x="142" y="236" fill="#f4f4f5" font-family="Saira" font-style="italic" font-weight="900" font-size="30" text-anchor="middle">1,25</text></g>
+            <g id="mp2"><rect x="186" y="46" width="34" height="148" rx="7" fill="#c0241e" stroke="#f4f4f5" stroke-width="4" /><text x="203" y="236" fill="#f4f4f5" font-family="Saira" font-style="italic" font-weight="900" font-size="30" text-anchor="middle">1</text></g>
+            <g id="mp3"><rect x="240" y="66" width="26" height="108" rx="6" fill="#ef4b40" stroke="#f4f4f5" stroke-width="4" /><text x="253" y="236" fill="#f4f4f5" font-family="Saira" font-style="italic" font-weight="900" font-size="30" text-anchor="middle">0,5</text></g>
+          </svg></div>
+          <div class="step" style="left:0;right:0;top:960px;display:flex;justify-content:center"><div class="nx red" id="f2m"><b>Microcarichi</b></div></div>
+          <div class="step" style="left:0;right:0;top:1110px;display:flex;justify-content:center"><div class="small" id="f2i" style="font-size:54px">Impercettibili…</div></div>
+          <div class="step" style="left:0;right:0;top:1190px;display:flex;justify-content:center"><div class="nx white" id="f2j"><b style="font-size:86px">…ma <i>importanti</i></b></div></div>
+        </div>
+
+        <div class="glitch" id="gl1" style="top:520px;background:linear-gradient(90deg,transparent,#ef4b40 20%,#fff 50%,#a8171a 80%,transparent)"></div>
+        <div class="glitch" id="gl2" style="top:910px;height:24px;background:linear-gradient(90deg,#fff,transparent 40%,#ef4b40)"></div>
+        <div class="glitch" id="gl3" style="top:1300px;height:60px;background:linear-gradient(90deg,transparent,#a8171a 30%,transparent 60%,#fff)"></div>
+        <div id="captions"></div>
+        <div id="wipe"></div>
+        <div id="flash"></div>
+      </div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const DUR = 60.533333;
+
+      // face: slow push-ins, small punches on key words (max 1.07 so the hairline stays below the pop-ups)
+      const Z = [[0,1.0,0],[0.05,1.04,8.3,"none"],[2.35,1.07,0.25,"expo.out"],[8.6,1.0,0],[8.65,1.04,5.3,"none"],[20.2,1.0,0],[20.25,1.03,5.4,"none"],[25.71,1.07,0.25,"expo.out"],
+        [28.1,1.0,0],[28.15,1.04,8.2,"none"],[36.5,1.0,0],[36.55,1.04,8.9,"none"],[45.08,1.08,0.2,"expo.out"],[53.5,1.0,0],[53.55,1.05,7.0,"none"]];
+      Z.forEach(([t,s,d,e]) => d ? tl.to("#face-wrap",{scale:s,duration:d,ease:e},t) : tl.set("#face-wrap",{scale:s},t));
+      // B-roll: slow push / drift for life
+      tl.fromTo("#bw1",{scale:1.12,x:-30},{scale:1.02,x:20,duration:2.6,ease:"none"},14.05);
+      tl.fromTo("#bw2",{scale:1.0},{scale:1.1,duration:3.5,ease:"none"},16.65);
+      tl.fromTo("#bw3",{scale:1.04,y:0},{scale:1.14,y:-40,duration:7.9,ease:"none"},45.55);
+
+      const show = (s,a,b) => { tl.fromTo(s,{opacity:0,x:-60},{opacity:1,x:0,duration:0.35,ease:"expo.out"},a); tl.to(s,{opacity:0,x:60,duration:0.18,ease:"power2.in"},b-0.18); };
+      const nxIn = (s,t) => tl.fromTo(s,{opacity:0,x:-80,clipPath:"inset(0 100% 0 0)"},{opacity:1,x:0,clipPath:"inset(0 0% 0 0)",duration:0.32,ease:"power3.out"},t);
+      const pop = (s,t,e) => tl.fromTo(s,{opacity:0,scale:0.8,y:14},{opacity:1,scale:1,y:0,duration:0.3,ease:e||"back.out(2)"},t);
+      const slam = (s,t) => tl.fromTo(s,{opacity:0,scale:1.7},{opacity:1,scale:1,duration:0.22,ease:"power4.in"},t);
+      const strike = (s,t) => tl.fromTo(s,{scaleX:0},{scaleX:1,duration:0.25,ease:"power3.out"},t);
+      const glitch = (t) => { ["#gl1","#gl2","#gl3"].forEach((g,k) => { tl.fromTo(g,{opacity:0.9,x:(k%2?-1:1)*140},{opacity:0,x:(k%2?1:-1)*60,duration:0.18,ease:"steps(3)",immediateRender:false},t+k*0.03); }); };
+      const wipe = (t) => { tl.fromTo("#wipe",{x:0},{x:3700,duration:0.5,ease:"power2.inOut",immediateRender:false},t); };   // slanted NEXUS bar sweeps the cut
+      const fsIn = (s,a,b) => { wipe(a-0.25); tl.fromTo(s,{opacity:0},{opacity:1,duration:0.01},a); glitch(a+0.02);   // the wipe is the transition: no flash on top of it
+        wipe(b-0.25); tl.to(s,{opacity:0,duration:0.01},b); };
+      gsap.set(".x",{scaleX:0});
+
+      // P1 — "Per quanto sembrerà strano, il carico è l'unica cosa ... o quasi"
+      show("#p1",0.25,8.45); nxIn("#p1k",0.3); slam("#p1b",2.35); nxIn("#p1n",3.0); pop("#p1q",6.65,"back.out(3)");
+      // P2 — tecnica corretta, stesso range di movimento, recuperi adeguatamente
+      show("#p2",8.75,13.85); nxIn("#p2k",8.8); nxIn("#p2a",9.89); nxIn("#p2b",11.33); nxIn("#p2c",12.88);
+      // FS1 — "il carico deve aumentare ... forza ... ipertrofia. Lineare."
+      fsIn("#fs1",14.05,20.15); tl.fromTo("#flash",{opacity:0.25},{opacity:0,duration:0.15,immediateRender:false},16.65); glitch(16.62);
+      tl.fromTo("#sp1",{x:0},{x:-400,duration:6.1,ease:"none"},14.05); tl.fromTo("#g1",{x:0,y:0},{x:700,y:-200,duration:6.1,ease:"sine.inOut"},14.05);
+      tl.fromTo("#f1brand",{opacity:0,y:-20},{opacity:1,y:0,duration:0.3,ease:"power2.out"},14.2); nxIn("#f1k",14.29);
+      tl.fromTo("#f1a",{opacity:0,y:60},{opacity:1,y:0,duration:0.3,ease:"back.out(2)"},14.6);
+      tl.fromTo("#f1b",{opacity:0,y:60},{opacity:1,y:0,duration:0.3,ease:"back.out(2)"},16.70);
+      tl.fromTo("#f1c",{opacity:0,scale:1.6},{opacity:1,scale:1,duration:0.22,ease:"power4.in"},18.58);
+      tl.fromTo("#f1p",{opacity:0,x:200,rotation:14},{opacity:1,x:0,rotation:4,duration:0.45,ease:"back.out(1.6)"},18.7);
+      const l1 = document.getElementById("l1"); l1.style.strokeDasharray = 1250; tl.fromTo(l1,{strokeDashoffset:1250},{strokeDashoffset:0,duration:0.6,ease:"power2.inOut"},19.35); tl.fromTo("#l1h",{opacity:0},{opacity:1,duration:0.1},19.9);
+      slam("#f1l",19.51);
+      // P3 — "Ok? Non vuoi sentire altro. ... puoi diventare forte anche senza montagne di massa muscolare"
+      show("#p3",20.24,28.0); nxIn("#p3a",20.24); slam("#p3b",25.71); nxIn("#p3c",26.33);
+      // P4 — "adattamento fisiologico ... in questo ordine: prima diventi forte e poi c'è il muscolo"
+      show("#p4",29.5,36.4); nxIn("#p4k",29.66); slam("#p4a",33.54); pop("#p4r",34.95,"expo.out"); slam("#p4b",35.63);
+      // P5 — meccanizza ogni ripetizione, recupera, non cancellare il ROM ... e crescerai. Basta.
+      show("#p5",36.6,45.45); nxIn("#p5a",36.94); nxIn("#p5b",39.24); nxIn("#p5c",40.88);
+      tl.to("#p5a, #p5b, #p5c",{opacity:0,x:60,duration:0.16,ease:"power2.in",stagger:0.03},43.9);   // the rules make room for the payoff
+      slam("#p5d",44.14); slam("#p5e",45.08); glitch(45.1);
+      // FS2 — "aumentare quel chilo, quel chilo e mezzo, anche con i microcarichi ... impercettibili ... importanti"
+      fsIn("#fs2",45.55,53.45); tl.fromTo("#sp2",{x:0},{x:400,duration:7.9,ease:"none"},45.55); tl.fromTo("#g2",{x:0,y:0},{x:-600,y:500,duration:7.9,ease:"sine.inOut"},45.55);
+      tl.fromTo("#f2brand",{opacity:0,y:-20},{opacity:1,y:0,duration:0.3,ease:"power2.out"},45.7); nxIn("#f2k",45.9);
+      slam("#f2n",47.55); tl.to("#f2n",{opacity:0,duration:0.06},48.68); slam("#f2n2",48.71);
+      tl.fromTo("#f2pl",{opacity:0},{opacity:1,duration:0.2},49.4);
+      ["#mp1","#mp2","#mp3"].forEach((p,k) => tl.fromTo(p,{x:640,opacity:0},{x:0,opacity:1,duration:0.35,ease:"back.out(1.4)"},49.7+k*0.22));
+      nxIn("#f2m",49.9);
+      tl.fromTo("#f2i",{opacity:0,y:10},{opacity:0.75,y:0,duration:0.3,ease:"power2.out"},51.52);
+      tl.to("#f2i",{opacity:0,duration:0.1},52.62); glitch(52.6);
+      tl.fromTo("#f2j",{opacity:0,scale:1.5,x:-30},{opacity:1,scale:1,x:0,duration:0.22,ease:"power4.in"},52.72);
+      // P6 — "continuare ad aggiungere carico ... range di ripetizioni relativamente basso, dai 4 ai 10 colpi"
+      tl.fromTo("#p6",{opacity:0,x:-60},{opacity:1,x:0,duration:0.35,ease:"expo.out"},55.6); nxIn("#p6a",55.65);
+      tl.fromTo("#p6k",{opacity:0,y:10},{opacity:1,y:0,duration:0.3},57.4); tl.fromTo("#rng, #rngt",{opacity:0},{opacity:1,duration:0.25},57.45);
+      const RW = 860, MAXR = 15, px = (r) => r / MAXR * RW; const tk = document.getElementById("rngt");
+      [1,4,10,15].forEach(r => { const d = document.createElement("div"); d.textContent = r === 15 ? "15+" : r; d.style.left = px(r) + "px"; tk.appendChild(d); });
+      const rf = document.getElementById("rngf"), rl = document.getElementById("rngl"); rf.style.left = rl.style.left = px(4) + "px"; rf.style.width = rl.style.width = (px(10) - px(4)) + "px";
+      tl.fromTo("#rngf",{scaleX:0},{scaleX:0.0001,duration:0.01},57.45); tl.to("#rngf",{scaleX:0.08,duration:0.2},59.11); tl.to("#rngf",{scaleX:1,duration:0.4,ease:"power2.out"},59.35);
+      tl.fromTo("#rngl",{opacity:0},{opacity:1,duration:0.2},59.55);
+
+      // captions — keywords in NEXUS red
+      const CAPS = [{"a": 0.04, "w": [["PER", 0.04], ["QUANTO", 0.38]], "b": 0.85}, {"a": 0.85, "w": [["SEMBRERÀ", 0.85], ["STRANO", 1.6]], "b": 2.16}, {"a": 2.16, "w": [["IL", 2.16], ["CARICO", 2.35]], "b": 2.91}, {"a": 2.91, "w": [["È", 2.91], ["L'UNICA", 3.0], ["COSA", 3.65]], "b": 4.03}, {"a": 4.03, "w": [["CHE", 4.03], ["TI", 4.32], ["DEVE", 4.5]], "b": 4.91}, {"a": 4.91, "w": [["INTERESSARE", 4.91]], "b": 6.65}, {"a": 6.65, "w": [["O", 6.65], ["QUASI", 6.76], ["L'UNICA", 7.15]], "b": 7.76}, {"a": 7.76, "w": [["ROBA.", 7.76]], "b": 8.76}, {"a": 8.76, "w": [["PERCHÉ", 8.76], ["SE", 9.14], ["TU", 9.26]], "b": 9.38}, {"a": 9.38, "w": [["HAI", 9.38], ["DELLA", 9.57], ["TECNICA", 9.89]], "b": 10.33}, {"a": 10.33, "w": [["CORRETTA", 10.33]], "b": 11.0}, {"a": 11.0, "w": [["HAI", 11.0], ["LO", 11.2], ["STESSO", 11.33]], "b": 11.72}, {"a": 11.72, "w": [["RANGE", 11.72]], "b": 12.08}, {"a": 12.08, "w": [["DI", 12.08], ["MOVIMENTO", 12.18]], "b": 12.8}, {"a": 12.8, "w": [["E", 12.8], ["RECUPERI", 12.88]], "b": 13.24}, {"a": 13.24, "w": [["ADEGUATAMENTE", 13.24]], "b": 14.17}, {"a": 14.17, "w": [["IL", 14.17], ["CARICO", 14.29], ["DEVE", 14.67]], "b": 14.9}, {"a": 14.9, "w": [["AUMENTARE.", 14.9]], "b": 15.76}, {"a": 15.76, "w": [["SE", 15.76], ["AUMENTA", 15.84]], "b": 16.23}, {"a": 16.23, "w": [["AUMENTA", 16.23], ["LA", 16.55], ["TUA", 16.58]], "b": 16.7}, {"a": 16.7, "w": [["FORZA", 16.7]], "b": 17.04}, {"a": 17.04, "w": [["SE", 17.04], ["LA", 17.23], ["FORZA", 17.28]], "b": 17.58}, {"a": 17.58, "w": [["AUMENTA", 17.58]], "b": 18.14}, {"a": 18.14, "w": [["AUMENTA", 18.14]], "b": 18.58}, {"a": 18.58, "w": [["L'IPERTROFIA.", 18.58]], "b": 19.51}, {"a": 19.51, "w": [["LINEARE.", 19.51]], "b": 20.24}, {"a": 20.24, "w": [["OK?", 20.24]], "b": 21.0}, {"a": 21.0, "w": [["NON", 21.0], ["VUOI", 21.24], ["SENTIRE", 21.55]], "b": 22.1}, {"a": 22.1, "w": [["ALTRO.", 22.1]], "b": 22.76}, {"a": 22.76, "w": [["EH", 22.76]], "b": 23.65}, {"a": 23.65, "w": [["PERÒ", 23.65]], "b": 24.23}, {"a": 24.23, "w": [["PERCHÉ", 24.23], ["IN", 24.47], ["REALTÀ", 24.82]], "b": 24.93}, {"a": 24.93, "w": [["PUOI", 24.93], ["DIVENTARE", 25.17]], "b": 25.71}, {"a": 25.71, "w": [["FORTE", 25.71], ["ANCHE", 26.02], ["SENZA", 26.33]], "b": 26.69}, {"a": 26.69, "w": [["MONTAGNE", 26.69], ["DI", 26.915], ["MASSA", 27.14]], "b": 27.45}, {"a": 27.45, "w": [["MUSCOLARE.", 27.45]], "b": 28.2}, {"a": 28.2, "w": [["È", 28.2], ["SEMPRE", 28.4]], "b": 29.44}, {"a": 29.44, "w": [["UN", 29.44], ["ADATTAMENTO", 29.66]], "b": 30.4}, {"a": 30.4, "w": [["FISIOLOGICO", 30.4]], "b": 31.33}, {"a": 31.33, "w": [["E", 31.33], ["SARÀ", 31.36], ["SEMPRE", 31.68]], "b": 32.21}, {"a": 32.21, "w": [["IN", 32.21], ["QUESTO", 32.33], ["ORDINE", 32.82]], "b": 33.54}, {"a": 33.54, "w": [["PRIMA", 33.54], ["DIVENTI", 33.94]], "b": 34.49}, {"a": 34.49, "w": [["FORTE", 34.49], ["E", 34.91], ["POI", 34.99]], "b": 35.24}, {"a": 35.24, "w": [["C'È", 35.24], ["IL", 35.47], ["MUSCOLO.", 35.63]], "b": 36.56}, {"a": 36.56, "w": [["QUINDI", 36.56], ["MECCANIZZA", 36.94]], "b": 37.49}, {"a": 37.49, "w": [["OGNI", 37.49], ["SINGOLA", 37.73]], "b": 38.14}, {"a": 38.14, "w": [["RIPETIZIONE", 38.14]], "b": 38.79}, {"a": 38.79, "w": [["CHE", 38.79], ["FAI", 38.97]], "b": 39.24}, {"a": 39.24, "w": [["RECUPERA", 39.24]], "b": 39.7}, {"a": 39.7, "w": [["ADEGUATAMENTE", 39.7]], "b": 40.45}, {"a": 40.45, "w": [["E", 40.45], ["NON", 40.52], ["CANCELLARE", 40.88]], "b": 41.34}, {"a": 41.34, "w": [["IL", 41.34], ["ROM", 41.72]], "b": 41.72}, {"a": 41.72, "w": [["CHE", 41.72], ["HAI", 41.96], ["ACQUISITO", 42.18]], "b": 42.87}, {"a": 42.87, "w": [["DURANTE", 42.87]], "b": 43.41}, {"a": 43.41, "w": [["LE", 43.41], ["ALZATE", 43.57]], "b": 44.01}, {"a": 44.01, "w": [["E", 44.01], ["CRESCERAI.", 44.14]], "b": 45.08}, {"a": 45.08, "w": [["BASTA.", 45.08]], "b": 45.66}, {"a": 45.66, "w": [["DEVI", 45.66], ["RIUSCIRE", 45.88]], "b": 46.4}, {"a": 46.4, "w": [["SEMPRE", 46.4]], "b": 46.8}, {"a": 46.8, "w": [["AD", 46.8], ["AUMENTARE", 46.9]], "b": 47.55}, {"a": 47.55, "w": [["QUEL", 47.55], ["CHILO", 47.68]], "b": 48.1}, {"a": 48.1, "w": [["QUEL", 48.1], ["CHILO", 48.34]], "b": 48.64}, {"a": 48.64, "w": [["E", 48.64], ["MEZZO", 48.71]], "b": 49.15}, {"a": 49.15, "w": [["ANCHE", 49.15]], "b": 49.42}, {"a": 49.42, "w": [["CON", 49.42], ["I", 49.6], ["MICROCARICHI", 49.7]], "b": 50.5}, {"a": 50.5, "w": [["PERCHÉ", 50.5], ["PER", 50.85], ["QUANTO", 51.22]], "b": 51.52}, {"a": 51.52, "w": [["IMPERCETTIBILI", 51.52]], "b": 52.37}, {"a": 52.37, "w": [["SONO", 52.37], ["IMPORTANTI.", 52.72]], "b": 53.48}, {"a": 53.48, "w": [["E", 53.48], ["NON", 53.54], ["DEVI", 53.74]], "b": 54.0}, {"a": 54.0, "w": [["FARE", 54.0], ["ALTRO", 54.28]], "b": 54.62}, {"a": 54.62, "w": [["CHE", 54.62], ["CONTINUARE", 54.82]], "b": 55.57}, {"a": 55.57, "w": [["AD", 55.57], ["AGGIUNGERE", 55.65]], "b": 55.88}, {"a": 55.88, "w": [["CARICO", 55.88], ["E", 56.54], ["TENERE", 56.66]], "b": 57.02}, {"a": 57.02, "w": [["QUEL", 57.02], ["RANGE", 57.4]], "b": 57.45}, {"a": 57.45, "w": [["DI", 57.45], ["RIPETIZIONI", 57.54]], "b": 58.05}, {"a": 58.05, "w": [["RELATIVAMENTE", 58.05]], "b": 58.66}, {"a": 58.66, "w": [["BASSO", 58.66]], "b": 58.98}, {"a": 58.98, "w": [["DAI", 58.98], ["4 AI", 59.11], ["10", 59.35]], "b": 59.63}, {"a": 59.63, "w": [["COLPI.", 59.63]], "b": 60.5}]; const KEY = new Set(["CARICO", "FORZA", "IPERTROFIA", "LINEARE", "FORTE", "MUSCOLO", "MUSCOLARE", "ROM", "MICROCARICHI", "CHILO", "IMPORTANTI", "4 AI 10", "RECUPERA", "RECUPERI", "BASTA", "TECNICA", "CRESCERAI"]); const box = document.getElementById("captions");
+      CAPS.forEach((c,i)=>{ const el=document.createElement("div"); el.className="cap"; el.id="cap"+i;
+        el.innerHTML=c.w.map(x=>{ const t=x[0]; const k=KEY.has(t.replace(/[.,;:?!]/g,"")); return k?`<span class="k">${t}</span>`:t; }).join(" "); box.appendChild(el);
+        tl.fromTo(el,{opacity:0,y:8},{opacity:1,y:0,duration:0.08,ease:"power2.out"},c.a);
+        if (i < CAPS.length - 1) tl.set(el,{opacity:0},Math.min(c.b,DUR-0.05)); });
+      tl.set({},{},DUR);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

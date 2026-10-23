@@ -1,0 +1,6 @@
+# Luca's take, logos and stock media stay local (regenerate per README)
+*.mp4
+assets/raw16k.wav
+assets/img/
+assets/broll/
+renders/

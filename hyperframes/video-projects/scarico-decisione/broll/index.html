@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="it" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/gsap.min.js"></script>
+    <script src="assets/three.min.js"></script>
+    <script src="assets/nexus-data.js"></script>
+    <style>
+      * { margin:0; padding:0; box-sizing:border-box; }
+      html, body { width:1920px; height:1080px; overflow:hidden; background:#0b0b0d; }
+      #root { position:relative; width:1920px; height:1080px; overflow:hidden; }
+      canvas { position:absolute; inset:0; width:1920px; height:1080px; display:block; }
+      #fx { position:absolute; inset:0; pointer-events:none; }
+      #vig { position:absolute; inset:0; background:radial-gradient(ellipse 78% 72% at 50% 50%, transparent 52%, rgba(0,0,0,0.6) 100%); }
+      #nexusimg { position:absolute; width:1px; height:1px; opacity:0; }
+    </style>
+  </head>
+  <body>
+    <!-- B-roll reel: 11 voxel shots back to back (cut into separate clips after render, see scripts/split_broll.py) -->
+    <div id="root" data-composition-id="main" data-start="0" data-duration="70" data-width="1920" data-height="1080">
+      <canvas id="bg" class="clip" data-start="0" data-duration="70" data-track-index="0" width="1920" height="1080"></canvas>
+      <canvas id="fg" class="clip" data-start="0" data-duration="70" data-track-index="1" width="1920" height="1080"></canvas>
+      <div id="fx" class="clip" data-start="0" data-duration="70" data-track-index="2"><div id="vig"></div></div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const W = 1920, H = 1080;
+      const mk = (id, alpha) => { const r = new THREE.WebGLRenderer({ canvas: document.getElementById(id), antialias: true, alpha, preserveDrawingBuffer: true });
+        r.setPixelRatio(1); r.setSize(W, H, false); r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.0; return r; };
+      const rBg = mk("bg", false), rFg = mk("fg", true);
+      rFg.setClearColor(0x000000, 0);
+      const sceneBg = new THREE.Scene(), sceneFg = new THREE.Scene();
+      const cam = new THREE.PerspectiveCamera(32, W / H, 0.03, 80);
+      const M = (c, e, ei) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.82, metalness: 0.0, emissive: e || 0x000000, emissiveIntensity: ei == null ? 1 : ei });
+      const MM = (c, r, m) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: m });
+      const box = (w, h, d, mat, x, y, z, parent) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); parent.add(m); return m; };
+      const cyl = (r, h, mat, x, y, z, parent, seg) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg || 24), mat); m.position.set(x, y, z); parent.add(m); return m; };
+      const canvasTex = (w, h, draw) => { const c = document.createElement("canvas"); c.width = w; c.height = h; draw(c.getContext("2d"), w, h);
+        const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; t.userData.canvas = c; return t; };
+      let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+      const V = (x, y, z) => new THREE.Vector3(x, y, z);
+      const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+      const ss = (x) => { x = clamp(x, 0, 1); return x * x * (3 - 2 * x); };
+      const lerp = (a, b, p) => a + (b - a) * p;
+
+      // ---------- LB System mark (red lattice) — redrawn from Luca's logo ----------
+      function drawMark(g, x, y, w, col, gap, lw) {
+        const h = w * 1.2, P = (px, py) => [x + px / 100 * w, y + py / 120 * h];
+        const segs = [[[50, 0], [100, 58]], [[6, 4], [94, 114]], [[0, 58], [50, 120]], [[94, 4], [6, 114]], [[50, 0], [0, 58]], [[100, 58], [50, 120]]];
+        g.lineCap = "square";
+        segs.forEach(([a, b]) => { const A = P(...a), B = P(...b);
+          if (gap) { g.strokeStyle = gap; g.lineWidth = lw * 2.1; g.beginPath(); g.moveTo(...A); g.lineTo(...B); g.stroke(); }
+          g.strokeStyle = col; g.lineWidth = lw; g.beginPath(); g.moveTo(...A); g.lineTo(...B); g.stroke(); });
+      }
+      const teeTex = canvasTex(512, 512, (g, w, h) => {
+        g.fillStyle = "#141417"; g.fillRect(0, 0, w, h);
+        drawMark(g, 150, 150, 70, "#c0241e", "#141417", 10);
+        g.fillStyle = "#f2f2f2"; g.font = "italic 900 118px Inter, sans-serif"; g.textBaseline = "middle"; g.fillText("LB", 240, 196);
+        g.font = "800 44px Inter, sans-serif"; g.fillStyle = "#bdbdbd"; g.fillText("SYSTEM", 196, 300);
+      });
+
+      // ---------- rigged voxel character ----------
+      function makeRig(parent, o) {
+        const R = {}; const skin = M(o.skin), skinD = M(o.skinD), hair = M(o.hair), shirt = M(o.shirt), pants = M(o.pants), shoe = M(o.shoe || 0xe9e9e9), dark = M(0x140f12), white = M(0xffffff);
+        const root = new THREE.Group(); parent.add(root); R.root = root;
+        const pelvis = new THREE.Group(); root.add(pelvis); R.pelvis = pelvis;
+        box(0.44, 0.22, 0.28, pants, 0, 0, 0, pelvis);
+        const leg = (s) => { const hip = new THREE.Group(); hip.position.set(s * 0.12, -0.06, 0); pelvis.add(hip);
+          box(0.2, 0.46, 0.22, pants, 0, -0.22, 0, hip);
+          const knee = new THREE.Group(); knee.position.y = -0.44; hip.add(knee);
+          box(0.17, 0.46, 0.18, pants, 0, -0.22, 0, knee);
+          const ank = new THREE.Group(); ank.position.y = -0.44; knee.add(ank);
+          box(0.18, 0.1, 0.31, shoe, 0, -0.05, 0.06, ank); box(0.185, 0.03, 0.315, M(0x222222), 0, -0.088, 0.06, ank);
+          return { hip, knee, ank }; };
+        R.legL = leg(-1); R.legR = leg(1);
+        const spine = new THREE.Group(); spine.position.y = 0.08; pelvis.add(spine); R.spine = spine;
+        const tm = [shirt, shirt, shirt, shirt, o.chest ? new THREE.MeshStandardMaterial({ map: o.chest, roughness: 0.85 }) : shirt, shirt];
+        const torso = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.64, 0.32), tm); torso.position.y = 0.32; spine.add(torso); R.torso = torso;
+        if (o.collar) box(0.3, 0.06, 0.06, M(o.collar), 0, 0.63, 0.15, spine);
+        const arm = (s) => { const sh = new THREE.Group(); sh.position.set(s * 0.375, 0.56, 0); spine.add(sh);
+          box(0.18, 0.34, 0.19, shirt, 0, -0.13, 0, sh); box(0.165, 0.12, 0.175, skin, 0, -0.26, 0, sh);
+          const el = new THREE.Group(); el.position.y = -0.3; sh.add(el);
+          box(0.155, 0.3, 0.165, skin, 0, -0.14, 0, el);
+          const hand = new THREE.Group(); hand.position.y = -0.3; el.add(hand);
+          box(0.15, 0.14, 0.16, skinD, 0, -0.06, 0, hand);
+          return { sh, el, hand }; };
+        R.armL = arm(-1); R.armR = arm(1);
+        box(0.17, 0.12, 0.17, skin, 0, 0.69, 0, spine);
+        const head = new THREE.Group(); head.position.y = 0.95; spine.add(head); R.head = head;
+        box(0.42, 0.46, 0.4, skin, 0, 0, 0, head);
+        box(0.05, 0.1, 0.08, skinD, -0.23, -0.01, 0, head); box(0.05, 0.1, 0.08, skinD, 0.23, -0.01, 0, head);
+        const eye = (x) => { box(0.09, 0.065, 0.02, white, x, 0.045, 0.205, head); return box(0.045, 0.06, 0.02, dark, x + (x < 0 ? 0.015 : -0.015), 0.045, 0.213, head); };
+        R.pupL = eye(-0.1); R.pupR = eye(0.1);
+        R.lidL = box(0.1, 0.075, 0.02, skin, -0.1, 0.045, 0.222, head); R.lidR = box(0.1, 0.075, 0.02, skin, 0.1, 0.045, 0.222, head);
+        R.lidL.scale.y = R.lidR.scale.y = 0.01;
+        R.lashL = box(0.095, 0.014, 0.012, dark, -0.1, 0.03, 0.234, head); R.lashR = box(0.095, 0.014, 0.012, dark, 0.1, 0.03, 0.234, head); R.lashL.visible = R.lashR.visible = false;
+        R.browL = box(0.12, 0.03, 0.025, hair, -0.1, 0.115, 0.215, head); R.browR = box(0.12, 0.03, 0.025, hair, 0.1, 0.115, 0.215, head);
+        box(0.065, 0.1, 0.065, skinD, 0, -0.015, 0.225, head);
+        if (o.beard) { const bd = M(o.beard);
+          box(0.43, 0.16, 0.05, bd, 0, -0.165, 0.2, head); box(0.05, 0.26, 0.37, bd, -0.21, -0.085, 0.015, head); box(0.05, 0.26, 0.37, bd, 0.21, -0.085, 0.015, head);
+          box(0.27, 0.09, 0.07, bd, 0, -0.262, 0.16, head); box(0.19, 0.04, 0.035, bd, 0, -0.085, 0.222, head); }
+        R.mouth = box(0.13, 0.03, 0.03, M(0x6e2026), 0, -0.13, 0.235, head);
+        if (o.glasses) { const fr = M(0x111111); box(0.13, 0.09, 0.02, fr, -0.1, 0.045, 0.232, head); box(0.13, 0.09, 0.02, fr, 0.1, 0.045, 0.232, head); box(0.08, 0.02, 0.02, fr, 0, 0.06, 0.232, head);
+          [-0.1, 0.1].forEach((x) => box(0.1, 0.065, 0.021, new THREE.MeshStandardMaterial({ color: 0xcfe8ff, transparent: true, opacity: 0.35, roughness: 0.1 }), x, 0.045, 0.235, head)); }
+        box(0.44, 0.12, 0.43, hair, 0, 0.26, -0.01, head); box(0.44, 0.07, 0.07, hair, 0.03, 0.2, 0.19, head);
+        box(0.06, 0.2, 0.38, hair, -0.215, 0.14, -0.02, head); box(0.06, 0.2, 0.38, hair, 0.215, 0.14, -0.02, head); box(0.44, 0.28, 0.06, hair, 0, 0.1, -0.205, head);
+        if (!o.shortHair) box(0.18, 0.08, 0.1, hair, 0.1, 0.34, 0.06, head);
+        return R;
+      }
+      // pose helpers (character faces +z; positive rx swings a hanging limb backwards, raises the torso forward)
+      function legPose(leg, a, s, ankleExtra) { leg.hip.rotation.set(-a, 0, 0); leg.knee.rotation.set(a + s, 0, 0); leg.ank.rotation.set(-s + (ankleExtra || 0), 0, 0); }
+      function standOn(R, a, s, footY) { R.pelvis.position.set(0, (footY || 0) + 0.1 + 0.06 + 0.44 * (Math.cos(a) + Math.cos(s)), -0.44 * (Math.sin(a) - Math.sin(s))); }
+      function relax(R) { R.armL.sh.rotation.set(0.05, 0, -0.08); R.armR.sh.rotation.set(0.05, 0, 0.08); R.armL.el.rotation.set(-0.12, 0, 0); R.armR.el.rotation.set(-0.12, 0, 0);
+        R.spine.rotation.set(0, 0, 0); R.head.rotation.set(0, 0, 0); R.armL.hand.rotation.set(0, 0, 0); R.armR.hand.rotation.set(0, 0, 0); }
+      function blink(R, t, ph, closed) { const bt = (t + (ph || 0)) % 3.9; const b = closed ? 1 : (bt < 0.13 ? Math.sin(bt / 0.13 * Math.PI) : 0); R.lidL.scale.y = R.lidR.scale.y = 0.01 + 0.99 * b; R.lashL.visible = R.lashR.visible = !!closed; }
+      function breathe(R, t, k) { R.torso.scale.set(1, 1 + Math.sin(t * 2.2) * 0.012 * (k || 1), 1 + Math.sin(t * 2.2) * 0.02 * (k || 1)); }
+      const wp = (o) => { const v = new THREE.Vector3(); o.getWorldPosition(v); return v; };
+
+      const LUCA = { skin: 0xd9a27c, skinD: 0xc08664, hair: 0x3d2817, beard: 0x35210f, shirt: 0x141417, pants: 0x232328, chest: teeTex, shoe: 0xe9e9e9 };
+      const PHYSIO = { skin: 0xf0c7a4, skinD: 0xd8ab88, hair: 0x6b4a2b, shirt: 0xf4f6f8, pants: 0x1f3a5f, collar: 0xdfe3e8, glasses: true, shortHair: true, shoe: 0xffffff };
+
+      // ---------- environments (bg = blurred set, fg = sharp hero props) ----------
+      const ENV = {};
+      function env(name) { const bg = new THREE.Group(), fg = new THREE.Group(); sceneBg.add(bg); sceneFg.add(fg); return (ENV[name] = { bg, fg }); }
+      function lightRig(grp, o) {
+        grp.add(new THREE.HemisphereLight(o.sky, o.ground, o.hemi));
+        const k = new THREE.DirectionalLight(o.key, o.keyI); k.position.set(...o.keyP); grp.add(k);
+        if (o.rim) { const r = new THREE.DirectionalLight(o.rim, o.rimI); r.position.set(...o.rimP); grp.add(r); }
+        (o.points || []).forEach(([c, i, d, p]) => { const l = new THREE.PointLight(c, i, d, 2); l.position.set(...p); grp.add(l); });
+      }
+      const steel = MM(0x1d1e22, 0.55, 0.5), chrome = MM(0xc9cdd4, 0.25, 0.9), rubber = M(0x111113), redM = M(0xb91f1a), redGlow = M(0xff2a20, 0xff2a20, 2.2);
+
+      // GYM (NEXUS)
+      const GYM = env("gym");
+      const floorTex = canvasTex(512, 512, (g, w, h) => { g.fillStyle = "#1c1c20"; g.fillRect(0, 0, w, h); g.strokeStyle = "#121215"; g.lineWidth = 5;
+        for (let i = 0; i <= 4; i++) { g.beginPath(); g.moveTo(i * 128, 0); g.lineTo(i * 128, h); g.stroke(); g.beginPath(); g.moveTo(0, i * 128); g.lineTo(w, i * 128); g.stroke(); }
+        for (let i = 0; i < 500; i++) { g.fillStyle = `rgba(255,255,255,${0.02 + rnd() * 0.03})`; g.fillRect(rnd() * w, rnd() * h, 2, 2); } });
+      floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping; floorTex.repeat.set(12, 12);
+      const gymFloor = (grp) => { const f = new THREE.Mesh(new THREE.PlaneGeometry(50, 50), new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.9 })); f.rotation.x = -Math.PI / 2; grp.add(f); };
+      gymFloor(GYM.bg);
+      const wallTex = canvasTex(512, 256, (g, w, h) => { g.fillStyle = "#26262b"; g.fillRect(0, 0, w, h); for (let i = 0; i < 1400; i++) { const c = 30 + rnd() * 18; g.fillStyle = `rgb(${c},${c},${c + 4})`; g.fillRect(rnd() * w, rnd() * h, 3, 3); } });
+      wallTex.wrapS = THREE.RepeatWrapping; wallTex.repeat.set(4, 1);
+      const wallM = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.95 });
+      box(34, 8, 0.3, wallM, 0, 4, -7.2, GYM.bg); box(0.3, 8, 24, wallM, -8, 4, 0, GYM.bg); box(0.3, 8, 24, wallM, 8, 4, 0, GYM.bg);
+      box(34, 0.3, 24, M(0x111114), 0, 6.4, 0, GYM.bg);
+      for (let i = -3; i <= 3; i++) { box(0.08, 5.6, 0.06, redGlow, i * 2.3 + (i === 0 ? 99 : 0), 3.2, -7.0, GYM.bg); }
+      for (let i = 0; i < 4; i++) box(5.5, 0.08, 0.5, M(0xffffff, 0xffffff, 1.6), 0, 6.2, -5 + i * 3.2, GYM.bg);
+      // NEXUS sign (texture built lazily once the logo image has loaded)
+      const nexusMat = new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffff, emissiveIntensity: 0.0, transparent: true, roughness: 0.6 });
+      const nexusSign = new THREE.Mesh(new THREE.PlaneGeometry(5.4, 1.9), nexusMat); nexusSign.position.set(0, 3.6, -7.0); GYM.bg.add(nexusSign);
+      box(6.0, 2.4, 0.06, M(0x0b0b0d), 0, 3.6, -7.04, GYM.bg);
+      { const N = window.NEXUS_RGBA, raw = atob(N.d), px = new Uint8Array(raw.length); for (let i = 0; i < raw.length; i++) px[i] = raw.charCodeAt(i);
+        const t = new THREE.DataTexture(px, N.w, N.h, THREE.RGBAFormat); t.flipY = true; t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearFilter; t.needsUpdate = true;
+        nexusMat.map = t; nexusMat.emissiveMap = t; nexusMat.color.set(0xffffff); nexusMat.emissiveIntensity = 0.9; nexusMat.alphaTest = 0.05; }
+      const ensureNexus = () => {};
+      // racks, dumbbells, plates
+      const rack = (grp, x, z) => { [[-0.6, -0.5], [-0.6, 0.5], [0.6, -0.5], [0.6, 0.5]].forEach(([dx, dz]) => box(0.12, 2.6, 0.12, steel, x + dx, 1.3, z + dz, grp));
+        box(1.32, 0.1, 0.1, steel, x, 2.6, z - 0.5, grp); box(1.32, 0.1, 0.1, steel, x, 2.6, z + 0.5, grp); box(0.1, 0.1, 1.1, steel, x - 0.6, 2.6, z, grp); box(0.1, 0.1, 1.1, steel, x + 0.6, 2.6, z, grp); };
+      rack(GYM.bg, -4.6, -5.2); rack(GYM.bg, 4.6, -5.2); rack(GYM.bg, -6.5, -1.5);
+      const plateM = M(0x0e0e10), plateRim = M(0xb91f1a);
+      function barbell(grp, len, plates) { const g = new THREE.Group(); grp.add(g);
+        const b = cyl(0.022, len, chrome, 0, 0, 0, g, 12); b.rotation.z = Math.PI / 2;
+        [-1, 1].forEach((s) => { cyl(0.04, 0.05, chrome, s * (len / 2 - 0.42), 0, 0, g, 12).rotation.z = Math.PI / 2;
+          for (let i = 0; i < plates; i++) { const p = cyl(0.225 - i * 0.03, 0.045, i === 0 ? plateRim : plateM, s * (len / 2 - 0.36 + i * 0.05), 0, 0, g, 28); p.rotation.z = Math.PI / 2; }
+          const p2 = cyl(0.12, 0.048, plateM, s * (len / 2 - 0.36 + plates * 0.05 - 0.01), 0, 0, g, 20); p2.rotation.z = Math.PI / 2; });
+        return g; }
+      [[-4.6, -5.2], [4.6, -5.2]].forEach(([x, z]) => { const b = barbell(GYM.bg, 2.2, 2); b.position.set(x, 1.5, z - 0.5); });
+      for (let i = 0; i < 8; i++) { const x = -3 + i * 0.75; box(0.5, 0.12, 0.12, chrome, x, 0.9, -6.6, GYM.bg); box(0.1, 0.24, 0.24, rubber, x - 0.24, 0.9, -6.6, GYM.bg); box(0.1, 0.24, 0.24, rubber, x + 0.24, 0.9, -6.6, GYM.bg); }
+      box(6.4, 0.1, 0.6, steel, 0, 0.75, -6.6, GYM.bg); box(6.4, 0.1, 0.6, steel, 0, 0.35, -6.6, GYM.bg);
+      for (let i = 0; i < 5; i++) { const p = cyl(0.42 - i * 0.04, 0.07, i % 2 ? plateM : plateRim, 6.6, 0.04 + i * 0.075, -3.5, GYM.bg, 28); }
+      box(0.05, 2.4, 8, MM(0x8a93a3, 0.15, 0.7), 7.82, 1.7, -1.5, GYM.bg);
+      lightRig(GYM.bg, { sky: 0xffeedd, ground: 0x18161c, hemi: 0.85, key: 0xffe0bd, keyI: 2.1, keyP: [3, 6, 4], rim: 0xff4a3a, rimI: 0.9, rimP: [-4, 3, -5] });
+      lightRig(GYM.fg, { sky: 0xffeedd, ground: 0x18161c, hemi: 0.95, key: 0xffe0bd, keyI: 2.6, keyP: [3, 6, 4], rim: 0xff5a48, rimI: 1.5, rimP: [-4, 3, -4] });
+      // gym props in fg: hero barbell + flat bench
+      const heroBar = barbell(GYM.fg, 2.2, 2);
+      const benchG = new THREE.Group(); GYM.fg.add(benchG);
+      box(0.36, 0.1, 1.25, M(0x1a1a1d), 0, 0.42, 0, benchG); box(0.37, 0.02, 1.26, redM, 0, 0.365, 0, benchG);
+      box(0.08, 0.36, 0.08, steel, 0, 0.18, -0.48, benchG); box(0.08, 0.36, 0.08, steel, 0, 0.18, 0.48, benchG); box(0.5, 0.05, 0.08, steel, 0, 0.025, -0.48, benchG); box(0.5, 0.05, 0.08, steel, 0, 0.025, 0.48, benchG);
+      const benchUp = new THREE.Group(); GYM.fg.add(benchUp);                            // uprights for bench press
+      [-0.62, 0.62].forEach((x) => { box(0.08, 1.15, 0.08, steel, x, 0.575, 0, benchUp); box(0.12, 0.05, 0.1, steel, x, 1.08, 0.04, benchUp); });
+      const towel = new THREE.Group(); GYM.fg.add(towel);
+      const lucaGym = makeRig(GYM.fg, LUCA);
+
+      // BEDROOM
+      const BED = env("bed");
+      { const f = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), M(0x2a2420)); f.rotation.x = -Math.PI / 2; BED.bg.add(f);
+        box(20, 6, 0.2, M(0x1d2433), 0, 3, -3.2, BED.bg); box(0.2, 6, 20, M(0x1a2030), -4.5, 3, 0, BED.bg);
+        box(1.6, 1.8, 0.05, M(0x7da0ff, 0x3c5aa8, 0.9), 1.9, 2.4, -3.08, BED.bg); box(0.07, 1.9, 0.08, M(0x10141d), 1.9, 2.4, -3.05, BED.bg); box(1.7, 0.07, 0.08, M(0x10141d), 1.9, 2.4, -3.05, BED.bg);
+        const moon = new THREE.Mesh(new THREE.CircleGeometry(0.22, 32), M(0xffffff, 0xeaf0ff, 1.6)); moon.position.set(2.3, 2.9, -3.0); BED.bg.add(moon);
+        for (let i = 0; i < 14; i++) box(0.025, 0.025, 0.01, M(0xffffff, 0xffffff, 1.2), 1.2 + rnd() * 1.4, 1.6 + rnd() * 1.5, -3.02, BED.bg);
+        box(0.9, 1.6, 0.06, M(0x2c3446), -1.4, 2.6, -3.08, BED.bg); }
+      lightRig(BED.bg, { sky: 0x6c84c8, ground: 0x0c0e14, hemi: 0.45, key: 0x9db4ff, keyI: 1.1, keyP: [2, 3, -2], points: [[0xff7a3a, 1.4, 4, [-1.1, 0.95, -0.5]]] });
+      lightRig(BED.fg, { sky: 0x6c84c8, ground: 0x0c0e14, hemi: 0.55, key: 0x9db4ff, keyI: 1.4, keyP: [2, 3, -1], points: [[0xff6a3a, 1.8, 2.5, [1.0, 0.85, -0.7]], [0x9db4ff, 1.4, 3, [0.9, 1.5, -0.2]]] });
+      { const g = BED.fg; box(1.5, 0.45, 2.3, M(0x3a3026), 0, 0.225, 0, g); box(1.45, 0.18, 2.25, M(0xe8e4dc), 0, 0.54, 0, g);
+        box(1.55, 1.1, 0.1, M(0x3a3026), 0, 0.55, -1.15, g); box(1.25, 0.12, 0.42, M(0xf3f1ec), 0, 0.69, -0.86, g);
+        box(0.55, 0.55, 0.5, M(0x3a3026), 1.15, 0.275, -0.95, g); }
+      const blanket = box(1.5, 0.36, 1.5, M(0x34507c), 0, 0.8, 0.38, BED.fg); box(1.52, 0.06, 0.22, M(0xdfe6f2), 0, 0.97, -0.3, BED.fg);
+      const clockTex = canvasTex(256, 128, (g, w, h) => { g.fillStyle = "#050505"; g.fillRect(0, 0, w, h); g.fillStyle = "#ff3b2e"; g.font = "700 84px Inter, monospace"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("02:13", w / 2, h / 2 + 4); });
+      const clock = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.16, 0.12), [M(0x111111), M(0x111111), M(0x111111), M(0x111111), new THREE.MeshStandardMaterial({ map: clockTex, emissive: 0xffffff, emissiveMap: clockTex, emissiveIntensity: 1.1 }), M(0x111111)]);
+      clock.position.set(1.12, 0.63, -0.92); clock.rotation.y = 0.5; BED.fg.add(clock);
+      const phoneBed = box(0.09, 0.012, 0.17, M(0x0a0a0a), 1.25, 0.556, -1.05, BED.fg);
+      const lucaBed = makeRig(BED.fg, LUCA);
+
+      // KITCHEN (eat)
+      const KIT = env("kit");
+      { const f = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), M(0x8a7a66)); f.rotation.x = -Math.PI / 2; KIT.bg.add(f);
+        box(20, 6, 0.2, M(0xe7dfd2), 0, 3, -3.5, KIT.bg);
+        for (let i = 0; i < 6; i++) { box(0.78, 0.9, 0.6, M(0x3d4a3f), -2.4 + i * 0.82, 0.45, -3.1, KIT.bg); box(0.78, 0.8, 0.4, M(0x3d4a3f), -2.4 + i * 0.82, 2.4, -3.2, KIT.bg); }
+        box(5.0, 0.06, 0.65, M(0xd8d2c8), -0.35, 0.93, -3.1, KIT.bg);
+        box(1.5, 1.2, 0.05, M(0xfff1c8, 0xffe2a0, 1.2), 2.8, 2.2, -3.38, KIT.bg);
+        [[-1.2, 0x2e7d32], [-0.8, 0xc62828]].forEach(([x, c]) => cyl(0.1, 0.25, M(c), x, 1.08, -3.1, KIT.bg)); }
+      lightRig(KIT.bg, { sky: 0xfff3e0, ground: 0x6b5a48, hemi: 0.9, key: 0xffe7c4, keyI: 1.8, keyP: [3, 5, 3] });
+      lightRig(KIT.fg, { sky: 0xfff3e0, ground: 0x6b5a48, hemi: 1.0, key: 0xffe7c4, keyI: 2.2, keyP: [3, 5, 3], rim: 0xffffff, rimI: 0.6, rimP: [-3, 3, -3] });
+      { const g = KIT.fg; box(1.8, 0.07, 1.1, M(0x7a5638), 0, 0.78, 0.25, g); [[-0.8, -0.2], [0.8, -0.2], [-0.8, 0.7], [0.8, 0.7]].forEach(([x, z]) => box(0.07, 0.74, 0.07, M(0x5a3e28), x, 0.39, z, g));
+        cyl(0.24, 0.025, M(0xf7f7f5), 0, 0.83, 0.5, g, 40); cyl(0.2, 0.012, M(0xeeeeec), 0, 0.845, 0.5, g, 40);
+        for (let i = 0; i < 40; i++) box(0.035, 0.03, 0.035, M(0xf3efe6), -0.12 + rnd() * 0.16, 0.86 + rnd() * 0.03, 0.42 + rnd() * 0.16, g);             // rice
+        for (let i = 0; i < 3; i++) box(0.11, 0.04, 0.07, M(0xc98d4a), 0.06 + i * 0.02, 0.87 + i * 0.012, 0.42 + i * 0.07, g);                         // chicken
+        for (let i = 0; i < 6; i++) { const x = -0.1 + (i % 3) * 0.06, z = 0.6 + Math.floor(i / 3) * 0.05; box(0.045, 0.05, 0.045, M(0x2f8f3a), x, 0.88, z, g); box(0.015, 0.03, 0.015, M(0x9bc27a), x, 0.85, z, g); }
+        const glass = cyl(0.05, 0.16, new THREE.MeshStandardMaterial({ color: 0xbfe3ff, transparent: true, opacity: 0.45, roughness: 0.05 }), 0.4, 0.895, 0.45, g); }
+      const fork = new THREE.Group(); KIT.fg.add(fork); box(0.02, 0.2, 0.015, chrome, 0, 0, 0, fork); box(0.05, 0.05, 0.012, chrome, 0, 0.12, 0, fork);
+      const chair = new THREE.Group(); KIT.fg.add(chair); box(0.5, 0.06, 0.5, M(0x5a3e28), 0, 0.48, 0, chair); box(0.5, 0.6, 0.06, M(0x5a3e28), 0, 0.8, -0.25, chair);
+      const lucaKit = makeRig(KIT.fg, LUCA);
+
+      // OFFICE (stress)
+      const OFF = env("off");
+      { const f = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), M(0x1e1e22)); f.rotation.x = -Math.PI / 2; OFF.bg.add(f);
+        box(20, 6, 0.2, M(0x23252c), 0, 3, -3.4, OFF.bg);
+        box(3.6, 2.0, 0.05, M(0x0c1020), -0.4, 2.4, -3.28, OFF.bg);
+        for (let i = 0; i < 70; i++) box(0.06, 0.08, 0.01, M(0xffd38a, 0xffc060, 1.0 + rnd()), -2.1 + rnd() * 3.4, 1.5 + rnd() * 1.8, -3.24, OFF.bg);
+        box(1.2, 2.4, 0.4, M(0x2c2f38), 2.6, 1.2, -3.1, OFF.bg); for (let i = 0; i < 4; i++) box(1.1, 0.04, 0.35, M(0x1a1c22), 2.6, 0.5 + i * 0.55, -3.0, OFF.bg); }
+      lightRig(OFF.bg, { sky: 0x8090c0, ground: 0x101014, hemi: 0.35, key: 0xffd9b0, keyI: 0.7, keyP: [2, 4, 3], points: [[0x8fb6ff, 1.2, 4, [0, 1.3, 0.6]]] });
+      lightRig(OFF.fg, { sky: 0x8090c0, ground: 0x101014, hemi: 0.5, key: 0xffd9b0, keyI: 0.9, keyP: [2, 4, 3], points: [[0x9cc0ff, 3.2, 3, [0, 1.25, 0.75]], [0xff4b3a, 1.2, 2.2, [0.55, 0.95, 0.75]]] });
+      { const g = OFF.fg; box(1.7, 0.06, 0.85, M(0x3b3530), 0, 0.76, 0.35, g); [[-0.8, 0], [0.8, 0], [-0.8, 0.72], [0.8, 0.72]].forEach(([x, z]) => box(0.06, 0.73, 0.06, steel, x, 0.37, z, g));
+        box(0.62, 0.025, 0.42, M(0x2a2d33), -0.05, 0.8, 0.52, g);
+        const scr = box(0.62, 0.4, 0.02, M(0x2a2d33), -0.05, 1.0, 0.33, g); scr.rotation.x = -0.25;
+        for (let i = 0; i < 6; i++) box(0.24, 0.006, 0.31, M(0xf2f2f2), 0.55 + (i % 2) * 0.01, 0.795 + i * 0.008, 0.35 - i * 0.01, g); }
+      const laptopScreen = canvasTex(512, 320, (g, w, h) => { g.fillStyle = "#0f1626"; g.fillRect(0, 0, w, h); g.fillStyle = "#1f2b45"; g.fillRect(0, 0, w, 36);
+        for (let i = 0; i < 7; i++) { g.fillStyle = i === 2 || i === 5 ? "#c0241e" : "#2b3a5c"; g.fillRect(24, 56 + i * 36, w - 48, 24); g.fillStyle = "#e9eefc"; g.fillRect(36, 63 + i * 36, 140 + (i * 53) % 160, 10); } });
+      const lsMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.57, 0.35), new THREE.MeshStandardMaterial({ map: laptopScreen, emissive: 0xffffff, emissiveMap: laptopScreen, emissiveIntensity: 0.9 }));
+      lsMesh.position.set(-0.05, 1.0, 0.345); lsMesh.rotation.x = -0.25; OFF.fg.add(lsMesh);
+      const phoneDesk = new THREE.Group(); OFF.fg.add(phoneDesk); box(0.09, 0.012, 0.18, M(0x0a0a0a), 0, 0, 0, phoneDesk);
+      const phoneGlow = box(0.08, 0.002, 0.16, M(0xffffff, 0xff5a4a, 1.6), 0, 0.007, 0, phoneDesk); phoneDesk.position.set(0.5, 0.795, 0.6);
+      const chair2 = new THREE.Group(); OFF.fg.add(chair2); box(0.55, 0.08, 0.55, M(0x18181b), 0, 0.48, 0, chair2); box(0.55, 0.75, 0.08, M(0x18181b), 0, 0.9, -0.28, chair2);
+      const lucaOff = makeRig(OFF.fg, LUCA);
+
+      // CLINIC (physio)
+      const CLN = env("cln");
+      { const f = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), M(0xcfd6d8)); f.rotation.x = -Math.PI / 2; CLN.bg.add(f);
+        box(20, 6, 0.2, M(0xb9d3d2), 0, 3, -3.4, CLN.bg); box(0.2, 6, 20, M(0xa9c6c5), -4, 3, 0, CLN.bg);
+        box(1.0, 1.4, 0.04, M(0xffffff), 1.6, 2.2, -3.28, CLN.bg);
+        const sk = M(0xd8d1c4); box(0.12, 0.14, 0.02, sk, 1.6, 2.65, -3.25, CLN.bg); box(0.04, 0.5, 0.02, sk, 1.6, 2.3, -3.25, CLN.bg); box(0.3, 0.03, 0.02, sk, 1.6, 2.45, -3.25, CLN.bg);
+        box(0.03, 0.4, 0.02, sk, 1.53, 1.85, -3.25, CLN.bg); box(0.03, 0.4, 0.02, sk, 1.67, 1.85, -3.25, CLN.bg);
+        box(1.6, 0.9, 0.5, M(0xeef2f3), -2.2, 0.45, -3.0, CLN.bg); box(0.5, 1.8, 0.4, M(0xeef2f3), 3.0, 0.9, -3.0, CLN.bg); }
+      lightRig(CLN.bg, { sky: 0xffffff, ground: 0x8a9a9a, hemi: 1.0, key: 0xffffff, keyI: 1.6, keyP: [2, 5, 4] });
+      lightRig(CLN.fg, { sky: 0xffffff, ground: 0x8a9a9a, hemi: 1.0, key: 0xffffff, keyI: 2.0, keyP: [2, 5, 4], rim: 0xbfe8ff, rimI: 0.6, rimP: [-3, 3, -3] });
+      { const g = CLN.fg; box(1.9, 0.12, 0.7, M(0x2c4a63), 0, 0.62, 0, g); box(1.9, 0.02, 0.7, M(0xffffff), 0, 0.69, 0, g);
+        [[-0.85, -0.28], [0.85, -0.28], [-0.85, 0.28], [0.85, 0.28]].forEach(([x, z]) => box(0.06, 0.56, 0.06, chrome, x, 0.28, z, g)); }
+      const painGlow = new THREE.Mesh(new THREE.SphereGeometry(0.12, 24, 16), new THREE.MeshBasicMaterial({ color: 0xff2a1a, transparent: true, opacity: 0.5, depthWrite: false }));
+      CLN.fg.add(painGlow);
+      const lucaCln = makeRig(CLN.fg, LUCA), physio = makeRig(CLN.fg, PHYSIO);
+
+      // APP close-up (phone in hands, gym bg)
+      const APP = env("app");
+      lightRig(APP.fg, { sky: 0xffeedd, ground: 0x18161c, hemi: 0.8, key: 0xffe0bd, keyI: 1.6, keyP: [2, 4, 4], rim: 0xff5a48, rimI: 1.0, rimP: [-3, 2, -3] });
+      const appCanvas = document.createElement("canvas"); appCanvas.width = 540; appCanvas.height = 1100;
+      const appTex = new THREE.CanvasTexture(appCanvas); appTex.colorSpace = THREE.SRGBColorSpace; appTex.anisotropy = 8;
+      function drawApp(p) {
+        const g = appCanvas.getContext("2d"), w = 540, h = 1100;
+        g.fillStyle = "#0f0f12"; g.fillRect(0, 0, w, h);
+        g.fillStyle = "#c2c2c2"; g.beginPath(); g.roundRect(30, 60, 210, 76, 38); g.fill();
+        drawMark(g, 56, 74, 40, "#a11d19", "#c2c2c2", 6); g.fillStyle = "#0b0b0b"; g.font = "italic 900 54px Inter, sans-serif"; g.textBaseline = "middle"; g.fillText("LB", 116, 100);
+        g.fillStyle = "#9b9ba3"; g.font = "700 26px Inter, sans-serif"; g.fillText("Ciao Luca", 300, 86); g.fillStyle = "#fff"; g.font = "800 30px Inter, sans-serif"; g.fillText("Settimana 6", 300, 120);
+        // performance card
+        g.fillStyle = "#1a1a1f"; g.beginPath(); g.roundRect(30, 170, w - 60, 400, 30); g.fill();
+        g.fillStyle = "#fff"; g.font = "800 32px Inter, sans-serif"; g.fillText("Andamento panca", 60, 220);
+        g.fillStyle = "#9b9ba3"; g.font = "600 24px Inter, sans-serif"; g.fillText("ripetizioni a 80 kg", 60, 256);
+        const pts = [8, 8, 9, 8, 6, 6, 7, 8, 9], x0 = 70, x1 = w - 70, y0 = 520, y1 = 300, n = pts.length;
+        g.strokeStyle = "#2a2a31"; g.lineWidth = 2; for (let i = 0; i < 4; i++) { const y = y1 + i * (y0 - y1) / 3; g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke(); }
+        const X = (i) => x0 + i * (x1 - x0) / (n - 1), Y = (v) => y0 - (v - 5) / 5 * (y0 - y1);
+        const upto = p * (n - 1);
+        g.fillStyle = "rgba(192,36,30,0.18)"; g.fillRect(X(3.5), y1 - 20, X(5.5) - X(3.5), y0 - y1 + 20);
+        g.fillStyle = "#e05a50"; g.font = "800 20px Inter, sans-serif"; g.fillText("SCARICO", X(3.6), y1 - 2);
+        g.strokeStyle = "#ffffff"; g.lineWidth = 6; g.lineJoin = "round"; g.beginPath();
+        for (let i = 0; i <= Math.floor(upto); i++) (i ? g.lineTo : g.moveTo).call(g, X(i), Y(pts[i]));
+        const fi = Math.floor(upto), fr = upto - fi; if (fi < n - 1) g.lineTo(X(fi) + (X(fi + 1) - X(fi)) * fr, Y(pts[fi]) + (Y(pts[fi + 1]) - Y(pts[fi])) * fr); g.stroke();
+        for (let i = 0; i <= Math.floor(upto); i++) { g.fillStyle = i >= 4 && i <= 5 ? "#c0241e" : "#ffffff"; g.beginPath(); g.arc(X(i), Y(pts[i]), 9, 0, Math.PI * 2); g.fill(); }
+        // session list
+        const rows = [["Lun · Squat", "4 × 6 · RIR 2", "#22c55e"], ["Mer · Panca", "2 × 8 · RIR 3", "#f5b31b"], ["Ven · Rematore", "2 × 8 · RIR 3", "#f5b31b"], ["Sonno medio", "6 h 40'", "#9b9ba3"]];
+        rows.forEach(([a, b, c], i) => { const y = 600 + i * 104; g.fillStyle = "#1a1a1f"; g.beginPath(); g.roundRect(30, y, w - 60, 88, 22); g.fill();
+          g.fillStyle = c; g.beginPath(); g.arc(70, y + 44, 10, 0, Math.PI * 2); g.fill();
+          g.fillStyle = "#fff"; g.font = "700 27px Inter, sans-serif"; g.fillText(a, 96, y + 44); g.fillStyle = "#9b9ba3"; g.font = "600 24px Inter, sans-serif"; g.textAlign = "right"; g.fillText(b, w - 56, y + 44); g.textAlign = "left"; });
+        g.fillStyle = "#c0241e"; g.beginPath(); g.roundRect(30, 1020, w - 60, 64, 32); g.fill(); g.fillStyle = "#fff"; g.font = "800 27px Inter, sans-serif"; g.textAlign = "center"; g.fillText("Scrivi al coach", w / 2, 1052); g.textAlign = "left";
+        appTex.needsUpdate = true;
+      }
+      const phone = new THREE.Group(); APP.fg.add(phone);
+      box(0.4, 0.8, 0.035, M(0x0b0b0d), 0, 0, 0, phone); box(0.41, 0.81, 0.03, MM(0x3a3a40, 0.3, 0.8), 0, 0, -0.004, phone);
+      const scrMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.37, 0.755), new THREE.MeshStandardMaterial({ map: appTex, emissive: 0xffffff, emissiveMap: appTex, emissiveIntensity: 0.95, roughness: 0.3 }));
+      scrMesh.position.z = 0.0185; phone.add(scrMesh);
+      const handsApp = new THREE.Group(); APP.fg.add(handsApp);
+      { const sk = M(0xd9a27c), skd = M(0xc08664);
+        [-1, 1].forEach((s) => { box(0.09, 0.3, 0.12, sk, s * 0.245, -0.22, -0.05, handsApp); box(0.035, 0.07, 0.05, skd, s * 0.205, -0.12, 0.03, handsApp); box(0.16, 0.3, 0.16, M(0x141417), s * 0.27, -0.5, -0.1, handsApp); }); }
+
+      // ---------- shots ----------
+      // each: { d: seconds, bg: env for set, fg: env for props, cam: [from, to, lookFrom, lookTo, fov], blur, up(u, p) }
+      const SH = [];
+      const shot = (o) => SH.push(o);
+
+      // 1 GYM WIDE — NEXUS sign, Luca chalks up by the rack
+      shot({ d: 6, bg: "gym", fg: "gym", cam: [V(-2.2, 1.6, 5.2), V(-0.9, 1.75, 4.6), V(0.2, 2.3, -6), V(0.4, 2.4, -6), 42], blur: 0.8, up(u) {
+        const R = lucaGym; R.root.position.set(1.7, 0, -1.6); R.root.rotation.set(0, -0.55, 0); relax(R); legPose(R.legL, 0, 0); legPose(R.legR, 0, 0); standOn(R, 0, 0);
+        const c = Math.sin(u * 5) * 0.25; R.armL.sh.rotation.set(-0.7 + c * 0.3, 0, -0.1); R.armR.sh.rotation.set(-0.75 - c * 0.3, 0, 0.1); R.armL.el.rotation.set(-1.1, 0, 0.2); R.armR.el.rotation.set(-1.1, 0, -0.2);
+        R.head.rotation.set(0.25, 0, 0); blink(R, u); breathe(R, u);
+        heroBar.visible = false; benchG.visible = false; benchUp.visible = false; } });
+
+      // 2 SQUAT — 3/4 side, two reps
+      shot({ d: 7, bg: "gym", fg: "gym", cam: [V(3.9, 1.45, 3.6), V(3.4, 1.4, 3.15), V(0, 1.2, 0), V(0, 1.15, 0), 36], blur: 3.5, up(u) {
+        const R = lucaGym; R.root.position.set(0, 0, 0); R.root.rotation.set(0, 0.35, 0); relax(R);
+        const ph = (u + 0.4) % 3.3; const p = ph < 1.4 ? ss(ph / 1.4) : ph < 1.6 ? 1 : ph < 2.7 ? 1 - ss((ph - 1.6) / 1.1) : 0;
+        const a = 1.5 * p, s = 0.55 * p; legPose(R.legL, a, s); legPose(R.legR, a, s); standOn(R, a, s);
+        R.legL.hip.rotation.z = -0.12; R.legR.hip.rotation.z = 0.12;
+        R.spine.rotation.set(0.62 * p + 0.06, 0, 0); R.head.rotation.set(-0.5 * p, 0, 0);
+        R.armL.sh.rotation.set(0.25, 0, -1.35); R.armR.sh.rotation.set(0.25, 0, 1.35); R.armL.el.rotation.set(0, 0, -1.75); R.armR.el.rotation.set(0, 0, 1.75);
+        heroBar.visible = true; R.spine.updateMatrixWorld(true); const bp = new THREE.Vector3(0, 0.62, -0.2); R.spine.localToWorld(bp);
+        heroBar.position.copy(bp); heroBar.rotation.set(0, 0.35, 0); blink(R, u, 0.7); breathe(R, u, 0.6);
+        benchG.visible = false; benchUp.visible = false; } });
+
+      // 3 BENCH PRESS — high 3/4, two reps
+      shot({ d: 7, bg: "gym", fg: "gym", cam: [V(2.3, 2.05, 2.2), V(2.0, 1.95, 1.9), V(0, 0.7, -0.15), V(0, 0.7, -0.1), 36], blur: 3.5, up(u) {
+        const R = lucaGym; relax(R); benchG.visible = true; benchUp.visible = true; benchG.position.set(0, 0, 0); benchUp.position.set(0, 0, -0.62);
+        R.root.rotation.set(-Math.PI / 2, 0, 0); R.root.position.set(0, 0.61, 0.38); R.pelvis.position.set(0, 0, 0); R.pelvis.rotation.set(0, 0, 0);
+        legPose(R.legL, -0.12, 0); legPose(R.legR, -0.12, 0);
+        R.legL.hip.rotation.set(0.14, 0, -0.25); R.legR.hip.rotation.set(0.14, 0, 0.25); R.legL.knee.rotation.set(Math.PI / 2 - 0.14, 0, 0); R.legR.knee.rotation.set(Math.PI / 2 - 0.14, 0, 0);
+        R.legL.ank.rotation.set(0, 0, 0); R.legR.ank.rotation.set(0, 0, 0);
+        const ph = (u + 0.6) % 3.2; const p = ph < 1.3 ? ss(ph / 1.3) : ph < 1.5 ? 1 : ph < 2.5 ? 1 - ss((ph - 1.5) / 1.0) : 0;
+        R.armL.sh.rotation.set(-Math.PI / 2 + 0.25 * p, 0, -0.18 - 0.95 * p); R.armR.sh.rotation.set(-Math.PI / 2 + 0.25 * p, 0, 0.18 + 0.95 * p);
+        R.armL.el.rotation.set(0, 0, 1.55 * p); R.armR.el.rotation.set(0, 0, -1.55 * p);
+        R.head.rotation.set(0, 0, -0.35); R.root.updateMatrixWorld(true);
+        const hl = wp(R.armL.hand), hr = wp(R.armR.hand); heroBar.visible = true; heroBar.position.set(0, (hl.y + hr.y) / 2 - 0.06, (hl.z + hr.z) / 2); heroBar.rotation.set(0, 0, 0);
+        blink(R, u, 1.1); breathe(R, u, 0.8); } });
+
+      // 4 BENT-OVER ROW — side, three reps
+      shot({ d: 6, bg: "gym", fg: "gym", cam: [V(4.0, 1.3, 1.6), V(3.6, 1.25, 1.3), V(0, 0.9, 0.15), V(0, 0.9, 0.15), 38], blur: 3.5, up(u) {
+        const R = lucaGym; R.root.position.set(0, 0, 0); R.root.rotation.set(0, 0, 0); relax(R); benchG.visible = false; benchUp.visible = false;
+        const a = 0.55, s = 0.3; legPose(R.legL, a, s); legPose(R.legR, a, s); standOn(R, a, s); R.legL.hip.rotation.z = -0.06; R.legR.hip.rotation.z = 0.06;
+        const lean = 1.05; R.spine.rotation.set(lean, 0, 0); R.head.rotation.set(-0.55, 0, 0);
+        const ph = u % 2.0; const p = ph < 0.7 ? ss(ph / 0.7) : ph < 0.9 ? 1 : ph < 1.7 ? 1 - ss((ph - 0.9) / 0.8) : 0;
+        R.armL.sh.rotation.set(-lean + 0.95 * p, 0, -0.1); R.armR.sh.rotation.set(-lean + 0.95 * p, 0, 0.1);
+        R.armL.el.rotation.set(-1.45 * p, 0, 0); R.armR.el.rotation.set(-1.45 * p, 0, 0);
+        R.root.updateMatrixWorld(true); const hl = wp(R.armL.hand), hr = wp(R.armR.hand);
+        heroBar.visible = true; heroBar.position.set(0, (hl.y + hr.y) / 2 - 0.07, (hl.z + hr.z) / 2); heroBar.rotation.set(0, 0, 0);
+        blink(R, u, 0.3); breathe(R, u, 0.8); } });
+
+      // 5 BAR CLOSE-UP — plates on the rack, slow slide
+      shot({ d: 5, bg: "gym", fg: "gym", cam: [V(1.7, 1.75, 1.15), V(0.8, 1.7, 1.1), V(1.0, 1.5, 0), V(0.25, 1.5, 0), 32], blur: 6, up(u) {
+        lucaGym.root.position.set(0, -50, 0); benchG.visible = false; benchUp.visible = true; benchUp.position.set(0, 0.47, 0.04);
+        heroBar.visible = true; heroBar.position.set(0, 1.5, 0); heroBar.rotation.set(0, 0, 0); } });
+
+      // 6 TIRED — seated on the bench, head down
+      shot({ d: 6, bg: "gym", fg: "gym", cam: [V(2.4, 1.25, 3.1), V(2.05, 1.2, 2.7), V(0, 0.9, 0.05), V(0, 0.88, 0.05), 36], blur: 4.5, up(u) {
+        const R = lucaGym; relax(R); heroBar.visible = false; benchUp.visible = false; benchG.visible = true; benchG.position.set(0, 0, -0.1); benchG.rotation.set(0, Math.PI / 2, 0);
+        R.root.position.set(0, 0.0, 0.25); R.root.rotation.set(0, 0.25, 0);
+        legPose(R.legL, Math.PI / 2, 0.15); legPose(R.legR, Math.PI / 2, 0.15); R.legL.hip.rotation.z = -0.14; R.legR.hip.rotation.z = 0.14;
+        R.pelvis.position.set(0, 0.555, -0.25);
+        const br = Math.sin(u * 1.6); R.spine.rotation.set(0.62 + br * 0.03, 0, 0); R.head.rotation.set(0.55 + br * 0.03, 0, 0);
+        R.armL.sh.rotation.set(-0.95, 0, 0.05); R.armR.sh.rotation.set(-0.95, 0, -0.05); R.armL.el.rotation.set(-0.85, 0, 0); R.armR.el.rotation.set(-0.85, 0, 0);
+        blink(R, u, 0, false); R.lidL.scale.y = R.lidR.scale.y = 0.55; breathe(R, u * 0.8, 2.2); } });
+
+      // 7 SLEEP — night, alarm clock, slow push-in
+      shot({ d: 7, bg: "bed", fg: "bed", camUp: V(0, 0, -1), cam: [V(0.35, 2.6, 0.4), V(0.3, 2.3, 0.18), V(0.15, 0.8, -0.55), V(0.1, 0.8, -0.62), 40], blur: 4, up(u) {
+        const R = lucaBed; relax(R); R.root.rotation.set(-Math.PI / 2, 0, 0); R.root.position.set(0, 0.8, -0.58); R.pelvis.position.set(0, -0.95, 0);
+        legPose(R.legL, 0, 0); legPose(R.legR, 0, 0); R.head.rotation.set(0, 0.15, 0); R.armL.sh.rotation.set(0, 0, -0.05); R.armR.sh.rotation.set(0, 0, 0.05); R.armL.el.rotation.set(0, 0, 0); R.armR.el.rotation.set(0, 0, 0);
+        blink(R, u, 0, true); breathe(R, u * 0.6, 2.5); blanket.scale.y = 1 + Math.sin(u * 1.3) * 0.04; } });
+
+      // 8 EAT — kitchen table, fork to mouth
+      shot({ d: 6, bg: "kit", fg: "kit", cam: [V(0.9, 1.3, 2.5), V(0.7, 1.22, 2.2), V(0, 1.0, 0), V(0, 1.0, 0.05), 34], blur: 5, up(u) {
+        const R = lucaKit; relax(R); R.root.position.set(0, 0, -0.35); R.root.rotation.set(0, 0, 0); chair.position.set(0, 0, -0.55);
+        legPose(R.legL, Math.PI / 2, 0); legPose(R.legR, Math.PI / 2, 0); R.pelvis.position.set(0, 0.6, 0.0);
+        R.spine.rotation.set(0.12, 0, 0);
+        const ph = u % 3.0; const p = ph < 0.8 ? ss(ph / 0.8) : ph < 1.3 ? 1 : ph < 2.0 ? 1 - ss((ph - 1.3) / 0.7) : 0;
+        R.armR.sh.rotation.set(-0.7 - 0.55 * p, 0, 0.25); R.armR.el.rotation.set(-0.9 - 1.05 * p, 0, 0);
+        R.armL.sh.rotation.set(-0.7, 0, -0.1); R.armL.el.rotation.set(-0.75, 0, 0);
+        R.head.rotation.set(0.25 - 0.2 * p, 0, 0); R.mouth.scale.y = 1 + (p > 0.85 ? Math.sin((u % 3) * 18) * 0.5 + 0.5 : 0) * 1.5;
+        R.root.updateMatrixWorld(true); const hp = wp(R.armR.hand); fork.position.set(hp.x - 0.02, hp.y + 0.02, hp.z + 0.06); fork.rotation.set(0.9 - 0.5 * p, 0, 0.3);
+        blink(R, u, 0.4); breathe(R, u); } });
+
+      // 9 STRESS — desk at night, phone buzzing, hands on head
+      shot({ d: 6, bg: "off", fg: "off", cam: [V(-1.1, 1.35, 2.6), V(-0.85, 1.3, 2.25), V(0, 1.15, 0), V(0, 1.15, 0.05), 34], blur: 5, up(u) {
+        const R = lucaOff; relax(R); R.root.position.set(0, 0, -0.35); chair2.position.set(0, 0, -0.55);
+        legPose(R.legL, Math.PI / 2, 0); legPose(R.legR, Math.PI / 2, 0); R.pelvis.position.set(0, 0.62, 0);
+        R.spine.rotation.set(0.15, 0, 0);
+        R.armL.sh.rotation.set(-2.55, 0, -0.55); R.armR.sh.rotation.set(-2.55, 0, 0.55); R.armL.el.rotation.set(-1.95, 0, 0); R.armR.el.rotation.set(-1.95, 0, 0);
+        R.head.rotation.set(0.12, Math.sin(u * 2.4) * 0.12, 0); R.browL.rotation.z = 0.3; R.browR.rotation.z = -0.3;
+        const buzz = (u % 1.6) < 0.5; phoneDesk.position.x = 0.5 + (buzz ? Math.sin(u * 90) * 0.006 : 0); phoneGlow.material.emissiveIntensity = buzz ? 1.8 : 0.6;
+        blink(R, u, 1.4); breathe(R, u * 1.4, 1.5); } });
+
+      // 10 PHYSIO — seated on the table, knee assessment, pain pulse
+      shot({ d: 7, bg: "cln", fg: "cln", cam: [V(-2.2, 1.55, 3.3), V(-1.85, 1.5, 2.95), V(0, 1.05, 0.35), V(0.05, 1.02, 0.35), 38], blur: 4, up(u) {
+        const R = lucaCln; relax(R); R.root.position.set(-0.2, 0, 0); R.root.rotation.set(0, 0, 0);
+        const ext = 0.5 + 0.5 * Math.sin(u * 1.1 - 1.4);
+        legPose(R.legL, Math.PI / 2, 0.1); legPose(R.legR, Math.PI / 2, 0.1 - 0.95 * ext); R.pelvis.position.set(0, 0.795, -0.05);
+        R.armL.sh.rotation.set(0.15, 0, -0.35); R.armR.sh.rotation.set(0.15, 0, 0.35); R.armL.el.rotation.set(-0.2, 0, 0); R.armR.el.rotation.set(-0.2, 0, 0);
+        R.head.rotation.set(0.32, 0.15, 0); R.browL.rotation.z = 0.18; R.browR.rotation.z = -0.18;
+        const P = physio; relax(P); P.root.position.set(0.75, 0, 0.85); P.root.rotation.set(0, -2.1, 0); legPose(P.legL, 0.25, 0.12); legPose(P.legR, 0.25, 0.12); standOn(P, 0.25, 0.12);
+        P.spine.rotation.set(0.45, 0, 0); P.head.rotation.set(0.15, 0, 0); P.armL.sh.rotation.set(-1.05, 0, -0.05); P.armR.sh.rotation.set(-0.9, 0, 0.1); P.armL.el.rotation.set(-0.4, 0, 0); P.armR.el.rotation.set(-0.5, 0, 0);
+        R.root.updateMatrixWorld(true); const kp = wp(R.legR.knee); painGlow.position.copy(kp).add(V(0, 0.03, 0.06));
+        const pul = (u * 1.4) % 1; painGlow.scale.setScalar(1.1 + pul * 1.2); painGlow.material.opacity = 0.7 * (1 - pul); painGlow.renderOrder = 10; painGlow.material.depthTest = false;
+        blink(R, u, 0.2); blink(P, u, 2.1); breathe(R, u); breathe(P, u + 1); } });
+
+      // 11 APP — LB System app in hand, chart draws in
+      shot({ d: 7, bg: "gym", fg: "app", cam: [V(0.08, 1.4, 1.75), V(0.05, 1.39, 1.5), V(0, 1.36, 0), V(0, 1.37, 0), 30], blur: 9, up(u) {
+        phone.position.set(0, 1.38, 0); phone.rotation.set(-0.12 + Math.sin(u * 0.9) * 0.015, 0.06 + Math.sin(u * 0.7) * 0.02, 0.02);
+        handsApp.position.set(0, 1.38, 0); handsApp.rotation.copy(phone.rotation);
+        drawApp(ss((u - 0.5) / 4.5)); } });
+
+      const DUR = SH.reduce((s, x) => s + x.d, 0);
+      let acc = 0; SH.forEach((s) => { s.t0 = acc; acc += s.d; });
+      const bgEl = document.getElementById("bg");
+      function render(t) {
+        ensureNexus();
+        let i = 0; for (let k = 0; k < SH.length; k++) if (t >= SH[k].t0 - 1e-6) i = k;
+        const s = SH[i], u = Math.min(s.d, t - s.t0), p = ss(u / s.d);
+        Object.keys(ENV).forEach((k) => { ENV[k].bg.visible = k === s.bg; ENV[k].fg.visible = k === s.fg; });
+        if (s.bg === "gym" && s.fg !== "gym") ENV.gym.bg.visible = true;
+        sceneBg.background = new THREE.Color({ gym: 0x141418, bed: 0x0d111b, kit: 0xd9d0c2, off: 0x15161b, cln: 0xb9d3d2 }[s.bg]);
+        sceneBg.fog = new THREE.Fog(sceneBg.background, 9, 26);
+        s.up(u, p);
+        cam.up.copy(s.camUp || V(0, 1, 0)); cam.position.lerpVectors(s.cam[0], s.cam[1], p); cam.lookAt(new THREE.Vector3().lerpVectors(s.cam[2], s.cam[3], p)); cam.fov = s.cam[4]; cam.updateProjectionMatrix();
+        bgEl.style.filter = `blur(${s.blur}px) brightness(1.05)`;
+        rBg.render(sceneBg, cam); rFg.render(sceneFg, cam);
+      }
+      window.__BROLL = SH.map((s) => ({ t0: s.t0, d: s.d }));
+      const tl = gsap.timeline({ paused: true });
+      const clock0 = { t: 0 };
+      tl.to(clock0, { t: DUR, duration: DUR, ease: "none", onUpdate: () => render(clock0.t) }, 0);
+      tl.set({}, {}, DUR);
+      render(0);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

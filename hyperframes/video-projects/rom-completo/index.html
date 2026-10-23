@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="it" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      /* Luca brand (assets/brand-tokens.css) + one semantic colour per concept (Jeff Nippard system):
+         blue = brand/data, green = correct, red = myth / "less", yellow = measurement (0,5 %, stretch) */
+      :root { --bg:#0a0a0f; --card:#1a1a23; --blue:#3b82f6; --green:#22c55e; --red:#ef4444; --y:#facc15; --line:rgba(255,255,255,0.14); --ink:#0a0a0f; --mute:#c9cfdc; }
+      * { margin:0; padding:0; box-sizing:border-box; }
+      html, body { width:1080px; height:1920px; overflow:hidden; background:#000; }
+      #root { position:relative; width:1080px; height:1920px; overflow:hidden; font-family: Inter, ui-sans-serif, sans-serif; color:#fff; }
+      #face-wrap { position:absolute; inset:0; transform-origin:50% 42%; }
+      #face { width:1080px; height:1920px; object-fit:cover; filter:contrast(1.06) saturate(1.06) brightness(0.98); }
+      #topshade { position:absolute; left:0; right:0; top:0; height:640px; pointer-events:none; background:linear-gradient(180deg, rgba(6,8,14,0.62), rgba(6,8,14,0.34) 55%, rgba(6,8,14,0)); }
+      #botshade { position:absolute; left:0; right:0; bottom:0; height:560px; pointer-events:none; background:linear-gradient(0deg, rgba(6,8,14,0.55), rgba(6,8,14,0)); }
+      #flash { position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; z-index:9; }
+
+      /* top-third slides: everything lives in y 118-468, above Luca's hairline */
+      .ov { position:absolute; left:40px; right:40px; top:118px; height:350px; opacity:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:18px; }
+      .row { display:flex; gap:20px; justify-content:center; align-items:center; }
+      .col { display:flex; flex-direction:column; gap:18px; align-items:flex-start; }
+      .rel { position:relative; }
+      .card { background:var(--card); border:2px solid var(--line); border-radius:28px; padding:20px 36px; box-shadow:0 18px 44px rgba(0,0,0,0.55); text-align:center; }
+      .card .n { font-weight:900; font-size:84px; line-height:1; letter-spacing:-0.02em; color:var(--y); white-space:nowrap; }
+      .card .l { font-weight:800; font-size:26px; letter-spacing:0.16em; color:var(--mute); margin-top:10px; text-transform:uppercase; }
+      .pill { display:inline-flex; align-items:center; gap:12px; padding:14px 28px; border-radius:999px; background:rgba(20,22,32,0.92); border:2px solid var(--line); font-weight:800; font-size:36px; letter-spacing:0.02em; text-transform:uppercase; white-space:nowrap; box-shadow:0 10px 26px rgba(0,0,0,0.45); }
+      .pill.blue { border-color:var(--blue); } .pill.green { border-color:var(--green); }
+      .tag { display:inline-block; background:var(--y); color:var(--ink); font-weight:900; font-size:52px; letter-spacing:0.01em; padding:8px 26px; border-radius:12px; transform:rotate(-3deg); text-transform:uppercase; box-shadow:0 12px 30px rgba(0,0,0,0.45); white-space:nowrap; }
+      .tag.red { background:var(--red); color:#fff; } .tag.green { background:var(--green); color:var(--ink); }
+      .x { position:absolute; left:-10px; right:-10px; top:50%; height:10px; margin-top:-5px; background:var(--red); border-radius:5px; transform-origin:0 50%; transform:rotate(-6deg); box-shadow:0 4px 14px rgba(0,0,0,0.5); }
+      .stack { position:relative; height:80px; width:900px; }
+      .stack .tag { position:absolute; left:50%; top:0; }
+      .photo { position:relative; border-radius:22px; overflow:hidden; border:5px solid #fff; box-shadow:0 20px 50px rgba(0,0,0,0.6); background:#111; }
+      .photo img { width:100%; height:100%; object-fit:cover; display:block; }
+      .chip { position:absolute; left:14px; bottom:14px; padding:8px 16px; border-radius:12px; background:rgba(10,10,15,0.86); font-weight:900; font-size:26px; letter-spacing:0.04em; text-transform:uppercase; white-space:nowrap; }
+      .badge { position:absolute; right:14px; top:14px; padding:8px 16px; border-radius:12px; background:var(--green); color:var(--ink); font-weight:900; font-size:28px; letter-spacing:0.03em; text-transform:uppercase; }
+
+      /* S5 tension curve */
+      #o5card { width:900px; padding:18px 28px 10px; text-align:left; }
+      #o5card .l { margin:0 0 4px 0; text-align:left; }
+      #curve { width:844px; height:100px; display:block; }
+      /* S6 overhead-extension illustration */
+      #o6card { width:960px; height:340px; padding:16px 26px; display:flex; gap:26px; align-items:center; text-align:left; }
+      #fig { width:290px; height:300px; flex:0 0 290px; }
+      .meters { flex:1; display:flex; flex-direction:column; gap:22px; }
+      .meters .t { font-weight:900; font-size:40px; line-height:1; text-transform:uppercase; letter-spacing:-0.01em; }
+      .meter .lab { display:flex; justify-content:space-between; font-weight:800; font-size:26px; letter-spacing:0.12em; color:var(--mute); text-transform:uppercase; margin-bottom:8px; }
+      .meter .trk { position:relative; height:28px; border-radius:14px; background:rgba(255,255,255,0.08); border:2px solid var(--line); overflow:hidden; }
+      .meter .fill { position:absolute; left:0; top:0; bottom:0; width:100%; border-radius:12px; transform-origin:0 50%; }
+
+      /* full-screen graphics */
+      .fs { position:absolute; inset:0; opacity:0; overflow:hidden; background:radial-gradient(ellipse 95% 70% at 50% 32%, #12244a 0%, #0b1226 50%, #06070c 100%); }
+      .fs .grid { position:absolute; inset:-40px; background-image:linear-gradient(rgba(255,255,255,0.045) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,0.045) 2px, transparent 2px); background-size:90px 90px; }
+      .fs .inner { position:absolute; left:70px; right:70px; top:210px; display:flex; flex-direction:column; align-items:center; gap:40px; }
+      .fs .kicker { font-weight:900; font-size:40px; letter-spacing:0.2em; color:#9cc0ff; text-transform:uppercase; }
+      .fs .title { font-weight:900; font-size:116px; line-height:0.95; text-align:center; text-transform:uppercase; letter-spacing:-0.015em; max-width:940px; }
+      .fs .title span { color:var(--y); }
+      .bigcard { width:900px; display:flex; align-items:center; gap:30px; padding:28px 36px; border-radius:30px; background:rgba(255,255,255,0.06); border:2px solid var(--line); }
+      .bigcard .ic { flex:0 0 104px; height:104px; border-radius:24px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:64px; color:var(--ink); }
+      .bigcard b { font-weight:900; font-size:60px; text-transform:uppercase; letter-spacing:-0.01em; } .bigcard span { display:block; font-weight:700; font-size:30px; color:var(--mute); margin-top:6px; }
+      .ic.green { background:var(--green); } .ic.red { background:var(--red); color:#fff; } .ic.y { background:var(--y); }
+      /* FS2 hero number + proportional bar */
+      .hero { font-weight:900; font-size:230px; line-height:1; color:var(--y); font-variant-numeric:tabular-nums; letter-spacing:-0.03em; text-shadow:0 10px 44px rgba(250,204,21,0.22); white-space:nowrap; }
+      #barbox { position:relative; width:900px; }
+      #barlab { display:flex; justify-content:space-between; font-weight:800; font-size:28px; letter-spacing:0.12em; color:var(--mute); text-transform:uppercase; margin-bottom:12px; }
+      #bar { position:relative; height:84px; border-radius:20px; background:rgba(255,255,255,0.07); border:2px solid var(--line); overflow:hidden; }
+      #barfill { position:absolute; left:0; top:0; bottom:0; width:100%; background:var(--blue); transform-origin:0 50%; }
+      #sliver { position:absolute; right:0; top:0; bottom:0; width:6px; background:var(--y); box-shadow:0 0 18px var(--y); }
+      #callout { position:absolute; right:-8px; top:118px; display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
+      #callout .arr { width:6px; height:46px; background:var(--y); margin-right:8px; border-radius:3px; }
+      #callout .txt { font-weight:900; font-size:34px; color:var(--y); text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap; }
+      /* FS3 photos */
+      .pair { display:flex; gap:34px; justify-content:center; margin-top:10px; }
+      .pair .photo { width:440px; height:600px; }
+
+      /* captions: Jeff Nippard style, plain white bold, soft shadow, sits on the shirt below the beard */
+      #captions { position:absolute; left:40px; right:40px; top:1505px; height:120px; z-index:6; }
+      .cap { position:absolute; left:0; right:0; top:0; text-align:center; font-weight:800; font-size:74px; line-height:1.05; letter-spacing:-0.01em; opacity:0; white-space:nowrap;
+        text-shadow:0 0 3px rgba(0,0,0,0.9), 0 4px 0 rgba(0,0,0,0.7), 0 8px 26px rgba(0,0,0,0.6); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="70.467000" data-width="1080" data-height="1920">
+      <div id="face-wrap"><video id="face" src="assets/edit.mp4" muted playsinline data-start="0" data-duration="70.467000" data-track-index="0"></video></div>
+      <audio id="voice" src="assets/edit.mp4" data-start="0" data-duration="70.467000" data-track-index="1" data-volume="1"></audio>
+      <audio id="sfx0" src="assets/sfx/pop.mp3" data-start="0.98" data-duration="0.72" data-track-index="10" data-volume="0.14"></audio>
+      <audio id="sfx1" src="assets/sfx/slam.mp3" data-start="4.87" data-duration="1.22" data-track-index="11" data-volume="0.15"></audio>
+      <audio id="sfx2" src="assets/sfx/pop.mp3" data-start="7.2" data-duration="0.72" data-track-index="12" data-volume="0.14"></audio>
+      <audio id="sfx3" src="assets/sfx/swipe.mp3" data-start="9.75" data-duration="1.05" data-track-index="13" data-volume="0.12"></audio>
+      <audio id="sfx4" src="assets/sfx/slam.mp3" data-start="14.12" data-duration="1.22" data-track-index="14" data-volume="0.15"></audio>
+      <audio id="sfx5" src="assets/sfx/pop.mp3" data-start="17.14" data-duration="0.72" data-track-index="15" data-volume="0.14"></audio>
+      <audio id="sfx6" src="assets/sfx/click.wav" data-start="19.21" data-duration="0.45" data-track-index="16" data-volume="0.16"></audio>
+      <audio id="sfx7" src="assets/sfx/slam.mp3" data-start="20.26" data-duration="1.22" data-track-index="17" data-volume="0.15"></audio>
+      <audio id="sfx8" src="assets/sfx/pop.mp3" data-start="22.29" data-duration="0.72" data-track-index="18" data-volume="0.14"></audio>
+      <audio id="sfx9" src="assets/sfx/whoosh.mp3" data-start="23.0" data-duration="0.57" data-track-index="19" data-volume="0.18"></audio>
+      <audio id="sfx10" src="assets/sfx/slam.mp3" data-start="23.63" data-duration="1.22" data-track-index="20" data-volume="0.15"></audio>
+      <audio id="sfx11" src="assets/sfx/click.wav" data-start="24.99" data-duration="0.45" data-track-index="21" data-volume="0.16"></audio>
+      <audio id="sfx12" src="assets/sfx/click.wav" data-start="26.05" data-duration="0.45" data-track-index="22" data-volume="0.16"></audio>
+      <audio id="sfx13" src="assets/sfx/slam.mp3" data-start="27.15" data-duration="1.22" data-track-index="23" data-volume="0.15"></audio>
+      <audio id="sfx14" src="assets/sfx/whoosh.mp3" data-start="27.93" data-duration="0.57" data-track-index="24" data-volume="0.18"></audio>
+      <audio id="sfx15" src="assets/sfx/click.wav" data-start="28.74" data-duration="0.45" data-track-index="25" data-volume="0.16"></audio>
+      <audio id="sfx16" src="assets/sfx/pop.mp3" data-start="30.62" data-duration="0.72" data-track-index="26" data-volume="0.14"></audio>
+      <audio id="sfx17" src="assets/sfx/slam.mp3" data-start="31.77" data-duration="1.22" data-track-index="27" data-volume="0.15"></audio>
+      <audio id="sfx18" src="assets/sfx/click.wav" data-start="33.35" data-duration="0.45" data-track-index="28" data-volume="0.16"></audio>
+      <audio id="sfx19" src="assets/sfx/sparkle.mp3" data-start="34.2" data-duration="2.03" data-track-index="29" data-volume="0.14"></audio>
+      <audio id="sfx20" src="assets/sfx/whoosh.mp3" data-start="36.3" data-duration="0.57" data-track-index="30" data-volume="0.18"></audio>
+      <audio id="sfx21" src="assets/sfx/swipe.mp3" data-start="38.46" data-duration="1.05" data-track-index="31" data-volume="0.12"></audio>
+      <audio id="sfx22" src="assets/sfx/swipe.mp3" data-start="39.31" data-duration="1.05" data-track-index="32" data-volume="0.12"></audio>
+      <audio id="sfx23" src="assets/sfx/pop.mp3" data-start="41.5" data-duration="0.72" data-track-index="33" data-volume="0.14"></audio>
+      <audio id="sfx24" src="assets/sfx/slam.mp3" data-start="44.84" data-duration="1.22" data-track-index="34" data-volume="0.15"></audio>
+      <audio id="sfx25" src="assets/sfx/pop.mp3" data-start="46.8" data-duration="0.72" data-track-index="35" data-volume="0.14"></audio>
+      <audio id="sfx26" src="assets/sfx/swipe.mp3" data-start="50.1" data-duration="1.05" data-track-index="36" data-volume="0.12"></audio>
+      <audio id="sfx27" src="assets/sfx/click.wav" data-start="52.63" data-duration="0.45" data-track-index="37" data-volume="0.16"></audio>
+      <audio id="sfx28" src="assets/sfx/slam.mp3" data-start="56.12" data-duration="1.22" data-track-index="38" data-volume="0.15"></audio>
+      <audio id="sfx29" src="assets/sfx/whoosh.mp3" data-start="56.98" data-duration="0.57" data-track-index="39" data-volume="0.18"></audio>
+      <audio id="sfx30" src="assets/sfx/click.wav" data-start="57.5" data-duration="0.45" data-track-index="40" data-volume="0.16"></audio>
+      <audio id="sfx31" src="assets/sfx/click.wav" data-start="58.03" data-duration="0.45" data-track-index="41" data-volume="0.16"></audio>
+      <audio id="sfx32" src="assets/sfx/click.wav" data-start="60.28" data-duration="0.45" data-track-index="42" data-volume="0.16"></audio>
+      <audio id="sfx33" src="assets/sfx/slam.mp3" data-start="61.67" data-duration="1.22" data-track-index="43" data-volume="0.15"></audio>
+      <audio id="sfx34" src="assets/sfx/slam.mp3" data-start="64.57" data-duration="1.22" data-track-index="44" data-volume="0.15"></audio>
+      <audio id="sfx35" src="assets/sfx/pop.mp3" data-start="66.95" data-duration="0.72" data-track-index="45" data-volume="0.14"></audio>
+      <audio id="sfx36" src="assets/sfx/click.wav" data-start="67.38" data-duration="0.45" data-track-index="46" data-volume="0.16"></audio>
+      <audio id="sfx37" src="assets/sfx/pop.mp3" data-start="68.74" data-duration="0.72" data-track-index="47" data-volume="0.14"></audio>
+      <audio id="sfx38" src="assets/sfx/sparkle.mp3" data-start="69.4" data-duration="1.07" data-track-index="48" data-volume="0.14"></audio>
+      <audio id="music" src="assets/music.mp3" data-start="0" data-duration="70.467000" data-track-index="2" data-volume="0.045"></audio>
+      <div id="overlay" class="clip" data-start="0" data-duration="70.467000" data-track-index="3" style="position:absolute;inset:0;">
+        <div id="topshade"></div><div id="botshade"></div>
+
+        <!-- S1 hook -->
+        <div class="ov" id="o1"><div class="pill" id="o1a">😮‍💨 Stanco di vedere…</div>
+          <div class="card" id="o1b"><div class="n">ROM PARZIALI</div><div class="l">in ogni video, ultimamente</div></div></div>
+        <!-- S2 the trend -->
+        <div class="ov" id="o2"><div class="row" style="align-items:flex-start">
+          <div class="photo" id="o2p" style="width:440px;height:300px"><img src="assets/img/cable-fly.jpg" alt="" style="object-position:60% 30%" /><div class="chip">Croci ai cavi</div></div>
+          <div class="col" style="padding-top:18px"><div class="pill blue" id="o2a" style="font-size:30px">📅 Ultimi 2–3 anni</div><div class="pill" id="o2b" style="font-size:30px">Parziali in allungamento</div><div class="tag" id="o2t">= più crescita?</div></div>
+        </div></div>
+        <!-- S3 the myth: full ROM + lockout = bad -->
+        <div class="ov" id="o3"><div class="card rel" id="o3c"><div class="n" style="color:#fff">ROM COMPLETO</div><div class="l">+ lockout articolare</div><div class="x" id="o3x"></div></div>
+          <div class="stack"><div class="tag red" id="o3t1">Perdi 1 cm di tensione!</div><div class="tag" id="o3t2">🙄 Per favore…</div></div></div>
+
+        <!-- FS1 let's be clear -->
+        <div class="fs" id="fs1"><div class="grid"></div><div class="inner">
+          <div class="kicker" id="f1k">Allora…</div><div class="title" id="f1t">Facciamo <span>chiarezza</span></div>
+          <div class="bigcard" id="f1a"><div class="ic green">✓</div><div><b>ROM completo</b><span>tutta l'escursione dell'esercizio</span></div></div>
+          <div class="bigcard" id="f1b"><div class="ic green">✓</div><div><b>ROM articolare</b><span>fino al lockout dell'articolazione</span></div></div>
+          <div class="tag green" id="f1g">Va benissimo</div>
+        </div></div>
+        <!-- FS2 how much tension a lockout removes -->
+        <div class="fs" id="fs2"><div class="grid"></div><div class="inner" style="top:200px;gap:40px">
+          <div class="title" id="f2q" style="font-size:92px">Quanta tensione <span>perdi</span> in lockout?</div>
+          <div class="hero" id="f2n">&lt; 0,0%</div>
+          <div id="barbox"><div id="barlab"><span>Tensione della ripetizione</span><span>100%</span></div>
+            <div id="bar"><div id="barfill"></div><div id="sliver"></div></div>
+            <div id="callout"><div class="arr"></div><div class="txt">Il microsecondo di lockout</div></div></div>
+          <div class="tag" id="f2t" style="margin-top:120px">È minima</div>
+        </div></div>
+        <!-- FS3 lockout is fine: chest press / squat -->
+        <div class="fs" id="fs3"><div class="grid"></div><div class="inner" style="top:170px;gap:30px">
+          <div class="kicker" id="f3k">Nessun problema</div><div class="title" id="f3t" style="font-size:100px">Lockout <span>articolare</span></div>
+          <div class="pair">
+            <div class="photo" id="f3a" style="transform:rotate(-3deg)"><img src="assets/img/chest-press.jpg" alt="" style="object-position:62% 50%" /><div class="chip">Chest press</div><div class="badge" id="f3ab">✓ Lockout</div></div>
+            <div class="photo" id="f3b" style="transform:rotate(3deg)"><img src="assets/img/squat.jpg" alt="" style="object-position:50% 45%" /><div class="chip">Squat</div><div class="badge" id="f3bb">✓ Lockout</div></div>
+          </div>
+        </div></div>
+
+        <!-- S5 continuous tension -->
+        <div class="ov" id="o5"><div class="pill blue" id="o5a">⏱ 1 secondo dopo… già scendi</div>
+          <div class="card" id="o5card"><div class="l">Tensione sul muscolo, rep dopo rep</div>
+            <svg id="curve" viewBox="0 0 844 100"><line x1="0" y1="93" x2="844" y2="93" stroke="rgba(255,255,255,0.18)" stroke-width="2" />
+              <polyline id="o5l" fill="none" stroke="#22c55e" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"
+                points="10,80 80,22 190,18 205,25 220,18 330,20 420,22 435,28 450,20 560,18 650,22 665,28 680,20 790,18 834,20" /></svg></div>
+          <div class="tag green" id="o5t">Tensione continua ✓</div></div>
+        <!-- S6 overhead extension: more stretch, less strength -->
+        <div class="ov" id="o6"><div class="card" id="o6card">
+          <svg id="fig" viewBox="0 0 290 300">
+            <g stroke-linecap="round" stroke-linejoin="round" fill="none">
+              <line x1="138" y1="176" x2="138" y2="292" stroke="#d9deea" stroke-width="46" />
+              <g id="arm"><!-- side view, facing right. Rotates about the shoulder (138,170): more negative = arm further behind the head -->
+                <g id="fore"><line x1="138" y1="50" x2="138" y2="-40" stroke="#aeb6c8" stroke-width="22" />
+                  <rect x="110" y="-58" width="56" height="24" rx="8" fill="#8a93a6" stroke="none" /></g>
+                <line x1="138" y1="170" x2="138" y2="50" stroke="#eef1f7" stroke-width="30" />
+                <line id="tri" x1="127" y1="160" x2="127" y2="60" stroke="#facc15" stroke-width="9" opacity="0.35" /></g>
+              <circle cx="165" cy="112" r="34" fill="#d9deea" stroke="#1a1a23" stroke-width="6" />
+              <circle cx="186" cy="106" r="5" fill="#1a1a23" stroke="none" />
+            </g>
+          </svg>
+          <div class="meters"><div class="t" id="o6h">Overhead extension</div>
+            <div class="meter" id="o6m1"><div class="lab"><span>Stretch al tricipite</span><span id="o6v1">↑</span></div><div class="trk"><div class="fill" id="o6f1" style="background:var(--y)"></div></div></div>
+            <div class="meter" id="o6m2"><div class="lab"><span>Forza in quella posizione</span><span id="o6v2" style="color:#ef4444">↓</span></div><div class="trk"><div class="fill" id="o6f2" style="background:var(--blue)"></div></div></div>
+          </div></div>
+          <div class="tag red" id="o6t" style="position:absolute;right:30px;top:300px">Meno forte</div></div>
+        <!-- FS4 the chain -->
+        <div class="fs" id="fs4"><div class="grid"></div><div class="inner" style="gap:30px">
+          <div class="kicker">Di conseguenza</div>
+          <div class="bigcard" id="f4a"><div class="ic y">↑</div><div><b>Più stretch</b><span>braccio dietro la testa</span></div></div>
+          <div class="bigcard" id="f4b"><div class="ic red">↓</div><div><b>Meno forza</b><span>posizione svantaggiosa</span></div></div>
+          <div class="bigcard" id="f4c"><div class="ic red">↓</div><div><b>Meno carico</b><span>sollevi meno peso</span></div></div>
+          <div class="bigcard" id="f4d"><div class="ic red">↓</div><div><b>Meno tensione</b><span>al muscolo, in generale</span></div></div>
+        </div></div>
+        <!-- S7 stop overthinking -->
+        <div class="ov" id="o7"><div class="row" id="o7r"><div class="card" id="o7e" style="padding:14px 26px"><div class="n" style="font-size:110px">🤯</div></div>
+          <div class="col"><div class="pill rel" id="o7a">📐 L'angolo perfetto<div class="x" id="o7x"></div></div><div class="pill" id="o7b">½ ROM in allungamento</div></div></div>
+          <div class="row" id="o7end" style="position:absolute;left:0;right:0;top:60px"><div class="tag green" id="o7g">ROM completo ✓</div><div class="pill blue" id="o7h" style="text-transform:none">@luca_bandiera_pt</div></div></div>
+
+        <div id="captions"></div>
+        <div id="flash"></div>
+      </div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const DUR = 70.467000;
+
+      // face: slow push-ins between beats, small punches on key words (max 1.08 so the hairline stays below the slides)
+      const Z = [[0,1.0,0],[0.05,1.04,4.7,"none"],[4.87,1.08,0.25,"expo.out"],[6.2,1.0,0],[6.25,1.04,9.6,"none"],[16.0,1.0,0],[16.05,1.03,3.1,"none"],
+        [19.21,1.08,0.22,"expo.out"],[20.3,1.02,0],[20.35,1.05,2.6,"none"],[35.3,1.0,0],[35.35,1.03,2.0,"none"],[41.45,1.0,0],[41.5,1.05,4.8,"none"],
+        [46.4,1.0,0],[46.45,1.04,10.4,"none"],[63.0,1.0,0],[63.05,1.03,1.5,"none"],[64.57,1.08,0.25,"expo.out"],[66.5,1.02,0],[66.55,1.06,3.9,"none"]];
+      Z.forEach(([t,s,d,e]) => d ? tl.to("#face-wrap",{scale:s,duration:d,ease:e},t) : tl.set("#face-wrap",{scale:s},t));
+
+      const show = (s,a,b) => { tl.fromTo(s,{opacity:0,y:-24},{opacity:1,y:0,duration:0.35,ease:"expo.out"},a); tl.to(s,{opacity:0,duration:0.15},b-0.15); };
+      const pop = (s,t,e) => tl.fromTo(s,{opacity:0,scale:0.8,y:14},{opacity:1,scale:1,y:0,duration:0.3,ease:e||"back.out(2)"},t);
+      const slam = (s,t) => tl.fromTo(s,{opacity:0,scale:1.7},{opacity:1,scale:1,duration:0.22,ease:"power4.in"},t);
+      const slide = (s,t,x) => tl.fromTo(s,{opacity:0,x:x},{opacity:1,x:0,duration:0.4,ease:"power3.out"},t);
+      const strike = (s,t) => tl.fromTo(s,{scaleX:0},{scaleX:1,duration:0.25,ease:"power3.out"},t);
+      const fsIn = (s,a,b) => { tl.fromTo(s,{opacity:0,scale:1.06},{opacity:1,scale:1,duration:0.3,ease:"power3.out"},a); tl.fromTo("#flash",{opacity:0.45},{opacity:0,duration:0.25,immediateRender:false},a);
+        tl.to(s,{opacity:0,scale:0.97,duration:0.25,ease:"power2.in"},b-0.25); };
+      gsap.set("#o6v2, #f2n, .ov .pill, .ov .tag, .ov .card, .ov .photo, .fs .bigcard, .fs .tag, .fs .photo, .fs .badge, #o7end, #callout, #sliver", {opacity:0}); gsap.set(".x",{scaleX:0});
+      gsap.set("#o3t1, #o3t2", {xPercent:-50});
+
+      // S1 hook — "stancato di vedere ... video che fanno ROM parziali"
+      show("#o1",0.9,6.15); pop("#o1a",0.98); slam("#o1b",4.87);
+      // S2 trend — "ultimi 2-3 anni ... parziali in allungamento ... facciano crescere di più"
+      show("#o2",7.1,15.9); pop("#o2a",7.2); slide("#o2p",9.81,-60); tl.fromTo("#o2p",{rotation:-6},{rotation:-2,duration:0.5,ease:"back.out(2)"},9.81);
+      pop("#o2b",10.1,"expo.out"); slam("#o2t",14.12);
+      // S3 the myth — "ROM completo, se vai in lockout articolare, no ... perdi quel centimetro ... per favore"
+      show("#o3",17.0,23.05); pop("#o3c",17.14,"expo.out"); strike("#o3x",19.21); slam("#o3t1",20.26);
+      tl.to("#o3t1",{opacity:0,duration:0.12},22.25); slam("#o3t2",22.29);
+      // FS1 — "Allora, facciamo chiarezza: un ROM completo, un ROM articolare, va benissimo"
+      fsIn("#fs1",23.05,27.95); tl.fromTo("#f1k",{opacity:0,y:-16},{opacity:1,y:0,duration:0.3,ease:"power2.out"},23.15);
+      tl.fromTo("#f1t",{opacity:0,scale:1.25},{opacity:1,scale:1,duration:0.3,ease:"power4.out"},23.63);
+      slide("#f1a",24.99,-80); slide("#f1b",26.05,80); slam("#f1g",27.15);
+      // FS2 — "quel microsecondo di tensione che togli ... è minima ... neanche dello 0,5%"
+      fsIn("#fs2",27.98,35.25); tl.fromTo("#f2q",{opacity:0,y:30},{opacity:1,y:0,duration:0.35,ease:"expo.out"},28.1);
+      tl.fromTo("#barfill",{scaleX:0},{scaleX:1,duration:1.1,ease:"power2.inOut"},28.74);
+      tl.fromTo("#sliver",{opacity:0},{opacity:1,duration:0.15},30.62); tl.fromTo("#callout",{opacity:0,y:20},{opacity:1,y:0,duration:0.3,ease:"back.out(2)"},30.62);
+      tl.to("#sliver",{opacity:0.35,duration:0.18,yoyo:true,repeat:5,ease:"sine.inOut"},30.9);
+      slam("#f2t",31.77);
+      tl.fromTo("#f2n",{opacity:0},{opacity:1,duration:0.15},33.3);
+      const pc = {v:0}; tl.to(pc,{v:5,duration:0.9,ease:"power2.out",onUpdate:()=>{document.getElementById("f2n").textContent="< 0,"+Math.round(pc.v)+"%";}},33.35);
+      tl.fromTo("#f2n",{scale:1},{scale:1.08,duration:0.18,yoyo:true,repeat:1,ease:"power2.out"},34.2);
+      // FS3 — "non sarà un problema ... lockout articolare in una chest press o in uno squat"
+      fsIn("#fs3",36.35,41.4); tl.fromTo("#f3k",{opacity:0,y:-16},{opacity:1,y:0,duration:0.3,ease:"power2.out"},36.41);
+      tl.fromTo("#f3t",{opacity:0,y:30},{opacity:1,y:0,duration:0.35,ease:"expo.out"},36.6);
+      tl.fromTo("#f3t span",{color:"#ffffff"},{color:"#facc15",duration:0.25},37.88);
+      tl.fromTo("#f3a",{opacity:0,y:80,rotation:-10},{opacity:1,y:0,rotation:-3,duration:0.45,ease:"back.out(1.6)"},38.5);
+      tl.fromTo("#f3b",{opacity:0,y:80,rotation:10},{opacity:1,y:0,rotation:3,duration:0.45,ease:"back.out(1.6)"},39.35);
+      pop("#f3ab",39.0,"back.out(3)"); pop("#f3bb",39.85,"back.out(3)");
+      // S5 — "il secondo dopo stai già scendendo ... con una tensione continua"
+      show("#o5",41.45,46.35); pop("#o5a",41.5,"expo.out"); tl.fromTo("#o5card",{opacity:0,y:20},{opacity:1,y:0,duration:0.3,ease:"power3.out"},42.0);
+      const l5 = document.getElementById("o5l"); l5.style.strokeDasharray = 1000; tl.fromTo(l5,{strokeDashoffset:1000},{strokeDashoffset:0,duration:2.4,ease:"none"},42.25);
+      slam("#o5t",44.84);
+      // S6 — overhead extension: "un braccio che vi va dietro così ... stretch al tricipite ... meno forte"
+      show("#o6",46.75,57.0); pop("#o6card",46.8,"expo.out");
+      gsap.set("#arm",{svgOrigin:"138 170",rotation:-12}); gsap.set("#fore",{svgOrigin:"138 50",rotation:192});   // forearm hangs straight down (world 180°)
+      tl.fromTo("#o6h",{opacity:0,x:30},{opacity:1,x:0,duration:0.3,ease:"power2.out"},48.71);
+      tl.to("#arm",{rotation:-30,duration:0.8,ease:"power2.inOut"},50.17);            // arm travels behind the head
+      tl.to("#fore",{rotation:210,duration:0.8,ease:"power2.inOut"},50.17);
+      tl.fromTo("#o6f1",{scaleX:0.35},{scaleX:0.95,duration:0.7,ease:"power2.out"},52.63); tl.to("#tri",{opacity:1,attr:{"stroke-width":14},duration:0.4},53.12);
+      tl.fromTo("#o6f2",{scaleX:0.8},{scaleX:0.8,duration:0.01},46.8); tl.to("#o6f2",{scaleX:0.32,backgroundColor:"#ef4444",duration:0.6,ease:"power2.in"},56.12);
+      pop("#o6v2",56.12,"back.out(3)"); slam("#o6t",56.12);
+      // FS4 — "di conseguenza il carico ... e generare tensione al muscolo sarà minore in generale"
+      fsIn("#fs4",57.03,62.95); slide("#f4a",57.16,-70); slide("#f4b",57.5,70); slide("#f4c",58.03,-70); slide("#f4d",60.28,70);
+      tl.to("#f4d",{borderColor:"#ef4444",backgroundColor:"rgba(239,68,68,0.16)",scale:1.04,duration:0.25,ease:"power2.out"},61.67);
+      // S7 — "sfracellando il cervello ... l'angolo perfetto ... mezzo ROM in allungamento"
+      tl.fromTo("#o7",{opacity:0,y:-24},{opacity:1,y:0,duration:0.35,ease:"expo.out"},64.4);   // no exit: holds to the last frame
+      slam("#o7e",64.57); pop("#o7a",66.95,"expo.out"); strike("#o7x",67.38); pop("#o7b",68.74);
+      tl.to("#o7r",{opacity:0,y:-20,duration:0.25},69.35); tl.fromTo("#o7end",{opacity:0,y:20},{opacity:1,y:0,duration:0.3,ease:"back.out(2)"},69.4);
+      tl.fromTo("#o7g",{opacity:0,scale:1.6},{opacity:1,scale:1,duration:0.22,ease:"power4.in"},69.4); pop("#o7h",69.7);
+
+      // captions
+      const CAPS = [{"a": 0.03, "w": [["ORA", 0.03]], "b": 0.21}, {"a": 0.21, "w": [["MI", 0.21], ["SONO", 0.35], ["ANCHE", 0.63]], "b": 0.98}, {"a": 0.98, "w": [["STANCATO", 0.98]], "b": 1.54}, {"a": 1.54, "w": [["DI", 1.54], ["VEDERE", 1.68]], "b": 2.1}, {"a": 2.1, "w": [["ULTIMAMENTE", 2.1]], "b": 2.87}, {"a": 2.87, "w": [["DAVVERO", 2.87], ["DEI", 3.36], ["VIDEO", 3.57]], "b": 3.98}, {"a": 3.98, "w": [["CHE", 3.98], ["FANNO", 4.3], ["ROM", 4.87]], "b": 5.21}, {"a": 5.21, "w": [["PARZIALI", 5.21]], "b": 6.24}, {"a": 6.24, "w": [["PERCHÉ", 6.24], ["NEGLI", 6.44]], "b": 7.2}, {"a": 7.2, "w": [["ULTIMI", 7.2], ["2-3", 7.44], ["ANNI", 7.88]], "b": 8.14}, {"a": 8.14, "w": [["PIÙ", 8.14], ["O", 8.33], ["MENO", 8.39]], "b": 8.85}, {"a": 8.85, "w": [["SIAMO", 8.85], ["ARRIVATI", 8.92]], "b": 9.3}, {"a": 9.3, "w": [["A", 9.3], ["PENSARE", 9.36]], "b": 9.67}, {"a": 9.67, "w": [["CHE", 9.67], ["LE", 9.81], ["PARZIALI", 9.9]], "b": 10.085}, {"a": 10.085, "w": [["IN", 10.085], ["ALLUNGAMENTO", 10.27]], "b": 10.92}, {"a": 10.92, "w": [["O", 10.92], ["COMUNQUE", 10.97]], "b": 11.5}, {"a": 11.5, "w": [["ESERCIZI", 11.5], ["DOVE", 11.86], ["C'È", 12.08]], "b": 12.3}, {"a": 12.3, "w": [["TANTA", 12.3], ["TENSIONE", 12.58]], "b": 12.8}, {"a": 12.8, "w": [["IN", 12.8], ["ALLUNGAMENTO", 13.02]], "b": 13.71}, {"a": 13.71, "w": [["FACCIANO", 13.71], ["CRESCERE", 14.12]], "b": 14.56}, {"a": 14.56, "w": [["DI", 14.56], ["PIÙ", 14.66], ["OGNI", 14.9]], "b": 15.06}, {"a": 15.06, "w": [["SINGOLO", 15.06], ["MUSCOLO", 15.44]], "b": 15.95}, {"a": 15.95, "w": [["E", 15.95], ["DI", 16.02], ["CONSEGUENZA", 16.14]], "b": 16.78}, {"a": 16.78, "w": [["FARE", 16.78], ["UN", 17.02], ["ROM", 17.14]], "b": 17.33}, {"a": 17.33, "w": [["COMPLETO", 17.33]], "b": 17.79}, {"a": 17.79, "w": [["SE", 17.79], ["VAI", 17.91]], "b": 18.13}, {"a": 18.13, "w": [["IN", 18.13], ["LOCKOUT", 18.21]], "b": 18.62}, {"a": 18.62, "w": [["ARTICOLARE", 18.62]], "b": 19.21}, {"a": 19.21, "w": [["NO", 19.21]], "b": 19.33}, {"a": 19.33, "w": [["PERCHÉ", 19.33], ["ALTRIMENTI", 19.68]], "b": 20.26}, {"a": 20.26, "w": [["PERDI", 20.26]], "b": 20.55}, {"a": 20.55, "w": [["QUEL", 20.55], ["CENTIMETRO", 20.85]], "b": 21.37}, {"a": 21.37, "w": [["DI", 21.37], ["TENSIONE", 21.5]], "b": 22.29}, {"a": 22.29, "w": [["PER", 22.29], ["FAVORE", 22.48]], "b": 22.765}, {"a": 22.765, "w": [["EH.", 22.765]], "b": 23.05}, {"a": 23.05, "w": [["ALLORA", 23.05]], "b": 23.63}, {"a": 23.63, "w": [["FACCIAMO", 23.63]], "b": 24.2}, {"a": 24.2, "w": [["CHIAREZZA", 24.2]], "b": 24.99}, {"a": 24.99, "w": [["UN", 24.99], ["ROM", 25.13], ["COMPLETO", 25.35]], "b": 26.05}, {"a": 26.05, "w": [["UN", 26.05], ["ROM", 26.21]], "b": 26.43}, {"a": 26.43, "w": [["ARTICOLARE", 26.43]], "b": 27.15}, {"a": 27.15, "w": [["VA", 27.15], ["BENISSIMO", 27.29]], "b": 27.98}, {"a": 27.98, "w": [["ANCHE", 27.98], ["PERCHÉ", 28.3]], "b": 28.74}, {"a": 28.74, "w": [["QUEL", 28.74], ["MICROSECONDO", 29.03]], "b": 29.9}, {"a": 29.9, "w": [["DI", 29.9], ["TENSIONE", 30.04]], "b": 30.62}, {"a": 30.62, "w": [["CHE", 30.62], ["TOGLI", 30.84]], "b": 31.19}, {"a": 31.19, "w": [["APPUNTO", 31.19]], "b": 31.7}, {"a": 31.7, "w": [["È", 31.7], ["MINIMA", 31.77]], "b": 32.34}, {"a": 32.34, "w": [["STIAMO", 32.34], ["PARLANDO", 32.77]], "b": 33.35}, {"a": 33.35, "w": [["NEANCHE", 33.35]], "b": 33.85}, {"a": 33.85, "w": [["DELLO", 33.85], ["0,5%", 34.2]], "b": 34.73}, {"a": 34.73, "w": [["DI", 34.73], ["CONSEGUENZA", 35.36]], "b": 35.97}, {"a": 35.97, "w": [["NON", 35.97], ["SARÀ", 36.1], ["UN", 36.31]], "b": 36.41}, {"a": 36.41, "w": [["PROBLEMA", 36.41], ["PER", 36.83], ["TE", 36.98]], "b": 37.16}, {"a": 37.16, "w": [["ANDARE", 37.16], ["IN", 37.41], ["LOCKOUT", 37.51]], "b": 37.88}, {"a": 37.88, "w": [["ARTICOLARE", 37.88]], "b": 38.4}, {"a": 38.4, "w": [["IN", 38.4], ["UNA", 38.5], ["CHEST PRESS", 38.66]], "b": 39.18}, {"a": 39.18, "w": [["O", 39.18], ["IN", 39.23], ["UNO", 39.33]], "b": 39.49}, {"a": 39.49, "w": [["SQUAT", 39.49]], "b": 39.86}, {"a": 39.86, "w": [["SE", 39.86], ["POI", 40.01], ["NEANCHE", 40.22]], "b": 40.75}, {"a": 40.75, "w": [["IL", 40.75], ["SECONDO", 40.9], ["DOPO", 41.43]], "b": 41.75}, {"a": 41.75, "w": [["STAI", 41.75], ["GIÀ", 42.03]], "b": 42.25}, {"a": 42.25, "w": [["SCENDENDO", 42.25]], "b": 42.92}, {"a": 42.92, "w": [["PER", 42.92], ["FARE", 43.16]], "b": 43.44}, {"a": 43.44, "w": [["LA", 43.44], ["RIPETIZIONE", 43.59]], "b": 44.4}, {"a": 44.4, "w": [["CON", 44.4], ["UNA", 44.62], ["TENSIONE", 44.84]], "b": 45.44}, {"a": 45.44, "w": [["CONTINUA.", 45.44]], "b": 46.41}, {"a": 46.41, "w": [["OPPURE", 46.41]], "b": 46.7}, {"a": 46.7, "w": [["PER", 46.7], ["FARE", 46.86]], "b": 47.305}, {"a": 47.305, "w": [["L'ALLUNGAMENTO", 47.305]], "b": 47.75}, {"a": 47.75, "w": [["COME", 47.75], ["PER", 47.94], ["ESEMPIO", 48.1]], "b": 48.49}, {"a": 48.49, "w": [["FARE", 48.49]], "b": 48.71}, {"a": 48.71, "w": [["L'OVERHEAD EXTENSION", 48.71]], "b": 49.53}, {"a": 49.53, "w": [["CON", 49.53], ["UN", 49.61], ["BRACCIO", 49.8]], "b": 50.17}, {"a": 50.17, "w": [["CHE", 50.17], ["VI", 50.33], ["VA", 50.48]], "b": 50.61}, {"a": 50.61, "w": [["DIETRO", 50.61], ["COSÌ", 50.89]], "b": 51.21}, {"a": 51.21, "w": [["PER", 51.21], ["CERCARE", 51.27]], "b": 51.64}, {"a": 51.64, "w": [["DI", 51.64], ["FARE", 51.75], ["CHISSÀ", 51.98]], "b": 52.3}, {"a": 52.3, "w": [["QUANTO", 52.3], ["STRETCH", 52.63]], "b": 53.02}, {"a": 53.02, "w": [["AL", 53.02], ["TRICIPITE", 53.12]], "b": 53.62}, {"a": 53.62, "w": [["QUANDO", 53.62], ["POI", 53.95]], "b": 54.1}, {"a": 54.1, "w": [["EFFETTIVAMENTE", 54.1]], "b": 54.87}, {"a": 54.87, "w": [["IN", 54.87], ["QUELLA", 54.98]], "b": 55.31}, {"a": 55.31, "w": [["POSIZIONE", 55.31], ["È", 55.8], ["ANCHE", 55.85]], "b": 56.12}, {"a": 56.12, "w": [["MENO", 56.12], ["FORTE", 56.34]], "b": 57.03}, {"a": 57.03, "w": [["DI", 57.03], ["CONSEGUENZA", 57.16]], "b": 57.9}, {"a": 57.9, "w": [["IL", 57.9], ["CARICO", 58.03]], "b": 58.5}, {"a": 58.5, "w": [["CHE", 58.5], ["POTETE", 58.7]], "b": 59.1}, {"a": 59.1, "w": [["SOLLEVARE", 59.1]], "b": 59.69}, {"a": 59.69, "w": [["E", 59.69], ["GENERARE", 59.75]], "b": 60.28}, {"a": 60.28, "w": [["TENSIONE", 60.28]], "b": 60.81}, {"a": 60.81, "w": [["AL", 60.81], ["MUSCOLO", 60.94]], "b": 61.41}, {"a": 61.41, "w": [["SARÀ", 61.41], ["MINORE", 61.67]], "b": 62.08}, {"a": 62.08, "w": [["IN", 62.08], ["GENERALE.", 62.2]], "b": 62.98}, {"a": 62.98, "w": [["QUINDI", 62.98], ["NON", 63.21], ["SO", 63.37]], "b": 63.48}, {"a": 63.48, "w": [["PERCHÉ", 63.48], ["VI", 63.81], ["STATE", 63.92]], "b": 64.19}, {"a": 64.19, "w": [["DAVVERO", 64.19]], "b": 64.57}, {"a": 64.57, "w": [["SFRACELLANDO", 64.57]], "b": 65.22}, {"a": 65.22, "w": [["IL", 65.22], ["CERVELLO", 65.33]], "b": 65.76}, {"a": 65.76, "w": [["SU", 65.76], ["QUESTE", 65.87], ["COSE", 66.2]], "b": 66.42}, {"a": 66.42, "w": [["PER", 66.42], ["CERCARE", 66.58]], "b": 66.95}, {"a": 66.95, "w": [["L'ANGOLO", 66.95], ["PERFETTO", 67.38]], "b": 67.83}, {"a": 67.83, "w": [["DI", 67.83], ["ALLUNGAMENTO", 67.93]], "b": 68.58}, {"a": 68.58, "w": [["O", 68.58], ["DI", 68.63], ["MEZZO", 68.74]], "b": 69.01}, {"a": 69.01, "w": [["ROM", 69.01]], "b": 69.16}, {"a": 69.16, "w": [["IN", 69.16], ["ALLUNGAMENTO.", 69.28]], "b": 70.64}]; const box = document.getElementById("captions");
+      CAPS.forEach((c,i)=>{ const el=document.createElement("div"); el.className="cap"; el.id="cap"+i; el.textContent=c.w.map(x=>x[0]).join(" "); box.appendChild(el);
+        tl.fromTo(el,{opacity:0,y:8},{opacity:1,y:0,duration:0.08,ease:"power2.out"},c.a);
+        if (i < CAPS.length - 1) tl.set(el,{opacity:0},Math.min(c.b,DUR-0.05)); });
+      tl.set({},{},DUR);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

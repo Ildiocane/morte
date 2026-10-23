@@ -1,0 +1,938 @@
+[
+  {
+    "text": "Which",
+    "start": 0,
+    "end": 0.2,
+    "id": "w0"
+  },
+  {
+    "text": "matters",
+    "start": 0.2,
+    "end": 0.47,
+    "id": "w1"
+  },
+  {
+    "text": "more",
+    "start": 0.47,
+    "end": 0.58,
+    "id": "w2"
+  },
+  {
+    "text": "for",
+    "start": 0.66,
+    "end": 0.74,
+    "id": "w3"
+  },
+  {
+    "text": "muscle",
+    "start": 0.75,
+    "end": 0.98,
+    "id": "w4"
+  },
+  {
+    "text": "growth.",
+    "start": 0.98,
+    "end": 1.24,
+    "id": "w5"
+  },
+  {
+    "text": "The",
+    "start": 1.24,
+    "end": 1.43,
+    "id": "w6"
+  },
+  {
+    "text": "positive,",
+    "start": 1.43,
+    "end": 2.08,
+    "id": "w7"
+  },
+  {
+    "text": "where",
+    "start": 2.08,
+    "end": 2.13,
+    "id": "w8"
+  },
+  {
+    "text": "you",
+    "start": 2.16,
+    "end": 2.2,
+    "id": "w9"
+  },
+  {
+    "text": "lift",
+    "start": 2.2,
+    "end": 2.26,
+    "id": "w10"
+  },
+  {
+    "text": "the",
+    "start": 2.26,
+    "end": 2.3,
+    "id": "w11"
+  },
+  {
+    "text": "weight",
+    "start": 2.3,
+    "end": 2.4,
+    "id": "w12"
+  },
+  {
+    "text": "up,",
+    "start": 2.44,
+    "end": 2.68,
+    "id": "w13"
+  },
+  {
+    "text": "or",
+    "start": 2.68,
+    "end": 2.71,
+    "id": "w14"
+  },
+  {
+    "text": "the",
+    "start": 2.81,
+    "end": 2.95,
+    "id": "w15"
+  },
+  {
+    "text": "negative,",
+    "start": 2.95,
+    "end": 3.52,
+    "id": "w16"
+  },
+  {
+    "text": "where",
+    "start": 3.52,
+    "end": 3.68,
+    "id": "w17"
+  },
+  {
+    "text": "you",
+    "start": 3.68,
+    "end": 3.77,
+    "id": "w18"
+  },
+  {
+    "text": "lower",
+    "start": 3.77,
+    "end": 3.93,
+    "id": "w19"
+  },
+  {
+    "text": "the",
+    "start": 3.93,
+    "end": 4.01,
+    "id": "w20"
+  },
+  {
+    "text": "weight",
+    "start": 4.08,
+    "end": 4.21,
+    "id": "w21"
+  },
+  {
+    "text": "back",
+    "start": 4.21,
+    "end": 4.33,
+    "id": "w22"
+  },
+  {
+    "text": "down.",
+    "start": 4.34,
+    "end": 4.6,
+    "id": "w23"
+  },
+  {
+    "text": "For",
+    "start": 4.6,
+    "end": 4.76,
+    "id": "w24"
+  },
+  {
+    "text": "years,",
+    "start": 4.76,
+    "end": 5.13,
+    "id": "w25"
+  },
+  {
+    "text": "most",
+    "start": 5.13,
+    "end": 5.33,
+    "id": "w26"
+  },
+  {
+    "text": "lifters",
+    "start": 5.34,
+    "end": 5.7,
+    "id": "w27"
+  },
+  {
+    "text": "assumed",
+    "start": 5.72,
+    "end": 6.12,
+    "id": "w28"
+  },
+  {
+    "text": "that",
+    "start": 6.12,
+    "end": 6.33,
+    "id": "w29"
+  },
+  {
+    "text": "the",
+    "start": 6.33,
+    "end": 6.48,
+    "id": "w30"
+  },
+  {
+    "text": "negative",
+    "start": 6.48,
+    "end": 6.9,
+    "id": "w31"
+  },
+  {
+    "text": "was",
+    "start": 6.9,
+    "end": 7.05,
+    "id": "w32"
+  },
+  {
+    "text": "most",
+    "start": 7.05,
+    "end": 7.24,
+    "id": "w33"
+  },
+  {
+    "text": "important",
+    "start": 7.32,
+    "end": 7.76,
+    "id": "w34"
+  },
+  {
+    "text": "because",
+    "start": 7.76,
+    "end": 8.06,
+    "id": "w35"
+  },
+  {
+    "text": "that's",
+    "start": 8.06,
+    "end": 8.31,
+    "id": "w36"
+  },
+  {
+    "text": "when",
+    "start": 8.31,
+    "end": 8.48,
+    "id": "w37"
+  },
+  {
+    "text": "the",
+    "start": 8.48,
+    "end": 8.6,
+    "id": "w38"
+  },
+  {
+    "text": "muscle",
+    "start": 8.6,
+    "end": 8.85,
+    "id": "w39"
+  },
+  {
+    "text": "is",
+    "start": 8.85,
+    "end": 8.92,
+    "id": "w40"
+  },
+  {
+    "text": "lengthening.",
+    "start": 8.96,
+    "end": 9.44,
+    "id": "w41"
+  },
+  {
+    "text": "And",
+    "start": 9.44,
+    "end": 9.47,
+    "id": "w42"
+  },
+  {
+    "text": "you've",
+    "start": 9.57,
+    "end": 9.8,
+    "id": "w43"
+  },
+  {
+    "text": "probably",
+    "start": 9.8,
+    "end": 10.13,
+    "id": "w44"
+  },
+  {
+    "text": "heard",
+    "start": 10.13,
+    "end": 10.33,
+    "id": "w45"
+  },
+  {
+    "text": "us",
+    "start": 10.34,
+    "end": 10.45,
+    "id": "w46"
+  },
+  {
+    "text": "science-based",
+    "start": 10.46,
+    "end": 11.08,
+    "id": "w47"
+  },
+  {
+    "text": "lifters",
+    "start": 11.08,
+    "end": 11.44,
+    "id": "w48"
+  },
+  {
+    "text": "say",
+    "start": 11.44,
+    "end": 11.76,
+    "id": "w49"
+  },
+  {
+    "text": "that",
+    "start": 11.8,
+    "end": 11.99,
+    "id": "w50"
+  },
+  {
+    "text": "it's",
+    "start": 11.99,
+    "end": 12.17,
+    "id": "w51"
+  },
+  {
+    "text": "really",
+    "start": 12.17,
+    "end": 12.38,
+    "id": "w52"
+  },
+  {
+    "text": "important",
+    "start": 12.46,
+    "end": 12.92,
+    "id": "w53"
+  },
+  {
+    "text": "to",
+    "start": 12.94,
+    "end": 13.06,
+    "id": "w54"
+  },
+  {
+    "text": "control",
+    "start": 13.06,
+    "end": 13.5,
+    "id": "w55"
+  },
+  {
+    "text": "the",
+    "start": 13.5,
+    "end": 13.69,
+    "id": "w56"
+  },
+  {
+    "text": "negative.",
+    "start": 13.69,
+    "end": 14.37,
+    "id": "w57"
+  },
+  {
+    "text": "But",
+    "start": 14.4,
+    "end": 14.55,
+    "id": "w58"
+  },
+  {
+    "text": "what",
+    "start": 14.55,
+    "end": 14.75,
+    "id": "w59"
+  },
+  {
+    "text": "does",
+    "start": 14.75,
+    "end": 14.95,
+    "id": "w60"
+  },
+  {
+    "text": "the",
+    "start": 14.95,
+    "end": 15.1,
+    "id": "w61"
+  },
+  {
+    "text": "latest",
+    "start": 15.1,
+    "end": 15.4,
+    "id": "w62"
+  },
+  {
+    "text": "science",
+    "start": 15.4,
+    "end": 15.76,
+    "id": "w63"
+  },
+  {
+    "text": "say",
+    "start": 15.8,
+    "end": 16.04,
+    "id": "w64"
+  },
+  {
+    "text": "about",
+    "start": 16.04,
+    "end": 16.27,
+    "id": "w65"
+  },
+  {
+    "text": "negatives",
+    "start": 16.27,
+    "end": 16.62,
+    "id": "w66"
+  },
+  {
+    "text": "in",
+    "start": 16.7,
+    "end": 16.77,
+    "id": "w67"
+  },
+  {
+    "text": "muscle",
+    "start": 16.78,
+    "end": 17.05,
+    "id": "w68"
+  },
+  {
+    "text": "growth?",
+    "start": 17.05,
+    "end": 17.52,
+    "id": "w69"
+  },
+  {
+    "text": "Well,",
+    "start": 17.52,
+    "end": 17.86,
+    "id": "w70"
+  },
+  {
+    "text": "a",
+    "start": 17.86,
+    "end": 17.91,
+    "id": "w71"
+  },
+  {
+    "text": "brand",
+    "start": 17.91,
+    "end": 18.2,
+    "id": "w72"
+  },
+  {
+    "text": "new",
+    "start": 18.2,
+    "end": 18.37,
+    "id": "w73"
+  },
+  {
+    "text": "meta-analysis",
+    "start": 18.37,
+    "end": 19.16,
+    "id": "w74"
+  },
+  {
+    "text": "of",
+    "start": 19.16,
+    "end": 19.31,
+    "id": "w75"
+  },
+  {
+    "text": "26",
+    "start": 19.32,
+    "end": 19.79,
+    "id": "w76"
+  },
+  {
+    "text": "studies",
+    "start": 19.79,
+    "end": 20.36,
+    "id": "w77"
+  },
+  {
+    "text": "and",
+    "start": 20.36,
+    "end": 20.54,
+    "id": "w78"
+  },
+  {
+    "text": "over",
+    "start": 20.54,
+    "end": 20.78,
+    "id": "w79"
+  },
+  {
+    "text": "600",
+    "start": 20.78,
+    "end": 21.31,
+    "id": "w80"
+  },
+  {
+    "text": "subjects",
+    "start": 21.31,
+    "end": 21.8,
+    "id": "w81"
+  },
+  {
+    "text": "compared",
+    "start": 21.8,
+    "end": 22.1,
+    "id": "w82"
+  },
+  {
+    "text": "muscle",
+    "start": 22.1,
+    "end": 22.32,
+    "id": "w83"
+  },
+  {
+    "text": "growth",
+    "start": 22.32,
+    "end": 22.56,
+    "id": "w84"
+  },
+  {
+    "text": "from",
+    "start": 22.56,
+    "end": 22.75,
+    "id": "w85"
+  },
+  {
+    "text": "emphasizing",
+    "start": 22.75,
+    "end": 23.27,
+    "id": "w86"
+  },
+  {
+    "text": "the",
+    "start": 23.27,
+    "end": 23.41,
+    "id": "w87"
+  },
+  {
+    "text": "positive",
+    "start": 23.41,
+    "end": 23.8,
+    "id": "w88"
+  },
+  {
+    "text": "versus",
+    "start": 23.8,
+    "end": 24.11,
+    "id": "w89"
+  },
+  {
+    "text": "the",
+    "start": 24.11,
+    "end": 24.26,
+    "id": "w90"
+  },
+  {
+    "text": "negative.",
+    "start": 24.26,
+    "end": 24.68,
+    "id": "w91"
+  },
+  {
+    "text": "And",
+    "start": 24.68,
+    "end": 24.82,
+    "id": "w92"
+  },
+  {
+    "text": "they",
+    "start": 24.82,
+    "end": 25,
+    "id": "w93"
+  },
+  {
+    "text": "found",
+    "start": 25,
+    "end": 25.23,
+    "id": "w94"
+  },
+  {
+    "text": "that,",
+    "start": 25.23,
+    "end": 25.52,
+    "id": "w95"
+  },
+  {
+    "text": "for",
+    "start": 25.52,
+    "end": 25.62,
+    "id": "w96"
+  },
+  {
+    "text": "the",
+    "start": 25.62,
+    "end": 25.72,
+    "id": "w97"
+  },
+  {
+    "text": "upper",
+    "start": 25.72,
+    "end": 25.89,
+    "id": "w98"
+  },
+  {
+    "text": "body,",
+    "start": 25.89,
+    "end": 26.08,
+    "id": "w99"
+  },
+  {
+    "text": "there",
+    "start": 26.08,
+    "end": 26.38,
+    "id": "w100"
+  },
+  {
+    "text": "was",
+    "start": 26.38,
+    "end": 26.56,
+    "id": "w101"
+  },
+  {
+    "text": "a",
+    "start": 26.56,
+    "end": 26.62,
+    "id": "w102"
+  },
+  {
+    "text": "small",
+    "start": 26.62,
+    "end": 26.92,
+    "id": "w103"
+  },
+  {
+    "text": "but",
+    "start": 26.92,
+    "end": 27.09,
+    "id": "w104"
+  },
+  {
+    "text": "significant",
+    "start": 27.1,
+    "end": 27.77,
+    "id": "w105"
+  },
+  {
+    "text": "advantage",
+    "start": 27.77,
+    "end": 28.36,
+    "id": "w106"
+  },
+  {
+    "text": "showing",
+    "start": 28.36,
+    "end": 28.71,
+    "id": "w107"
+  },
+  {
+    "text": "more",
+    "start": 28.71,
+    "end": 28.91,
+    "id": "w108"
+  },
+  {
+    "text": "muscle",
+    "start": 28.91,
+    "end": 29.21,
+    "id": "w109"
+  },
+  {
+    "text": "growth",
+    "start": 29.21,
+    "end": 29.51,
+    "id": "w110"
+  },
+  {
+    "text": "when",
+    "start": 29.52,
+    "end": 29.75,
+    "id": "w111"
+  },
+  {
+    "text": "you",
+    "start": 29.75,
+    "end": 29.92,
+    "id": "w112"
+  },
+  {
+    "text": "emphasize",
+    "start": 29.92,
+    "end": 30.39,
+    "id": "w113"
+  },
+  {
+    "text": "the",
+    "start": 30.44,
+    "end": 30.61,
+    "id": "w114"
+  },
+  {
+    "text": "negative.",
+    "start": 30.61,
+    "end": 31.28,
+    "id": "w115"
+  },
+  {
+    "text": "But",
+    "start": 31.28,
+    "end": 31.43,
+    "id": "w116"
+  },
+  {
+    "text": "for",
+    "start": 31.43,
+    "end": 31.58,
+    "id": "w117"
+  },
+  {
+    "text": "the",
+    "start": 31.58,
+    "end": 31.73,
+    "id": "w118"
+  },
+  {
+    "text": "lower",
+    "start": 31.73,
+    "end": 31.97,
+    "id": "w119"
+  },
+  {
+    "text": "body,",
+    "start": 31.97,
+    "end": 32.28,
+    "id": "w120"
+  },
+  {
+    "text": "both",
+    "start": 32.28,
+    "end": 32.5,
+    "id": "w121"
+  },
+  {
+    "text": "the",
+    "start": 32.5,
+    "end": 32.66,
+    "id": "w122"
+  },
+  {
+    "text": "positive",
+    "start": 32.66,
+    "end": 33.11,
+    "id": "w123"
+  },
+  {
+    "text": "and",
+    "start": 33.11,
+    "end": 33.27,
+    "id": "w124"
+  },
+  {
+    "text": "the",
+    "start": 33.27,
+    "end": 33.4,
+    "id": "w125"
+  },
+  {
+    "text": "negative",
+    "start": 33.48,
+    "end": 33.92,
+    "id": "w126"
+  },
+  {
+    "text": "led",
+    "start": 33.92,
+    "end": 34.05,
+    "id": "w127"
+  },
+  {
+    "text": "to",
+    "start": 34.05,
+    "end": 34.13,
+    "id": "w128"
+  },
+  {
+    "text": "similar",
+    "start": 34.13,
+    "end": 34.43,
+    "id": "w129"
+  },
+  {
+    "text": "growth.",
+    "start": 34.43,
+    "end": 34.84,
+    "id": "w130"
+  },
+  {
+    "text": "You",
+    "start": 34.84,
+    "end": 34.99,
+    "id": "w131"
+  },
+  {
+    "text": "should",
+    "start": 34.99,
+    "end": 35.3,
+    "id": "w132"
+  },
+  {
+    "text": "control",
+    "start": 35.3,
+    "end": 35.66,
+    "id": "w133"
+  },
+  {
+    "text": "the",
+    "start": 35.66,
+    "end": 35.81,
+    "id": "w134"
+  },
+  {
+    "text": "negative,",
+    "start": 35.81,
+    "end": 36.24,
+    "id": "w135"
+  },
+  {
+    "text": "but",
+    "start": 36.24,
+    "end": 36.38,
+    "id": "w136"
+  },
+  {
+    "text": "the",
+    "start": 36.38,
+    "end": 36.52,
+    "id": "w137"
+  },
+  {
+    "text": "idea",
+    "start": 36.52,
+    "end": 36.71,
+    "id": "w138"
+  },
+  {
+    "text": "that",
+    "start": 36.71,
+    "end": 36.82,
+    "id": "w139"
+  },
+  {
+    "text": "the",
+    "start": 36.9,
+    "end": 37.04,
+    "id": "w140"
+  },
+  {
+    "text": "negative",
+    "start": 37.04,
+    "end": 37.39,
+    "id": "w141"
+  },
+  {
+    "text": "is",
+    "start": 37.44,
+    "end": 37.55,
+    "id": "w142"
+  },
+  {
+    "text": "drastically",
+    "start": 37.64,
+    "end": 38.2,
+    "id": "w143"
+  },
+  {
+    "text": "more",
+    "start": 38.2,
+    "end": 38.4,
+    "id": "w144"
+  },
+  {
+    "text": "hypertrophic",
+    "start": 38.4,
+    "end": 39,
+    "id": "w145"
+  },
+  {
+    "text": "than",
+    "start": 39,
+    "end": 39.2,
+    "id": "w146"
+  },
+  {
+    "text": "the",
+    "start": 39.2,
+    "end": 39.32,
+    "id": "w147"
+  },
+  {
+    "text": "positive",
+    "start": 39.4,
+    "end": 39.8,
+    "id": "w148"
+  },
+  {
+    "text": "isn't",
+    "start": 39.8,
+    "end": 40.04,
+    "id": "w149"
+  },
+  {
+    "text": "really",
+    "start": 40.06,
+    "end": 40.36,
+    "id": "w150"
+  },
+  {
+    "text": "supported",
+    "start": 40.36,
+    "end": 40.83,
+    "id": "w151"
+  },
+  {
+    "text": "by",
+    "start": 40.83,
+    "end": 40.92,
+    "id": "w152"
+  },
+  {
+    "text": "the",
+    "start": 40.92,
+    "end": 41.07,
+    "id": "w153"
+  },
+  {
+    "text": "latest",
+    "start": 41.09,
+    "end": 41.39,
+    "id": "w154"
+  },
+  {
+    "text": "evidence.",
+    "start": 41.39,
+    "end": 42,
+    "id": "w155"
+  }
+]
