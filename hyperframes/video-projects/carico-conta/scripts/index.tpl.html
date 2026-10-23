@@ -187,7 +187,7 @@
       // P2 — tecnica corretta, stesso range di movimento, recuperi adeguatamente
       show("#p2",8.75,13.85); nxIn("#p2k",8.8); nxIn("#p2a",9.89); nxIn("#p2b",11.33); nxIn("#p2c",12.88);
       // FS1 — "il carico deve aumentare ... forza ... ipertrofia. Lineare."
-      fsIn("#fs1",14.05,20.15); tl.fromTo("#flash",{opacity:0.25},{opacity:0,duration:0.15},16.65); glitch(16.62);
+      fsIn("#fs1",14.05,20.15); tl.fromTo("#flash",{opacity:0.25},{opacity:0,duration:0.15,immediateRender:false},16.65); glitch(16.62);
       tl.fromTo("#sp1",{x:0},{x:-400,duration:6.1,ease:"none"},14.05); tl.fromTo("#g1",{x:0,y:0},{x:700,y:-200,duration:6.1,ease:"sine.inOut"},14.05);
       tl.fromTo("#f1brand",{opacity:0,y:-20},{opacity:1,y:0,duration:0.3,ease:"power2.out"},14.2); nxIn("#f1k",14.29);
       tl.fromTo("#f1a",{opacity:0,y:60},{opacity:1,y:0,duration:0.3,ease:"back.out(2)"},14.6);
